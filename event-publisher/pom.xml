@@ -11,7 +11,7 @@
   <parent>
     <groupId>ons.sdc.int.common</groupId>
     <artifactId>common</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
   </parent>
 
   <dependencies>
@@ -77,7 +77,7 @@
     <dependency>
       <groupId>ons.sdc.int.common</groupId>
       <artifactId>framework</artifactId>
-      <version>1.0.0</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
