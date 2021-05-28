@@ -16,6 +16,7 @@
   <parent>
     <groupId>ons.sdc.int.common</groupId>
     <artifactId>common</artifactId>
+    <!-- version auto updated by Travis mvn release -->
     <version>1.0.1-SNAPSHOT</version>
   </parent>
 
