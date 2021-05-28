@@ -31,7 +31,7 @@
 
 
   <modules>
-    <module>common-framework</module>
+    <module>framework</module>
     <module>product-reference</module>
     <module>eq-launcher</module>
   </modules>
