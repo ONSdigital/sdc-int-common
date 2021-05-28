@@ -2,16 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>product-reference</artifactId>
+  <artifactId>case-api-client</artifactId>
   <packaging>jar</packaging>
 
-  <name>SDC : Integrations Product Reference</name>
-  <description>SDC : Integrations Product Reference</description>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-  </properties>
+  <name>SDC : Integrations Case API Client</name>
+  <description>SDC : Integrations Case API Client</description>
 
   <parent>
     <groupId>ons.sdc.int.common</groupId>
@@ -32,6 +27,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>5.1.5.RELEASE</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
     </dependency>
@@ -39,6 +40,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
+      <version>4.2</version>
     </dependency>
 
     <dependency>
@@ -66,6 +68,12 @@
       <artifactId>logging</artifactId>
     </dependency>
 
+	<dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <version>1</version>
+    </dependency>
+
     <dependency>
       <groupId>ons.sdc.int.common</groupId>
       <artifactId>framework</artifactId>
@@ -75,8 +83,14 @@
     <dependency>
       <groupId>uk.gov.ons.ctp.integration.common</groupId>
       <artifactId>test-framework</artifactId>
-      <version>0.0.18</version>
+      <version>0.0.11</version>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>ons.sdc.int.common</groupId>
+      <artifactId>event-publisher</artifactId>
+      <version>1.0.0</version>
     </dependency>
 
   </dependencies>
@@ -85,6 +99,7 @@
     <defaultGoal>clean install</defaultGoal>
 
     <plugins>
+
       <plugin>
         <groupId>com.coveo</groupId>
         <artifactId>fmt-maven-plugin</artifactId>
@@ -96,6 +111,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -108,6 +124,9 @@
           <reuseForks>true</reuseForks>
         </configuration>
       </plugin>
+
+
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>

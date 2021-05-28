@@ -2,7 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>ons.sdc</groupId>
   <artifactId>common-eq-launcher</artifactId>
   <packaging>jar</packaging>
 
@@ -15,8 +14,8 @@
   </properties>
 
   <parent>
-    <groupId>ons.sdc</groupId>
-    <artifactId>int-common</artifactId>
+    <groupId>ons.sdc.int.common</groupId>
+    <artifactId>common</artifactId>
     <version>1.0.0</version>
   </parent>
 
@@ -58,15 +57,15 @@
     </dependency>
 
     <dependency>
-      <groupId>uk.gov.ons.ctp.integration.common</groupId>
+      <groupId>ons.sdc.int.common</groupId>
       <artifactId>framework</artifactId>
-      <version>0.0.79</version>
+      <version>1.0.0</version>
     </dependency>
 
     <dependency>
-      <groupId>uk.gov.ons.ctp.integration.common</groupId>
-      <artifactId>census-int-case-api-client</artifactId>
-      <version>0.0.21</version>
+      <groupId>ons.sdc.int.common</groupId>
+      <artifactId>case-api-client</artifactId>
+      <version>1.0.0</version>
     </dependency>
 
     <dependency>
@@ -130,12 +129,5 @@
       </plugin>
     </plugins>
   </build>
-
-  <scm>
-    <url>https://github.com/ONSdigital/census-int-eq-launcher</url>
-    <connection>scm:git:https://github.com/ONSdigital/census-int-eq-launcher</connection>
-    <developerConnection>scm:git:https://github.com/ONSdigital/census-int-eq-launcher</developerConnection>
-    <tag>HEAD</tag>
-  </scm>
 
 </project>

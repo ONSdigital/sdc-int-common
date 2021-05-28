@@ -2,21 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>uk.gov.ons.ctp.integration.common</groupId>
-  <artifactId>common-framework</artifactId>
+  <artifactId>framework</artifactId>
   <packaging>jar</packaging>
 
   <name>SDC : Integrations Framework</name>
   <description>SDC : Integrations Framework</description>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-  </properties>
-
   <parent>
-    <groupId>ons.sdc</groupId>
-    <artifactId>int-common</artifactId>
+    <groupId>ons.sdc.int.common</groupId>
+    <artifactId>common</artifactId>
     <version>1.0.0</version>
   </parent>
 

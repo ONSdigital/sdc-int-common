@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
                              http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>ons.sdc</groupId>
-  <artifactId>int-common</artifactId>
+  <groupId>ons.sdc.int.common</groupId>
+  <artifactId>common</artifactId>
   <version>1.0.0</version>
   <packaging>pom</packaging>
   <name>SDC : Integrations Common</name>
@@ -23,17 +23,12 @@
     </license>
   </licenses>
 
-  <parent>
-    <groupId>uk.gov.ons.ctp.integration</groupId>
-    <artifactId>census-int-common-config</artifactId>
-    <version>0.0.17</version>
-  </parent>
-
-
   <modules>
     <module>framework</module>
     <module>product-reference</module>
     <module>eq-launcher</module>
+    <module>case-api-client</module>
+    <module>event-publisher</module>
   </modules>
 
   <scm>

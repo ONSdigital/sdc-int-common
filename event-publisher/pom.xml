@@ -2,16 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>product-reference</artifactId>
+  <artifactId>event-publisher</artifactId>
   <packaging>jar</packaging>
 
-  <name>SDC : Integrations Product Reference</name>
-  <description>SDC : Integrations Product Reference</description>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-  </properties>
+  <name>SDC : Integrations Event Publisher</name>
+  <description>SDC : Integrations Event Publisher</description>
 
   <parent>
     <groupId>ons.sdc.int.common</groupId>
@@ -67,6 +62,19 @@
     </dependency>
 
     <dependency>
+      <groupId>org.springframework.amqp</groupId>
+      <artifactId>spring-rabbit</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+      <version>1.0.4.RELEASE</version>
+    </dependency>
+
+    <!-- ONS libraries -->
+
+    <dependency>
       <groupId>ons.sdc.int.common</groupId>
       <artifactId>framework</artifactId>
       <version>1.0.0</version>
@@ -75,16 +83,16 @@
     <dependency>
       <groupId>uk.gov.ons.ctp.integration.common</groupId>
       <artifactId>test-framework</artifactId>
-      <version>0.0.18</version>
+      <version>0.0.20</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <build>
     <defaultGoal>clean install</defaultGoal>
 
     <plugins>
+
       <plugin>
         <groupId>com.coveo</groupId>
         <artifactId>fmt-maven-plugin</artifactId>
@@ -96,6 +104,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -108,6 +117,9 @@
           <reuseForks>true</reuseForks>
         </configuration>
       </plugin>
+
+
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
