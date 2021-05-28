@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ons.sdc.int.common</groupId>
   <artifactId>common</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.1</version>
   <packaging>pom</packaging>
   <name>SDC : Integrations Common</name>
   <description>Parent project with common modules for SDC Integrations application projects</description>
@@ -34,7 +34,7 @@
     <url>https://github.com/ONSdigital/sdc-int-common</url>
     <connection>scm:git:https://github.com/ONSdigital/sdc-int-common</connection>
     <developerConnection>scm:git:https://github.com/ONSdigital/sdc-int-common</developerConnection>
-    <tag>HEAD</tag>
+    <tag>common-1.0.1</tag>
   </scm>
 
 
