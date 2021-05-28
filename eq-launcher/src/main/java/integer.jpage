@@ -1,0 +1,3 @@
+String input="-21474836489";
+Integer i = Integer.decode(input);
+System.out.println(i);

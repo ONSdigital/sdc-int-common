@@ -1,0 +1,11 @@
+uk/gov/ons/ctp/integration/common/product/model/Product.class
+uk/gov/ons/ctp/integration/common/product/ProductReference$1.class
+uk/gov/ons/ctp/integration/common/product/model/Product$Handler.class
+uk/gov/ons/ctp/integration/common/product/model/Product$ProductBuilder.class
+uk/gov/ons/ctp/integration/common/product/model/Product$DeliveryChannel.class
+uk/gov/ons/ctp/integration/common/product/model/Product$Region.class
+uk/gov/ons/ctp/integration/common/product/model/Product$Language.class
+uk/gov/ons/ctp/integration/common/product/model/Product$ProductGroup.class
+uk/gov/ons/ctp/integration/common/product/model/Product$RequestChannel.class
+uk/gov/ons/ctp/integration/common/product/ProductReference.class
+uk/gov/ons/ctp/integration/common/product/model/Product$CaseType.class
