@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ONSdigital/census-int-common-config.svg?branch=master)](https://travis-ci.org/ONSdigital/census-int-common-config)
+[![Build Status](https://travis-ci.org/ONSdigital/sdc-int-common.svg?branch=master)](https://travis-ci.org/ONSdigital/sdc-int-common)
 
-# census-int-common-config
-Common configuration for Census Integration Projects
+# sdc-int-common
+Common configuration for ONS SDC Integration Projects

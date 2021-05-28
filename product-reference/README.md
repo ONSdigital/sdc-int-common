@@ -1,8 +1,6 @@
-[![Build Status](https://travis-ci.org/ONSdigital/census-int-product-reference.svg?branch=master)](https://travis-ci.org/ONSdigital/census-int-product-reference)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/37fdebe43c0f467ead6394a3d43d90f4)](https://www.codacy.com/app/sdcplatform/census-int-product-reference?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ONSdigital/census-int-product-reference&amp;utm_campaign=Badge_Grade)
 
-# Census Integration Product Reference
-This project contains reusable service layer code to facilitate the lookup of Census product types (aka fulfilments).
+# SDC Integration Common Product Reference
+This project contains reusable service layer code to facilitate the lookup of SDC product types (aka fulfilments).
 and returns a list of product objects, encapsulating :
 
 *  description
@@ -28,7 +26,7 @@ The ProductReference class loads the available products from a JSON file when it
 The searchProducts method additionally uses Spring caching to save the comparison process on subsequent identical requests.
 
 The Product class used as the example and the return type contains enum definitions of certain fields - those enums may have counterparts
-in the application that uses the Component. This project has no dependency on either the Census Contact Centre Service or the 
+in the application that uses the Component. This project has no dependency on either the Contact Centre Service or the 
 RH Service, so needs it's own enums.
 ## Copyright
-Copyright (C) 2019,2020 Crown Copyright (Office for National Statistics)
+Copyright (C) 2021 Crown Copyright (Office for National Statistics)
