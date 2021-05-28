@@ -69,7 +69,6 @@
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
-      <version>1.0.4.RELEASE</version>
     </dependency>
 
     <!-- ONS libraries -->
@@ -81,9 +80,9 @@
     </dependency>
 
     <dependency>
-      <groupId>uk.gov.ons.ctp.integration.common</groupId>
+      <groupId>ons.sdc.int.common</groupId>
       <artifactId>test-framework</artifactId>
-      <version>0.0.20</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

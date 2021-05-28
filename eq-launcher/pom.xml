@@ -69,9 +69,9 @@
     </dependency>
 
     <dependency>
-      <groupId>uk.gov.ons.ctp.integration.common</groupId>
+      <groupId>ons.sdc.int.common</groupId>
       <artifactId>test-framework</artifactId>
-      <version>0.0.20</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
 

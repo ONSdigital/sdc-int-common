@@ -12,10 +12,6 @@ public class CaseContainerDTO {
 
   private String caseRef;
 
-  private String arid;
-
-  private String estabArid;
-
   private String estabType;
 
   private String uprn;
@@ -23,6 +19,8 @@ public class CaseContainerDTO {
   private String estabUprn;
 
   private Date createdDateTime;
+
+  private Date lastUpdated;
 
   private String addressLine1;
 

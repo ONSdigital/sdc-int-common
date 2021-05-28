@@ -1,0 +1,2 @@
+String st = "com.foo.bar.Thing";
+System.out.println(st.replaceAll("\\.\\w*$",".Package"));

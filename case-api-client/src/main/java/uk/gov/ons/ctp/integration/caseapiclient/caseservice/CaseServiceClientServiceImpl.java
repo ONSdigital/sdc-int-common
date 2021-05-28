@@ -19,6 +19,7 @@ public class CaseServiceClientServiceImpl {
   private static final String CASE_BY_CASE_REFERENCE_QUERY_PATH = "/cases/ref/{reference}";
   private static final String CASE_GET_REUSABLE_QUESTIONNAIRE_ID_PATH = "/cases/ccs/{caseId}/qid";
   private static final String CASE_CREATE_SINGLE_USE_QUESTIONNAIRE_ID_PATH = "/cases/{caseId}/qid";
+  private static final String CCS_CASE_BY_POSTCODE_QUERY_PATH = "/cases/ccs/postcode/{postcode}";
 
   private RestClient caseServiceClient;
 
@@ -51,6 +52,7 @@ public class CaseServiceClientServiceImpl {
     // Build map for query params
     MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
     queryParams.add("caseEvents", Boolean.toString(listCaseEvents));
+    queryParams.add("validAddressOnly", Boolean.TRUE.toString());
 
     // Ask Case Service to find case details
     List<CaseContainerDTO> cases =
@@ -62,6 +64,20 @@ public class CaseServiceClientServiceImpl {
             Long.toString(uprn));
 
     log.with("uprn", uprn).debug("getCaseByUprn() found case details by Uprn");
+
+    return cases;
+  }
+
+  public List<CaseContainerDTO> getCcsCaseByPostcode(String postcode) {
+    log.with("postcode", postcode)
+        .debug("getCcsCaseByPostcode() calling Case Service to find ccs case details by postcode");
+
+    // Ask Case Service to find ccs case details
+    List<CaseContainerDTO> cases =
+        caseServiceClient.getResources(
+            CCS_CASE_BY_POSTCODE_QUERY_PATH, CaseContainerDTO[].class, null, null, postcode);
+
+    log.with("postcode", postcode).debug("getCaseByPostcode() found ccs case details by postcode");
 
     return cases;
   }

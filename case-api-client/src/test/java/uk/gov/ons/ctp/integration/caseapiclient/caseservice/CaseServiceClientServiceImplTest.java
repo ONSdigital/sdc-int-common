@@ -12,17 +12,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import lombok.SneakyThrows;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.util.MultiValueMap;
 import uk.gov.ons.ctp.common.FixtureHelper;
-import uk.gov.ons.ctp.common.model.UniquePropertyReferenceNumber;
+import uk.gov.ons.ctp.common.domain.UniquePropertyReferenceNumber;
 import uk.gov.ons.ctp.common.rest.RestClient;
 import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.CaseContainerDTO;
 import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.QuestionnaireIdDTO;
@@ -32,6 +32,7 @@ import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.SingleUseQuest
  * This class contains unit tests for the CaseServiceClientServiceImpl class. It mocks out the Rest
  * calls and returns dummy responses to represent what would be returned by the case service.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class CaseServiceClientServiceImplTest {
   private static final String ID_0 = "b7565b5e-1396-4965-91a2-918c0d3642ed";
   private static final String ID_1 = "b7565b5e-2222-2222-2222-918c0d3642ed";
@@ -46,11 +47,6 @@ public class CaseServiceClientServiceImplTest {
       new CaseServiceClientServiceImpl(restClient);
 
   @Captor ArgumentCaptor<MultiValueMap<String, String>> queryParamsCaptor;
-
-  @Before
-  public void initMocks() {
-    MockitoAnnotations.initMocks(this);
-  }
 
   @Test
   public void testGetCaseById_withCaseEvents() {
@@ -161,8 +157,8 @@ public class CaseServiceClientServiceImplTest {
 
     // Sanity check the response
     assertEquals(testUuid, results.getId());
-    assertNotNull(
-        results.getCaseEvents()); // Response will have events as not removed at this level
+    assertNotNull(results.getCaseEvents()); // Response will have events as not removed at this
+    // level
     verifyRequestUsedCaseEventsQueryParam(requireCaseEvents);
     return results;
   }
@@ -175,6 +171,11 @@ public class CaseServiceClientServiceImplTest {
   @Test
   public void testGetCaseByUprn_withNoCaseEvents() throws Exception {
     doTestGetCaseByUprn(false);
+  }
+
+  @Test
+  public void testGetCcsCaseByPostcode() {
+    doTestGetCcsCaseByPostcode();
   }
 
   private void doTestGetCaseByUprn(boolean requireCaseEvents) throws Exception {
@@ -210,8 +211,36 @@ public class CaseServiceClientServiceImplTest {
     Mockito.verify(restClient)
         .getResources(any(), any(), any(), queryParamsCaptor.capture(), any());
     MultiValueMap<String, String> queryParams = queryParamsCaptor.getValue();
+    assertEquals(2, queryParams.keySet().size());
     assertEquals("[" + requireCaseEvents + "]", queryParams.get("caseEvents").toString());
-    assertEquals(1, queryParams.keySet().size());
+    assertEquals("[true]", queryParams.get("validAddressOnly").toString());
+  }
+
+  private void doTestGetCcsCaseByPostcode() {
+    String caseId1 = "b7565b5e-1396-4965-91a2-918c0d3642ed";
+    String caseId2 = "b7565b5e-2222-2222-2222-918c0d3642ed";
+    String postcode = "G1 2AA";
+
+    // Build results to be returned by the case service
+    List<CaseContainerDTO> caseData = FixtureHelper.loadClassFixtures(CaseContainerDTO[].class);
+    Mockito.when(
+            restClient.getResources(
+                eq("/cases/ccs/postcode/{postcode}"),
+                eq(CaseContainerDTO[].class),
+                any(),
+                any(),
+                eq(postcode)))
+        .thenReturn(caseData);
+
+    // Run the request
+    List<CaseContainerDTO> results = caseServiceClientService.getCcsCaseByPostcode(postcode);
+
+    // Sanity check the response
+    assertEquals(UUID.fromString(caseId1), results.get(0).getId());
+    assertEquals(postcode, results.get(0).getPostcode());
+
+    assertEquals(UUID.fromString(caseId2), results.get(1).getId());
+    assertEquals(postcode, results.get(1).getPostcode());
   }
 
   @Test
@@ -247,8 +276,8 @@ public class CaseServiceClientServiceImplTest {
     // Sanity check the response
     assertEquals(Long.toString(testCaseRef), results.getCaseRef());
     assertEquals(testUuid, results.getId());
-    assertNotNull(
-        results.getCaseEvents()); // Response will have events as not removed at this level
+    assertNotNull(results.getCaseEvents()); // Response will have events as not removed at this
+    // level
     verifyRequestUsedCaseEventsQueryParam(requireCaseEvents);
   }
 
