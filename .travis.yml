@@ -2,8 +2,8 @@ language: java
 jdk: openjdk11
 
 before_install:
-  # Checkout master branch not commit on master builds
-  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+  # Checkout main branch not commit on main builds
+  - if [ "$TRAVIS_BRANCH" == "main" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     git checkout $TRAVIS_BRANCH;
     fi
   - cp .travis.settings.xml $HOME/.m2/settings.xml
@@ -15,7 +15,7 @@ script:
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
   - git config --global user.email "travis@travis-ci.org";
   - git config --global user.name "Travis CI";
-  - if [ "$BRANCH" == "master" ]; then
+  - if [ "$BRANCH" == "main" ]; then
      if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
       mvn -B -Dusername=$GITHUB_API_KEY release:prepare;
       mvn -B release:perform;
