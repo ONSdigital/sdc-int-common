@@ -182,6 +182,14 @@
   </dependencyManagement>
 
   <build>
+    <extensions>
+      <extension>
+        <groupId>com.google.cloud.artifactregistry</groupId>
+        <artifactId>artifactregistry-maven-wagon</artifactId>
+        <version>2.1.1</version>
+      </extension>
+    </extensions>
+
     <pluginManagement>
       <plugins>
 
@@ -316,17 +324,28 @@
     </pluginManagement>
   </build>
 
-  <distributionManagement>
+  <repositories>
     <repository>
-      <id>releases</id>
-      <name>libs-release</name>
-      <url>https://ons.jfrog.io/ons/libs-releases-local</url>
+      <id>artifact-registry</id>
+      <url>artifactregistry://europe-west2-maven.pkg.dev/ons-ci-int/int-maven</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </repository>
+  </repositories>
+
+  <distributionManagement>
     <snapshotRepository>
-      <id>snapshots</id>
-      <name>libs-snapshots</name>
-      <url>https://ons.jfrog.io/ons/libs-snapshots-local</url>
+      <id>artifact-registry</id>
+      <url>artifactregistry://europe-west2-maven.pkg.dev/ons-ci-int/int-maven</url>
     </snapshotRepository>
+    <repository>
+      <id>artifact-registry</id>
+      <url>artifactregistry://europe-west2-maven.pkg.dev/ons-ci-int/int-maven</url>
+    </repository>
   </distributionManagement>
 
 </project>
