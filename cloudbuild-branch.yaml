@@ -13,15 +13,12 @@ steps:
     id: Maven Test
     env:
       - TZ=Europe/London
-    args:
-      - test
+    args: ['-Dmaven.repo.local=/workspace/.m2/repository', 'test']
     entrypoint: mvn
 
   - name: 'maven:3-jdk-11'
     id: Maven Deploy
-    args:
-      - deploy
-      - '-Dmaven.test.skip=true'
+    args: ['-Dmaven.repo.local=/workspace/.m2/repository', 'deploy', '-Dmaven.test.skip=true']
     entrypoint: mvn
       #
   # Update M2 repo cache
