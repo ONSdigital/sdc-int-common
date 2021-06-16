@@ -326,10 +326,20 @@
 
   <repositories>
     <repository>
-      <id>artifact-registry</id>
-      <url>artifactregistry://europe-west2-maven.pkg.dev/ons-ci-int/int-maven</url>
+      <id>artifact-release-registry</id>
+      <url>artifactregistry://europe-west2-maven.pkg.dev/ons-ci-int/int-maven-release</url>
       <releases>
         <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>artifact-snapshot-registry</id>
+      <url>artifactregistry://europe-west2-maven.pkg.dev/ons-ci-int/int-maven-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
       </releases>
       <snapshots>
         <enabled>true</enabled>
@@ -339,12 +349,12 @@
 
   <distributionManagement>
     <snapshotRepository>
-      <id>artifact-registry</id>
-      <url>artifactregistry://europe-west2-maven.pkg.dev/ons-ci-int/int-maven</url>
+      <id>artifact-snapshot-registry</id>
+      <url>artifactregistry://europe-west2-maven.pkg.dev/ons-ci-int/int-maven-snapshot</url>
     </snapshotRepository>
     <repository>
-      <id>artifact-registry</id>
-      <url>artifactregistry://europe-west2-maven.pkg.dev/ons-ci-int/int-maven</url>
+      <id>artifact-release-registry</id>
+      <url>artifactregistry://europe-west2-maven.pkg.dev/ons-ci-int/int-maven-release</url>
     </repository>
   </distributionManagement>
 
