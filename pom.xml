@@ -32,9 +32,8 @@
   </modules>
 
   <scm>
-    <url>https://github.com/ONSdigital/sdc-int-common</url>
-    <connection>scm:git:https://github.com/ONSdigital/sdc-int-common</connection>
-    <developerConnection>scm:git:https://github.com/ONSdigital/sdc-int-common</developerConnection>
+    <connection>scm:git:ssh://github.com/ONSdigital/sdc-int-common</connection>
+    <developerConnection>scm:git:ssh://github.com/ONSdigital/sdc-int-common</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
@@ -206,7 +205,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
-          <version>2.5.3</version>
+          <version>3.0.0-M4</version>
           <configuration>
             <scmCommentPrefix>[ci skip]</scmCommentPrefix>
           </configuration>
