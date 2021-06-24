@@ -31,15 +31,13 @@ steps:
     args:
       - '-c'
       - |
-        ls
-        pwd
         git config --global user.name censusintci
         git config --global user.email philip.whiles@ext.ons.gov.uk
         cp .mvn/cloudbuild-settings.xml /tmp
         sed -ie "s/\[GIT_DEPLOY_TOKEN\]/$$sdc-int-common-deploy-key/" /tmp/cloudbuild-settings.xml
         cd /workspace
-        mvnw release:prepare -s /tmp/cloudbuild-settings.xml
-        mvnw release:perform -s /tmp/cloudbuild-settings.xml
+        ./mvnw release:prepare -s /tmp/cloudbuild-settings.xml
+        ./mvnw release:perform -s /tmp/cloudbuild-settings.xml
     volumes:
       - name: javahome
         path: /usr/local/openjdk-11
