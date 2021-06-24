@@ -11,7 +11,7 @@ steps:
 
   - name: 'maven:3-jdk-11'
     id: Maven Test
-    secretEnv: [ 'DEPLOY_KEY' ]
+    secretEnv: [ 'sdc-int-common-deploy-key' ]
     env:
       - TZ=Europe/London
     args: ['-Dmaven.repo.local=/workspace/.m2/repository', 'test']
