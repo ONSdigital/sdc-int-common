@@ -19,6 +19,7 @@ steps:
     args:
       - '-c'
       - |
+        git config --global --unset credential.helper
         git config --global user.name censusintci
         git config --global user.email philip.whiles@ext.ons.gov.uk
         cp .mvn/cloudbuild-settings.xml /tmp
