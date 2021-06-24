@@ -1,7 +1,18 @@
 <settings>
   <servers>
     <server>
-      <id>gitlab</id>
+      <id>artifact-release-registry</id>
+      <configuration>
+        <httpHeaders>
+          <property>
+            <name>censusintci</name>
+            <value>[GIT_DEPLOY_TOKEN]</value>
+          </property>
+        </httpHeaders>
+      </configuration>
+    </server>
+    <server>
+      <id>artifact-snapshot-registry</id>
       <configuration>
         <httpHeaders>
           <property>
