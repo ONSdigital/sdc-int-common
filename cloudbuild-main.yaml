@@ -10,7 +10,7 @@ steps:
     args: ['xpzf', 'm2.tar.gz']
 
   - name: 'maven:3-jdk-11'
-    id: Maven Test
+    id: Maven Release
     secretEnv: [ 'sdc-int-common-deploy-key' ]
     env:
       - TZ=Europe/London
@@ -19,11 +19,21 @@ steps:
     args:
       - '-c'
       - |
+        git config --global user.name censusintci
+        git config --global user.email philip.whiles@ext.ons.gov.uk
         cp .mvn/cloudbuild-settings.xml /tmp
         sed -ie "s/\[GIT_DEPLOY_TOKEN\]/$$sdc-int-common-deploy-key/" /tmp/cloudbuild-settings.xml
         mvn release:prepare -s /tmp/cloudbuild-settings.xml
         mvn release:perform -s /tmp/cloudbuild-settings.xml
 
+  # Update M2 repo cache
+  - name: europe-west2-docker.pkg.dev/ons-ci-int/int-docker-ci/cloudbuild/tar
+    id: Compress M2 Cache
+    args: ['cpzf', 'm2.tar.gz', '.m2']
+
+  - name: gcr.io/cloud-builders/gsutil
+    id: Save M2 Cache
+    args: ['cp', 'm2.tar.gz', 'gs://ons-ci-int-cloudbuild-maven-cache/m2.tar.gz']
 
 availableSecrets:
   secretManager:
