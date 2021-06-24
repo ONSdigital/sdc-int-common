@@ -33,11 +33,11 @@ steps:
       - |
         git config --global user.name sdc-ci
         git config --global user.email philip.whiles@ext.ons.gov.uk
-        #cp .mvn/cloudbuild-settings.xml /tmp
-        #sed -ie "s/\[GIT_DEPLOY_TOKEN\]/$$sdc-int-common-deploy-key/" /tmp/cloudbuild-settings.xml
+        cp .mvn/cloudbuild-settings.xml /tmp
+        sed -ie "s/\[GIT_DEPLOY_TOKEN\]/$$sdc-int-common-deploy-key/" /tmp/cloudbuild-settings.xml
         cd /workspace
-        ./mvnw -B -Dusername=$$sdc-int-common-deploy-key release:prepare -Dmaven.repo.local=/workspace/.m2/repository
-        ./mvnw -B -Dusername=$$sdc-int-common-deploy-key release:perform -Dmaven.repo.local=/workspace/.m2/repository
+        ./mvnw -B release:prepare -s /tmp/cloudbuild-settings.xml -Dmaven.repo.local=/workspace/.m2/repository
+        ./mvnw -B release:perform -s /tmp/cloudbuild-settings.xml -Dmaven.repo.local=/workspace/.m2/repository
     volumes:
       - name: javahome
         path: /usr/local/openjdk-11

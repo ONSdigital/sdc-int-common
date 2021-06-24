@@ -1,15 +1,9 @@
 <settings>
   <servers>
-    <server>
-      <id>ONS</id>
-      <configuration>
-        <httpHeaders>
-          <property>
-            <name>git</name>
-            <value>[GIT_DEPLOY_TOKEN]</value>
-          </property>
-        </httpHeaders>
-      </configuration>
-    </server>
+     <server>
+       <id>ONS</id>
+       <username>git</username>
+       <privateKey>[GIT_DEPLOY_TOKEN]</privateKey>
+     </server>
   </servers>
 </settings>
