@@ -20,7 +20,7 @@ steps:
       - '-c'
       - |
         cp .mvn/cloudbuild-settings.xml /tmp
-        sed -ie "s/\[GIT_DEPLOY_TOKEN\]/S$DEPLOY_KEY/" /tmp/cloudbuild-settings.xml
+        sed -ie "s/\[GIT_DEPLOY_TOKEN\]/$$sdc-int-common-deploy-key/" /tmp/cloudbuild-settings.xml
         mvn release:prepare -s /tmp/cloudbuild-settings.xml
         mvn release:perform -s /tmp/cloudbuild-settings.xml
 
@@ -28,6 +28,6 @@ steps:
 availableSecrets:
   secretManager:
     - versionName: projects/415467542055/secrets/sdc-int-common-deploy-key/versions/1
-      env: 'DEPLOY_KEY'
+      env: 'sdc-int-common-deploy-key'
 
 
