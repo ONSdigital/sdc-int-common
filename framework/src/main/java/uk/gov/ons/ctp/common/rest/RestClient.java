@@ -1,7 +1,7 @@
 package uk.gov.ons.ctp.common.rest;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -54,7 +54,6 @@ public class RestClient {
   private HttpStatus httpDefaultStatus;
 
   private static Map<HttpStatus, HttpStatus> defaultBareBonesErrorMapping;
-  private static final Logger logging = LoggerFactory.getLogger(RestClient.class);
 
   static {
     defaultBareBonesErrorMapping = new HashMap<HttpStatus, HttpStatus>();
@@ -246,32 +245,30 @@ public class RestClient {
       // Failure detected. For 4xx and 5xx status codes
       if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
         errorMessage = "dealing with NOT_FOUND";
-        logging
-            .with("path", path)
-            .with("methodName", method.name())
-            .with("uriComponents", uriComponents)
-            .with("Status", e.getStatusCode())
-            .with("ResponseBody", e.getResponseBodyAsString())
-            .warn(errorMessage);
+        log.warn(
+            errorMessage,
+            kv("path", path),
+            kv("methodName", method.name()),
+            kv("uriComponents", uriComponents),
+            kv("status", e.getStatusCode()),
+            kv("responseBody", e.getResponseBodyAsString()));
       } else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
         // Caller expected to handle this situation
         log.info("Too many requests response on {} for path: {}", method.name(), path);
       } else {
-        logging
-            .with("path", path)
-            .with("methodName", method.name())
-            .with("uriComponents", uriComponents)
-            .with("statusCode", e.getStatusCode())
-            .with("responseBody", e.getResponseBodyAsString())
-            .error(errorMessage);
-        if (log.isDebugEnabled()) {
-          logging.debug(errorMessage, e);
-        }
+        log.error(
+            errorMessage,
+            kv("path", path),
+            kv("methodName", method.name()),
+            kv("uriComponents", uriComponents),
+            kv("status", e.getStatusCode()),
+            kv("responseBody", e.getResponseBodyAsString()));
+        log.debug(errorMessage, e);
       }
       throw new ResponseStatusException(
           mapToExternalStatus(e.getStatusCode()), e.getResponseBodyAsString(), e);
     } catch (RestClientException e) {
-      logging.with("path", path).with("methodName", method.name()).error(errorMessage, e);
+      log.error(errorMessage, kv("path", path), kv("methodName", method.name()), e);
       throw new ResponseStatusException(
           HttpStatus.INTERNAL_SERVER_ERROR, "Internal processing error");
     }
@@ -279,13 +276,14 @@ public class RestClient {
     T responseObject = response.getBody();
     if (responseObject == null) {
       errorMessage = "Empty body returned for given path";
-      logging
-          .with("path", path)
-          .with("methodName", method.name())
-          .with("uriComponents", uriComponents)
-          .with("statusCode", response.getStatusCode())
-          .with("responseBody", response.getBody())
-          .error(errorMessage);
+
+      log.error(
+          errorMessage,
+          kv("path", path),
+          kv("methodName", method.name()),
+          kv("uriComponents", uriComponents),
+          kv("status", response.getStatusCode()),
+          kv("responseBody", response.getBody()));
       throw new ResponseStatusException(
           mapToExternalStatus(response.getStatusCode()), "Internal processing error. No response.");
     }

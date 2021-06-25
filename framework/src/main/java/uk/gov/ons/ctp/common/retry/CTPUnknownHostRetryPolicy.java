@@ -1,10 +1,11 @@
 package uk.gov.ons.ctp.common.retry;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 import com.google.common.base.Joiner;
 import java.util.Collections;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.RetryContext;
 import org.springframework.retry.RetryPolicy;
 import org.springframework.retry.context.RetryContextSupport;
@@ -20,10 +21,9 @@ import org.springframework.util.ClassUtils;
  * <p>This RetryPolicy is used in our Spring Integration flows when picking up a message off a
  * queue.
  */
+@Slf4j
 public class CTPUnknownHostRetryPolicy implements RetryPolicy {
   private static final long serialVersionUID = -7771272230936795889L;
-
-  private static final Logger log = LoggerFactory.getLogger(CTPUnknownHostRetryPolicy.class);
 
   private static final int DEFAULT_MAX_ATTEMPTS = 3;
   private static final String RUNTIME_EXCEPTION = "java.lang.RuntimeException";
@@ -124,8 +124,8 @@ public class CTPUnknownHostRetryPolicy implements RetryPolicy {
         }
       }
     } catch (ClassNotFoundException e) {
-      log.with("class_names", Joiner.on(",").join(retryableExceptions))
-          .error("Invalid classname", e);
+      log.error(
+          "Invalid classname", kv("class_names", Joiner.on(",").join(retryableExceptions)), e);
     }
     return false;
   }
@@ -146,10 +146,9 @@ public class CTPUnknownHostRetryPolicy implements RetryPolicy {
         }
       }
     } catch (ClassNotFoundException e) {
-      log.with("class_names", Joiner.on(",").join(retryableExceptions))
-          .error("Invalid classname", e);
+      log.error(
+          "Invalid classname", kv("class_names", Joiner.on(",").join(retryableExceptions)), e);
     }
-
     return false;
   }
 

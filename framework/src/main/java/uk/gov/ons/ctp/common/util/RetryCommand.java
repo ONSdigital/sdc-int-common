@@ -1,9 +1,10 @@
 package uk.gov.ons.ctp.common.util;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.error.CTPException;
 
 /**
@@ -13,9 +14,8 @@ import uk.gov.ons.ctp.common.error.CTPException;
  *
  * @param <T> the type that the lambda will supply as return
  */
+@Slf4j
 public class RetryCommand<T> {
-
-  private static final Logger log = LoggerFactory.getLogger(DeadLetterLogCommand.class);
 
   public static final String ERROR_HANDLER_ERROR =
       "FAILED - Command aborted on advice of errorHandler";
@@ -74,14 +74,16 @@ public class RetryCommand<T> {
       } catch (Exception ex) {
         if (errorHandler.test(ex)) {
           retryCount++;
-          log.with("retry_count", retryCount)
-              .with("max_retries", maxRetries)
-              .warn("FAILED - Command failed on retry");
-
+          log.warn(
+              "FAILED - Command failed on retry",
+              kv("retry_count", retryCount),
+              kv("max_retries", maxRetries));
           if (retryCount >= maxRetries) {
-            log.with("retry_count", retryCount)
-                .with("max_retries", maxRetries)
-                .error(MAX_RETRIES_EXCEEDED, ex);
+            log.error(
+                MAX_RETRIES_EXCEEDED,
+                kv("retry_count", retryCount),
+                kv("max_retries", maxRetries),
+                ex);
             throw new CTPException(CTPException.Fault.SYSTEM_ERROR, ex, MAX_RETRIES_EXCEEDED);
           }
 

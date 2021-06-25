@@ -1,10 +1,11 @@
 package uk.gov.ons.ctp.common.cloud;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
@@ -18,9 +19,9 @@ import uk.gov.ons.ctp.common.error.CTPException.Fault;
  * Decorator for {@link CloudDataStore}. It is responsible for handling exponential backoffs when
  * the datastore is becoming overloaded.
  */
+@Slf4j
 @Service
 public class RetryableCloudDataStoreImpl implements RetryableCloudDataStore {
-  private static final Logger log = LoggerFactory.getLogger(RetryableCloudDataStoreImpl.class);
 
   private CloudDataStore cloudDataStore;
   private Retrier retrier;
@@ -39,10 +40,12 @@ public class RetryableCloudDataStoreImpl implements RetryableCloudDataStore {
       retrier.store(schema, key, value);
     } catch (DataStoreContentionException e) {
       String identity = value.getClass().getSimpleName() + ": " + id;
-      log.with("key", key)
-          .with("schema", schema)
-          .with("identity", identity)
-          .error(e, "Retries exhausted for storage");
+      log.error(
+          "Retries exhausted for storage",
+          kv("key", key),
+          kv("schema", schema),
+          kv("indentity", identity),
+          e);
       throw new CTPException(Fault.SYSTEM_ERROR, e, "Retries exhausted for storage of " + identity);
     }
   }
@@ -75,9 +78,7 @@ public class RetryableCloudDataStoreImpl implements RetryableCloudDataStore {
    */
   @Recover
   public void doRecover(Exception e) throws Exception {
-    if (log.isDebugEnabled()) {
-      log.with(e.getMessage()).debug("Datastore recovery throwing exception");
-    }
+    log.debug("Datastore recovery throwing exception {}", e.getMessage());
     throw e;
   }
 
@@ -85,9 +86,9 @@ public class RetryableCloudDataStoreImpl implements RetryableCloudDataStore {
    * We need another class for the retryable annotation, since calling a retryable annotated within
    * the same class does not honour the annotations.
    */
+  @Slf4j
   @Component
   static class Retrier {
-    private static final Logger log = LoggerFactory.getLogger(Retrier.class);
     private CloudDataStore cloudDataStore;
     private RetryConfig retryConfig;
 

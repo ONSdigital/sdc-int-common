@@ -1,10 +1,11 @@
 package uk.gov.ons.ctp.common.util;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import javax.xml.transform.stream.StreamResult;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.oxm.Marshaller;
 import uk.gov.ons.ctp.common.error.CTPException;
 
@@ -16,10 +17,8 @@ import uk.gov.ons.ctp.common.error.CTPException;
  *
  * @param <X> the type that the lambda will consume
  */
+@Slf4j
 public class DeadLetterLogCommand<X> {
-
-  private static final Logger log = LoggerFactory.getLogger(DeadLetterLogCommand.class);
-
   private X thingToMarshal;
   private Marshaller marshaller;
 
@@ -57,10 +56,10 @@ public class DeadLetterLogCommand<X> {
     } catch (Throwable t) {
       try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
         marshaller.marshal(thingToMarshal, new StreamResult(baos));
-        log.with("content", baos).error("Failed to execute", t);
+        log.error("Failed to execute", kv("content", baos), t);
       } catch (IOException ioe) {
         // we cannot marshal it to xml, so last ditch .. toString()
-        log.with("content", thingToMarshal).error("Failed to marshel", ioe);
+        log.error("Failed to marshal", kv("content", thingToMarshal), ioe);
       }
     }
   }
