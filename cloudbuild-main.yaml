@@ -22,7 +22,7 @@ steps:
 
   - name: gcr.io/cloud-builders/git
     id: Maven Release
-    secretEnv: [ test-secret ]
+    secretEnv: [ MY_SECRET ]
       #secretEnv: [ sdc-int-common-deploy-key ]
     env:
       - TZ=Europe/London
@@ -37,7 +37,7 @@ steps:
         git config --global user.email philip.whiles@ext.ons.gov.uk
         cp .mvn/cloudbuild-settings.xml /tmp
         #sed -ie "s/\[GIT_DEPLOY_TOKEN\]/$$sdc-int-common-deploy-key/" /tmp/cloudbuild-settings.xml
-        sed -ie "s/\[GIT_DEPLOY_TOKEN\]/$$test-secret/" /tmp/cloudbuild-settings.xml
+        sed -ie "s/\[GIT_DEPLOY_TOKEN\]/$$MY_SECRET/" /tmp/cloudbuild-settings.xml
         cat /tmp/cloudbuild-settings.xml
         cd /workspace
         ./mvnw -B release:prepare -s /tmp/cloudbuild-settings.xml -Dmaven.repo.local=/workspace/.m2/repository
@@ -59,6 +59,6 @@ availableSecrets:
   secretManager:
     - versionName: projects/415467542055/secrets/sdc-int-common-deploy-key/versions/1
       #env: sdc-int-common-deploy-key
-      env: test-secret
+      env: MY_SECRET
 
 
