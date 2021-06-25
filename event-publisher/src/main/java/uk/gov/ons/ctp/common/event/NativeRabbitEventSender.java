@@ -1,8 +1,8 @@
 package uk.gov.ons.ctp.common.event;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -10,6 +10,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.TimeoutException;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
 import uk.gov.ons.ctp.common.event.EventPublisher.EventType;
@@ -17,9 +18,8 @@ import uk.gov.ons.ctp.common.event.EventPublisher.RoutingKey;
 import uk.gov.ons.ctp.common.event.model.GenericEvent;
 import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
 
+@Slf4j
 public class NativeRabbitEventSender implements EventSender {
-  private static final Logger log = LoggerFactory.getLogger(NativeRabbitEventSender.class);
-
   private Connection connection;
   private String exchange;
   private Channel channel;
@@ -38,7 +38,7 @@ public class NativeRabbitEventSender implements EventSender {
       channel.exchangeDeclare(exchange, "topic", true);
     } catch (IOException e) {
       String errorMessage = "Failed to create Rabbit channel";
-      log.with("exchange", exchange).error(e, errorMessage);
+      log.error(errorMessage, kv("exchange", exchange), e);
       throw new CTPException(Fault.SYSTEM_ERROR, errorMessage);
     }
 
@@ -63,7 +63,7 @@ public class NativeRabbitEventSender implements EventSender {
       return factory.newConnection();
     } catch (IOException | TimeoutException e) {
       String errorMessage = "Failed to connect to Rabbit";
-      log.with("connectionDetails", connectionDetails).error(e, errorMessage);
+      log.error(errorMessage, kv("connectionDetails", connectionDetails), e);
       throw new CTPException(Fault.SYSTEM_ERROR, errorMessage);
     }
   }
