@@ -48,7 +48,6 @@
     <surefire.version>3.0.0-M5</surefire.version>
     <googlecloud.version>8.1.0</googlecloud.version>
     <guava.version>29.0-jre</guava.version>
-    <godaddylogging.version>1.2.5</godaddylogging.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <project.scm.id>ONS</project.scm.id>
@@ -166,12 +165,6 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-csv</artifactId>
         <version>1.4</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.godaddy</groupId>
-        <artifactId>logging</artifactId>
-        <version>${godaddylogging.version}</version>
       </dependency>
 
       <dependency>

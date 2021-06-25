@@ -1,9 +1,8 @@
 package uk.gov.ons.ctp.integration.eqlaunch.service.impl;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
 import static uk.gov.ons.ctp.common.domain.Source.FIELD_SERVICE;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -12,6 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
 import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.error.CTPException;
@@ -23,9 +23,8 @@ import uk.gov.ons.ctp.integration.eqlaunch.service.EqLaunchCoreData;
 import uk.gov.ons.ctp.integration.eqlaunch.service.EqLaunchData;
 import uk.gov.ons.ctp.integration.eqlaunch.service.EqLaunchService;
 
+@Slf4j
 public class EqLaunchServiceImpl implements EqLaunchService {
-
-  private static final Logger log = LoggerFactory.getLogger(EqLaunchServiceImpl.class);
   private static final String ROLE_FLUSHER = "flusher";
   private static final String CCS = "CCS";
   private JweEncryptor codec;
@@ -142,7 +141,7 @@ public class EqLaunchServiceImpl implements EqLaunchService {
     payload.computeIfAbsent("period_id", (k) -> "2021");
     payload.computeIfAbsent("form_type", (k) -> coreData.getFormType());
 
-    log.with("payload", payload).debug("Payload for EQ");
+    log.debug("Payload for EQ", kv("payload", payload));
 
     return payload;
   }
@@ -206,7 +205,10 @@ public class EqLaunchServiceImpl implements EqLaunchService {
       byte[] bytes = md.digest(questionnaireId.getBytes());
       responseId.append((new String(Hex.encode(bytes)).substring(0, 16)));
     } catch (NoSuchAlgorithmException ex) {
-      log.with(questionnaireId).error("No SHA-256 algorithm while encrypting questionnaire", ex);
+      log.error(
+          "No SHA-256 algorithm while encrypting questionnaire",
+          kv("questionnaireId", questionnaireId),
+          ex);
       throw new CTPException(Fault.SYSTEM_ERROR, ex);
     }
     return responseId.toString();

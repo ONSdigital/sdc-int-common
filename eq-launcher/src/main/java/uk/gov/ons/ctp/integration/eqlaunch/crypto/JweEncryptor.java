@@ -1,10 +1,11 @@
 package uk.gov.ons.ctp.integration.eqlaunch.crypto;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 import com.nimbusds.jose.JWSObject;
 import java.util.Map;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.integration.eqlaunch.crypto.JWEHelper.EncryptJwe;
 import uk.gov.ons.ctp.integration.eqlaunch.crypto.JWSHelper.EncodeJws;
@@ -13,10 +14,8 @@ import uk.gov.ons.ctp.integration.eqlaunch.crypto.JWSHelper.EncodeJws;
  * Implementation to sign a set of claims as a JSON Web Signature (JWS) and encrypt the JWS as the
  * payload of a JSON Web Encryption (JWE)
  */
+@Slf4j
 public class JweEncryptor {
-
-  private static final Logger log = LoggerFactory.getLogger(JweEncryptor.class);
-
   private static String KEYTYPE_PRIVATE = "private";
   private static String KEYTYPE_PUBLIC = "public";
 
@@ -37,9 +36,10 @@ public class JweEncryptor {
     if (privateKeyOpt.isPresent()) {
       this.privateKey = privateKeyOpt.get();
     } else {
-      log.with("keyPurpose", keyPurpose)
-          .with("keyType", KEYTYPE_PRIVATE)
-          .error("Failed to retrieve key to sign claims");
+      log.error(
+          "Failed to retrieve key to sign claims",
+          kv("keyPurpose", keyPurpose),
+          kv("keyType", KEYTYPE_PRIVATE));
       throw new CTPException(
           CTPException.Fault.SYSTEM_ERROR, "Failed to retrieve private key to sign claims");
     }
@@ -48,9 +48,10 @@ public class JweEncryptor {
     if (publicKeyOpt.isPresent()) {
       this.publicKey = publicKeyOpt.get();
     } else {
-      log.with("keyPurpose", keyPurpose)
-          .with("keyType", KEYTYPE_PUBLIC)
-          .error("Failed to retrieve key to encode payload");
+      log.error(
+          "Failed to retrieve key to encode payload",
+          kv("keyPurpose", keyPurpose),
+          kv("keyType", KEYTYPE_PUBLIC));
       throw new CTPException(
           CTPException.Fault.SYSTEM_ERROR, "Failed to retrieve public key to encode payload");
     }

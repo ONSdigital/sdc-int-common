@@ -1,7 +1,7 @@
 package uk.gov.ons.ctp.integration.eqlaunch.crypto;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEAlgorithm;
@@ -13,13 +13,13 @@ import com.nimbusds.jose.crypto.RSADecrypter;
 import com.nimbusds.jose.crypto.RSAEncrypter;
 import com.nimbusds.jose.jwk.RSAKey;
 import java.text.ParseException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.ons.ctp.common.error.CTPException;
 
 /** Helper class for encrypting, decrypting a JWS as the payload of a JWE. */
+@Slf4j
 public abstract class JWEHelper {
-
-  private static final Logger log = LoggerFactory.getLogger(JWEHelper.class);
 
   public static class EncryptJwe extends JWEHelper {
     private Key key;
@@ -40,7 +40,7 @@ public abstract class JWEHelper {
       try {
         encryptor = new RSAEncrypter(jwk);
       } catch (JOSEException e) {
-        log.with("kid", key.getKid()).error("Cannot initialise encryption for JWE");
+        log.error("Cannot initialise encryption for JWE", kv("kid", key.getKid()));
         throw new CTPException(
             CTPException.Fault.SYSTEM_ERROR, "Cannot initialise encryption for JWE");
       }
@@ -54,7 +54,7 @@ public abstract class JWEHelper {
      * @throws CTPException on error
      */
     public String encrypt(JWSObject jws) throws CTPException {
-      log.with(key.getKid()).debug("Encrypting with public key");
+      log.debug("Encrypting with public key", kv("kid", key.getKid()));
       Payload payload = new Payload(jws);
       JWEObject jweObject = new JWEObject(jweHeader, payload);
 
@@ -62,7 +62,7 @@ public abstract class JWEHelper {
         jweObject.encrypt(this.encryptor);
         return jweObject.serialize();
       } catch (JOSEException e) {
-        log.with("kid", key.getKid()).error("Failed to encrypt JWE");
+        log.error("Failed to encrypt JWE", kv("kid", key.getKid()), e);
         throw new CTPException(CTPException.Fault.SYSTEM_ERROR, "Failed to encrypt JWE");
       }
     }
@@ -94,23 +94,22 @@ public abstract class JWEHelper {
       try {
         jweObject = JWEObject.parse(jwe);
       } catch (ParseException e) {
-        log.with("jwe", jwe).with("kid", key.getKid()).error("Failed to parse JWE string");
+        log.error("Failed to parse JWE string", kv("jwe", jwe), kv("kid", key.getKid()), e);
         throw new CTPException(CTPException.Fault.SYSTEM_ERROR, "Failed to parse JWE string");
       }
 
       try {
         jweObject.decrypt(new RSADecrypter((RSAKey) key.getJWK()));
       } catch (JOSEException e) {
-        log.with("jwe", jwe)
-            .with("kid", key.getKid())
-            .error("Failed to decrypt JWE with provided key");
+        log.error(
+            "Failed to decrypt JWE with provided key", kv("jwe", jwe), kv("kid", key.getKid()), e);
         throw new CTPException(
             CTPException.Fault.SYSTEM_ERROR, "Failed to decrypt JWE with provided key");
       }
 
       Payload payload = jweObject.getPayload();
       if (payload == null) {
-        log.with("jwe", jwe).with("kid", key.getKid()).error("Extracted JWE Payload null");
+        log.error("Extracted JWE Payload null", kv("jwe", jwe), kv("kid", key.getKid()));
         throw new CTPException(CTPException.Fault.SYSTEM_ERROR, "Extracted JWE Payload null");
       }
 
@@ -130,13 +129,13 @@ public abstract class JWEHelper {
       JWEObject jweObject = JWEObject.parse(jwe);
       String keyId = jweObject.getHeader().getKeyID();
       if (StringUtils.isEmpty(keyId)) {
-        log.with("jwe", jwe).error("Failed to extract key Id from JWE header");
+        log.error("Failed to extract key Id from JWE header", kv("jwe", jwe));
         throw new CTPException(
             CTPException.Fault.SYSTEM_ERROR, "Failed to extract key Id from JWE header");
       }
       return keyId;
     } catch (ParseException e) {
-      log.with("jwe", jwe).error("Failed to parse JWE string");
+      log.error("Failed to parse JWE string", kv("jwe", jwe), e);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, "Failed to parse JWE string");
     }
   }
