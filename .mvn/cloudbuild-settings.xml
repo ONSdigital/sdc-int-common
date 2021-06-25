@@ -2,7 +2,7 @@
   <servers>
      <server>
        <id>ONS</id>
-       <username>sdc-ci</username>
+       <username>git</username>
        <privateKey>[GIT_DEPLOY_TOKEN]</privateKey>
      </server>
   </servers>
