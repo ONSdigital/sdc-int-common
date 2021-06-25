@@ -48,8 +48,6 @@ steps:
         ./mvnw -B release:prepare -s .mvn/cloudbuild-settings.xml -Dmaven.repo.local=/workspace/.m2/repository
         ./mvnw -B release:perform -s .mvn/cloudbuild-settings.xml -Dmaven.repo.local=/workspace/.m2/repository
     volumes:
-      - name: ssh
-        path: /root/.ssh
       - name: javahome
         path: /usr/local/openjdk-11
 
