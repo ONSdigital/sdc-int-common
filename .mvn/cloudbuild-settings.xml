@@ -3,7 +3,7 @@
      <server>
        <id>ONS</id>
        <username>git</username>
-       <privateKey>[GIT_DEPLOY_TOKEN]</privateKey>
+       <privateKey>/root/.ssh/id_rsa</privateKey>
      </server>
   </servers>
 </settings>
