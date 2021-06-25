@@ -57,7 +57,7 @@ steps:
 
 availableSecrets:
   secretManager:
-    - versionName: projects/415467542055/secrets/sdc-int-common-deploy-key/versions/1
+    - versionName: projects/415467542055/secrets/MY_SECRET/versions/1
       #env: sdc-int-common-deploy-key
       env: MY_SECRET
 
