@@ -22,7 +22,7 @@ steps:
       - name: javahome
         path: /usr/local/openjdk-11
 
-  - name: gcr.io/cloud-builders/git'
+  - name: gcr.io/cloud-builders/git
     secretEnv: [ SDC_INT_COMMON_DEPLOY_KEY ]
     entrypoint: bash
     dir: keys
