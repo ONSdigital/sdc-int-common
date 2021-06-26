@@ -1,7 +1,7 @@
 steps:
   # Grab cached M2 repo
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
-    id: Get M2 Cache
+    id: Retrieve M2 Cache
     entrypoint: gsutil
     args: ['cp', 'gs://ons-ci-int-cloudbuild-maven-cache/m2.tar.gz', 'm2.tar.gz']
       
@@ -24,6 +24,7 @@ steps:
         path: /usr/local/openjdk-11
 
   - name: gcr.io/cloud-builders/git
+    id: Prepare Git
     secretEnv: [ SDC_INT_COMMON_DEPLOY_KEY ]
     entrypoint: bash
     dir: keys
@@ -53,7 +54,7 @@ steps:
     args:
       - '-c'
       - |
-        git config --global user.name ons-ci-int
+        git config --global user.name immaterial_yet_required
         git config --global user.email philip.whiles@ext.ons.gov.uk
         git branch -m main
         cd /workspace
@@ -72,7 +73,7 @@ steps:
     args: ['cpzf', 'm2.tar.gz', '.m2']
 
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
-    id: Save M2 Cache
+    id: Backup M2 Cache
     entrypoint: gsutil
     args: ['cp', 'm2.tar.gz', 'gs://ons-ci-int-cloudbuild-maven-cache/m2.tar.gz']
 
