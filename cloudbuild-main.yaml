@@ -18,7 +18,7 @@ steps:
     args:
       - -c
       - |
-        which java
+        java -version
     volumes:
       - name: javahome
         path: /usr/local/openjdk-11
@@ -27,7 +27,6 @@ steps:
     id: Prepare Git
     secretEnv: [ SDC_INT_COMMON_DEPLOY_KEY ]
     entrypoint: bash
-    dir: keys
     args:
       - -c
       - |
@@ -49,15 +48,14 @@ steps:
     env:
       - TZ=Europe/London
       - JAVA_HOME=/usr/local/openjdk-11
-    args: ['-Dmaven.repo.local=/workspace/.m2/repository', 'test']
     entrypoint: bash
+    dir: /workspace
     args:
       - '-c'
       - |
         git config --global user.name immaterial_yet_required
         git config --global user.email philip.whiles@ext.ons.gov.uk
         git branch -m main
-        cd /workspace
         ./mvnw -B release:prepare -s .mvn/cloudbuild-settings.xml -Dmaven.repo.local=/workspace/.m2/repository
         ./mvnw -B release:perform -s .mvn/cloudbuild-settings.xml -Dmaven.repo.local=/workspace/.m2/repository
     volumes:
