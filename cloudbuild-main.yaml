@@ -53,7 +53,7 @@ steps:
     args:
       - '-c'
       - |
-        git config --global user.name immaterial_yet_required
+        git config --global user.name ons-ci-int
         git config --global user.email philip.whiles@ext.ons.gov.uk
         git branch -m main
         ./mvnw -B release:prepare -s .mvn/cloudbuild-settings.xml -Dmaven.repo.local=/workspace/.m2/repository
