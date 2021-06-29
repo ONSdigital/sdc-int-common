@@ -6,7 +6,7 @@
   <groupId>ons.sdc.int.common</groupId>
   <artifactId>common</artifactId>
   <!-- version auto updated by Travis mvn release -->
-  <version>1.0.8-SNAPSHOT</version>
+  <version>1.0.15-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>SDC : Integrations Common</name>
   <description>Parent project with common modules for SDC Integrations application projects</description>
@@ -36,7 +36,7 @@
   <scm>
     <connection>scm:git:ssh://github.com/ONSdigital/sdc-int-common</connection>
     <developerConnection>scm:git:ssh://github.com/ONSdigital/sdc-int-common</developerConnection>
-    <tag>common-1.0.6</tag>
+    <tag>common-1.0.9</tag>
   </scm>
 
 
@@ -202,7 +202,7 @@
           <artifactId>maven-release-plugin</artifactId>
           <version>3.0.0-M4</version>
           <configuration>
-            <scmCommentPrefix>[ci release]</scmCommentPrefix>
+            <scmCommentPrefix>[ci skip]</scmCommentPrefix>
           </configuration>
         </plugin>
 
