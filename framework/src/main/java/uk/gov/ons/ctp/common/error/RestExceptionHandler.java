@@ -1,6 +1,6 @@
 package uk.gov.ons.ctp.common.error;
 
-import static net.logstash.logback.argument.StructuredArguments.kv;
+import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
 
 import java.util.Arrays;
 import java.util.List;

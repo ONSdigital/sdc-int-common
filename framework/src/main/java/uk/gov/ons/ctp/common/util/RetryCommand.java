@@ -1,6 +1,6 @@
 package uk.gov.ons.ctp.common.util;
 
-import static net.logstash.logback.argument.StructuredArguments.kv;
+import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
 
 import java.util.function.Predicate;
 import java.util.function.Supplier;

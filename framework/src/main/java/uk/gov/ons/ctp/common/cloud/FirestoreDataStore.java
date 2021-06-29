@@ -1,6 +1,6 @@
 package uk.gov.ons.ctp.common.cloud;
 
-import static net.logstash.logback.argument.StructuredArguments.kv;
+import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.DocumentReference;

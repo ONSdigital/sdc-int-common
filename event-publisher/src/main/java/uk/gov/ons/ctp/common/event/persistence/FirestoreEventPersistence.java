@@ -1,6 +1,6 @@
 package uk.gov.ons.ctp.common.event.persistence;
 
-import static net.logstash.logback.argument.StructuredArguments.kv;
+import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import javax.annotation.PostConstruct;

@@ -1,7 +1,7 @@
 package uk.gov.ons.ctp.integration.eqlaunch.service.impl;
 
-import static net.logstash.logback.argument.StructuredArguments.kv;
 import static uk.gov.ons.ctp.common.domain.Source.FIELD_SERVICE;
+import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
