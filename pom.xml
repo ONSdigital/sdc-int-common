@@ -4,7 +4,7 @@
   <groupId>ons.sdc.int.common</groupId>
   <artifactId>common</artifactId>
   <!-- version auto updated by Travis mvn release -->
-  <version>1.0.15</version>
+  <version>1.0.16-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>SDC : Integrations Common</name>
   <description>Parent project with common modules for SDC Integrations application projects</description>
@@ -34,7 +34,7 @@
   <scm>
     <connection>scm:git:ssh://github.com/ONSdigital/sdc-int-common</connection>
     <developerConnection>scm:git:ssh://github.com/ONSdigital/sdc-int-common</developerConnection>
-    <tag>common-1.0.15</tag>
+    <tag>common-1.0.9</tag>
   </scm>
 
 
