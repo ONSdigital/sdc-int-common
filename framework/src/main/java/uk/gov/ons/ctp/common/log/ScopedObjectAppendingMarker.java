@@ -1,6 +1,8 @@
 package uk.gov.ons.ctp.common.log;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.hash.Hashing;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,12 +16,20 @@ import org.apache.commons.lang3.reflect.FieldUtils;
  * Provide a customised version of the appender code, so that we can apply logging scopes to
  * obfuscate annotated fields. This behaviour is inspired by the godaddy annotation logging scopes,
  * but applied in a simpler fashion.
+ *
+ * <p>Limitations:
+ *
+ * <ul>
+ *   <li>only masks/hashes String types
+ *   <li>does not recurse down object tree
+ * </ul>
  */
 @SuppressWarnings("serial")
 public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
 
-  private final Object scopedObject;
+  private Object scopedObject;
   private boolean scopesProcessed;
+  private boolean objCopied;
 
   public ScopedObjectAppendingMarker(String fieldName, Object object) {
     super(fieldName, object);
@@ -60,13 +70,28 @@ public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
         }
 
         if (scopedValue != null) {
+          if (f.getType() != String.class) {
+            System.out.println("Cannot mask/hash non-string field: " + f);
+            continue;
+          }
+
+          if (!objCopied) {
+            copyObject();
+          }
           FieldUtils.writeField(f, scopedObject, scopedValue, true);
         }
-      } catch (IllegalAccessException e) {
+      } catch (IllegalAccessException | JsonProcessingException e) {
         e.printStackTrace();
       }
     }
     scopesProcessed = true;
+  }
+
+  private void copyObject() throws JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper();
+    scopedObject =
+        mapper.readValue(mapper.writeValueAsString(scopedObject), scopedObject.getClass());
+    objCopied = true;
   }
 
   // provide a short hash for a field to obfuscate it.
