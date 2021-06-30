@@ -28,7 +28,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
  */
 @SuppressWarnings("serial")
 public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
-
+  private static final ObjectMapper mapper = new ObjectMapper();
   private Object scopedObject;
   private boolean scopesProcessed;
 
@@ -132,7 +132,6 @@ public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
   }
 
   private void copyObject() throws JsonProcessingException {
-    ObjectMapper mapper = new ObjectMapper();
     scopedObject =
         mapper.readValue(mapper.writeValueAsString(scopedObject), scopedObject.getClass());
   }
