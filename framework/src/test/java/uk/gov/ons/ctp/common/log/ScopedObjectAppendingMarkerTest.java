@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.logstash.logback.marker.LogstashMarker;
+import net.logstash.logback.marker.SingleFieldAppendingMarker;
 import org.junit.Test;
 
 public class ScopedObjectAppendingMarkerTest {
@@ -66,7 +67,7 @@ public class ScopedObjectAppendingMarkerTest {
     private Couple two;
   }
 
-  private LogstashMarker append(String fieldName, Object object) {
+  private ScopedObjectAppendingMarker append(String fieldName, Object object) {
     return new ScopedObjectAppendingMarker(fieldName, object);
   }
 
@@ -86,6 +87,44 @@ public class ScopedObjectAppendingMarkerTest {
   public void simpleWrite() throws Exception {
     StringWriter writer = generateLogging(new SimpleName("fred"));
     assertThat(writer.toString()).isEqualTo("{\"myObject\":{\"name\":\"fred\"}}");
+  }
+
+  @Test
+  public void simpleFieldValue() throws Exception {
+    SingleFieldAppendingMarker marker = append("myObject", new SimpleName("fred"));
+    Object value = marker.getFieldValue();
+    assertThat(value).isEqualTo("ScopedObjectAppendingMarkerTest.SimpleName(name=fred)");
+  }
+
+  @Test
+  public void toStringPattern() throws Exception {
+    SingleFieldAppendingMarker marker =
+        new ScopedObjectAppendingMarker("myObject", new SimpleName("fred"));
+    assertThat(marker.toString())
+        .isEqualTo("myObject=ScopedObjectAppendingMarkerTest.SimpleName(name=fred)");
+  }
+
+  @Test
+  public void toStringAlternativePattern() throws Exception {
+    SingleFieldAppendingMarker marker =
+        new ScopedObjectAppendingMarker("myObject", new SimpleName("fred"), "{0} :: {1}");
+    assertThat(marker.toString())
+        .isEqualTo("myObject :: ScopedObjectAppendingMarkerTest.SimpleName(name=fred)");
+  }
+
+  @Test
+  public void combinedWriteAndToString() throws Exception {
+    StringWriter writer = new StringWriter();
+    JsonGenerator generator = FACTORY.createGenerator(writer);
+
+    LogstashMarker marker = append("myObject", new SimpleName("fred"));
+    generator.writeStartObject();
+    marker.writeTo(generator);
+    generator.writeEndObject();
+    generator.flush();
+    assertThat(writer.toString()).isEqualTo("{\"myObject\":{\"name\":\"fred\"}}");
+    assertThat(marker.toString())
+        .isEqualTo("myObject=ScopedObjectAppendingMarkerTest.SimpleName(name=fred)");
   }
 
   @Test
