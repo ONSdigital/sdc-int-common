@@ -67,6 +67,15 @@ public class ScopedObjectAppendingMarkerTest {
     private Couple two;
   }
 
+  @Data
+  @AllArgsConstructor
+  @NoArgsConstructor
+  static class SelfRefClass {
+    static final SelfRefClass FRED = new SelfRefClass("fred", null);
+    private String name;
+    private SelfRefClass next;
+  }
+
   private ScopedObjectAppendingMarker append(String fieldName, Object object) {
     return new ScopedObjectAppendingMarker(fieldName, object);
   }
@@ -181,5 +190,11 @@ public class ScopedObjectAppendingMarkerTest {
             + "\"wife\":{\"forename\":\"susie\",\"surname\":\"****\"},"
             + "\"husband\":{\"forename\":\"jim\",\"surname\":\"****\"}}}}";
     assertThat(writer.toString()).isEqualTo(expected);
+  }
+
+  @Test
+  public void shouldHandleSelfReferencingClasses() throws Exception {
+    StringWriter writer = generateLogging(new SelfRefClass("Jim", null));
+    assertThat(writer.toString()).isEqualTo("{\"myObject\":{\"name\":\"Jim\",\"next\":null}}");
   }
 }

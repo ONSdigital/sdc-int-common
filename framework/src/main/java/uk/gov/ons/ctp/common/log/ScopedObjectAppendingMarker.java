@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.UUID;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.impl.ConfigurableMapper;
@@ -41,9 +42,12 @@ public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
     this.scopedObject = object;
   }
 
-  private boolean shouldRecurse(Field f) {
+  private boolean shouldRecurse(Field f, Class<?> parentClass) {
     Class<?> clazz = f.getType();
-    if (clazz.isPrimitive()
+    if (clazz == parentClass
+        || Modifier.isStatic(f.getModifiers())
+        || f.isEnumConstant()
+        || clazz.isPrimitive()
         || clazz == String.class
         || clazz == Date.class
         || clazz == UUID.class
@@ -61,7 +65,7 @@ public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
       Scope scope = loggingScope == null ? Scope.LOG : loggingScope.scope();
 
       if (scope == Scope.LOG) {
-        if (shouldRecurse(f)) {
+        if (shouldRecurse(f, clazz)) {
           if (hasObfuscation(f.getType())) {
             return true;
           }
@@ -109,7 +113,7 @@ public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
         }
 
         if (scopedValue == null) {
-          if (shouldRecurse(f)) {
+          if (shouldRecurse(f, clazz)) {
             processObjectAnnotation(FieldUtils.readField(f, obj, true));
           }
         } else {
