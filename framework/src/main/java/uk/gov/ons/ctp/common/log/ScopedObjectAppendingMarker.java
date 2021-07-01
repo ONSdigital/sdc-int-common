@@ -1,8 +1,6 @@
 package uk.gov.ons.ctp.common.log;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.Date;
 import com.google.common.hash.Hashing;
 import java.io.ByteArrayOutputStream;
@@ -10,6 +8,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.util.UUID;
+import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.impl.ConfigurableMapper;
 import net.logstash.logback.argument.StructuredArguments;
 import net.logstash.logback.marker.ObjectAppendingMarker;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -17,18 +17,17 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 /**
  * Provide a customised version of the appender code, so that we can apply logging scopes to
  * obfuscate annotated fields. This behaviour is inspired by the godaddy annotation logging scopes,
- * but applied in a simpler fashion.
+ * but applied in a simpler fashion, with minor restrictions.
  *
  * <p>Limitations:
  *
  * <ul>
  *   <li>only masks/hashes String types
- *   <li>does not recurse down object tree
  * </ul>
  */
 @SuppressWarnings("serial")
 public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
-  private static final ObjectMapper mapper = new ObjectMapper();
+  private static final MapperFacade mapper = new ConfigurableMapper();
   private Object scopedObject;
   private boolean scopesProcessed;
 
@@ -80,19 +79,14 @@ public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
     }
 
     if (hasObfuscation(scopedObject.getClass())) {
-      try {
-        copyObject();
-        processObjectAnnotation(scopedObject);
-      } catch (JsonProcessingException e) {
-        e.printStackTrace();
-      }
+      copyObject();
+      processObjectAnnotation(scopedObject);
     }
     scopesProcessed = true;
   }
 
   private void processObjectAnnotation(Object obj) {
     Class<?> clazz = obj.getClass();
-
     Field[] fields = clazz.getDeclaredFields();
 
     for (Field f : fields) {
@@ -120,20 +114,23 @@ public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
           }
         } else {
           if (f.getType() != String.class) {
+            // report problem to standard out since we don't want to log from
+            // within the logging code itself
             System.out.println("Cannot mask/hash non-string field: " + f);
             continue;
           }
           FieldUtils.writeField(f, obj, scopedValue, true);
         }
       } catch (IllegalAccessException e) {
+        // report problem to standard out since we don't want to log from
+        // within the logging code itself
         e.printStackTrace();
       }
     }
   }
 
-  private void copyObject() throws JsonProcessingException {
-    scopedObject =
-        mapper.readValue(mapper.writeValueAsString(scopedObject), scopedObject.getClass());
+  private void copyObject() {
+    scopedObject = mapper.map(scopedObject, scopedObject.getClass());
   }
 
   // provide a short hash for a field to obfuscate it.
