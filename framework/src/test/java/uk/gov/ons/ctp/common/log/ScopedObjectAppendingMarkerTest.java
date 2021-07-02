@@ -93,9 +93,21 @@ public class ScopedObjectAppendingMarkerTest {
   }
 
   @Test
+  public void shouldWriteNull() throws Exception {
+    StringWriter writer = generateLogging(null);
+    assertThat(writer.toString()).isEqualTo("{\"myObject\":null}");
+  }
+
+  @Test
   public void simpleWrite() throws Exception {
     StringWriter writer = generateLogging(new SimpleName("fred"));
     assertThat(writer.toString()).isEqualTo("{\"myObject\":{\"name\":\"fred\"}}");
+  }
+
+  @Test
+  public void simpleWriteWithNull() throws Exception {
+    StringWriter writer = generateLogging(new SimpleName(null));
+    assertThat(writer.toString()).isEqualTo("{\"myObject\":{\"name\":null}}");
   }
 
   @Test

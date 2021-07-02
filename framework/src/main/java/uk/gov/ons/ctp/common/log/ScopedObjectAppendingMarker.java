@@ -82,7 +82,7 @@ public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
       return;
     }
 
-    if (hasObfuscation(scopedObject.getClass())) {
+    if (scopedObject != null && hasObfuscation(scopedObject.getClass())) {
       copyObject();
       processObjectAnnotation(scopedObject);
     }
