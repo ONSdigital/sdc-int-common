@@ -1,13 +1,13 @@
 package uk.gov.ons.ctp.integration.ratelimiter.client;
 
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.ons.ctp.common.FixtureHelper;
@@ -22,7 +22,7 @@ import uk.gov.ons.ctp.integration.ratelimiter.model.RateLimitRequest;
 import uk.gov.ons.ctp.integration.ratelimiter.model.RateLimitResponse;
 
 /** This class contains unit tests for limit testing fulfilment requests. */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
 
   private Product product =
@@ -41,14 +41,18 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
   private UniquePropertyReferenceNumber uprn = new UniquePropertyReferenceNumber("24234234");
   private CaseType caseType = CaseType.HH;
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void shouldRejectNullEncryptionPassword() {
-    new RateLimiterClient(restClient, circuitBreaker, null);
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new RateLimiterClient(restClient, circuitBreaker, null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void shouldRejectBlankEncryptionPassword() {
-    new RateLimiterClient(restClient, circuitBreaker, "");
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new RateLimiterClient(restClient, circuitBreaker, ""));
   }
 
   @Test
@@ -59,7 +63,7 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
             () ->
                 rateLimiterClient.checkFulfilmentRateLimit(
                     null, product, caseType, AN_IPv4_ADDRESS, uprn, "0171 3434"));
-    assertTrue(exception.getMessage(), exception.getMessage().contains("'domain' cannot be null"));
+    assertTrue(exception.getMessage().contains("'domain' cannot be null"), exception.getMessage());
     verifyEnvoyLimiterNotCalled();
   }
 
@@ -172,7 +176,7 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
               rateLimiterClient.checkFulfilmentRateLimit(
                   domain, null, caseType, null, uprn, "0171 3434");
             });
-    assertTrue(exception.getMessage(), exception.getMessage().contains("cannot be null"));
+    assertTrue(exception.getMessage().contains("cannot be null"), exception.getMessage());
     verifyEnvoyLimiterNotCalled();
   }
 
@@ -185,7 +189,7 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
               rateLimiterClient.checkFulfilmentRateLimit(
                   domain, product, null, null, uprn, "0171 3434");
             });
-    assertTrue(exception.getMessage(), exception.getMessage().contains("cannot be null"));
+    assertTrue(exception.getMessage().contains("cannot be null"), exception.getMessage());
     verifyEnvoyLimiterNotCalled();
   }
 
@@ -198,7 +202,7 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
               rateLimiterClient.checkFulfilmentRateLimit(
                   domain, product, caseType, null, null, "0171 3434");
             });
-    assertTrue(exception.getMessage(), exception.getMessage().contains("cannot be null"));
+    assertTrue(exception.getMessage().contains("cannot be null"), exception.getMessage());
     verifyEnvoyLimiterNotCalled();
   }
 
@@ -210,7 +214,7 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
             () -> {
               rateLimiterClient.checkFulfilmentRateLimit(domain, product, caseType, null, uprn, "");
             });
-    assertTrue(exception.getMessage(), exception.getMessage().contains("cannot be blank"));
+    assertTrue(exception.getMessage().contains("cannot be blank"), exception.getMessage());
   }
 
   private void docheckFulfilmentRateLimit_belowThreshold(boolean useTelNo, boolean useIpAddress)

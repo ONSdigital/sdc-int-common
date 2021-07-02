@@ -1,6 +1,6 @@
 package uk.gov.ons.ctp.integration.ratelimiter.client;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.LinkedMultiValueMap;
@@ -42,7 +42,7 @@ public class RateLimiterClient_IT {
 
   private ObjectMapper objectMapper;
 
-  @Before
+  @BeforeEach
   public void setup() throws CTPException {
 
     limiterHost = System.getenv("LIMITER_HOST");

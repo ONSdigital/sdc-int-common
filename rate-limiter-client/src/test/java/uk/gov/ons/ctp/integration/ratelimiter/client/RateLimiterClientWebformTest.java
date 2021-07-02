@@ -1,13 +1,13 @@
 package uk.gov.ons.ctp.integration.ratelimiter.client;
 
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.ons.ctp.common.error.CTPException;
@@ -15,7 +15,7 @@ import uk.gov.ons.ctp.integration.ratelimiter.model.LimitDescriptor;
 import uk.gov.ons.ctp.integration.ratelimiter.model.RateLimitRequest;
 
 /** This class contains unit tests for limit testing Webform requests. */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RateLimiterClientWebformTest extends RateLimiterClientTestBase {
 
   @Test
@@ -24,7 +24,7 @@ public class RateLimiterClientWebformTest extends RateLimiterClientTestBase {
         assertThrows(
             CTPException.class,
             () -> rateLimiterClient.checkWebformRateLimit(null, AN_IPv4_ADDRESS));
-    assertTrue(exception.getMessage(), exception.getMessage().contains("'domain' cannot be null"));
+    assertTrue(exception.getMessage().contains("'domain' cannot be null"), exception.getMessage());
   }
 
   @Test
