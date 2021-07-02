@@ -90,6 +90,9 @@ public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
   }
 
   private void processObjectAnnotation(Object obj) {
+    if (obj == null) {
+      return;
+    }
     Class<?> clazz = obj.getClass();
     Field[] fields = clazz.getDeclaredFields();
 

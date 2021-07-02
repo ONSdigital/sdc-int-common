@@ -181,6 +181,20 @@ public class ScopedObjectAppendingMarkerTest {
   }
 
   @Test
+  public void nestedWriteWithNull() throws Exception {
+    SensitiveName husband = new SensitiveName("fred", "bloggs");
+    SensitiveName wife = null;
+
+    Couple myObject = new Couple("smith-bloggs", wife, husband);
+    StringWriter writer = generateLogging(myObject);
+    String expected =
+        "{\"myObject\":{\"familyName\":\"smith-bloggs\","
+            + "\"wife\":null,"
+            + "\"husband\":{\"forename\":\"fred\",\"surname\":\"****\"}}}";
+    assertThat(writer.toString()).isEqualTo(expected);
+  }
+
+  @Test
   public void multiNestedWrite() throws Exception {
     SensitiveName husband = new SensitiveName("fred", "bloggs");
     SensitiveName wife = new SensitiveName("jane", "smith");
