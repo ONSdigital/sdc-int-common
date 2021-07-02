@@ -1,12 +1,13 @@
 package uk.gov.ons.ctp.common.error;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
+import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
@@ -22,11 +23,9 @@ import org.springframework.web.server.ResponseStatusException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
 
 /** Rest Exception Handler */
+@Slf4j
 @ControllerAdvice
 public class RestExceptionHandler {
-
-  private static final Logger log = LoggerFactory.getLogger(RestExceptionHandler.class);
-
   public static final String INVALID_JSON = "Provided json fails validation.";
   public static final String PROVIDED_JSON_INCORRECT = "Provided json is incorrect.";
 
@@ -59,28 +58,32 @@ public class RestExceptionHandler {
 
     switch (status) {
       case NOT_FOUND:
-        log.with("fault", exception.getFault())
-            .with("message", exception.getMessage())
-            .warn("Handling CTPException - Resource not found");
+        log.warn(
+            "Handling CTPException - Resource not found",
+            kv("fault", exception.getFault()),
+            kv("message", exception.getMessage()));
         break;
       case BAD_REQUEST:
-        log.with("fault", exception.getFault())
-            .with("message", exception.getMessage())
-            .warn("Handling CTPException - Bad request");
+        log.warn(
+            "Handling CTPException - Bad request",
+            kv("fault", exception.getFault()),
+            kv("message", exception.getMessage()));
         break;
       case ACCEPTED:
-        log.with("fault", exception.getFault())
-            .with("message", exception.getMessage())
-            .warn("Handling CTPException - The request is accepted but unable to process");
+        log.warn(
+            "Handling CTPException - The request is accepted but unable to process",
+            kv("fault", exception.getFault()),
+            kv("message", exception.getMessage()));
         break;
 
       default:
-        log.with("fault", exception.getFault())
-            .with("message", exception.getMessage())
-            .error("Handling CTPException - System error", exception);
+        log.error(
+            "Handling CTPException - System error",
+            kv("fault", exception.getFault()),
+            kv("message", exception.getMessage()),
+            exception);
         break;
     }
-
     return new ResponseEntity<>(exception, status);
   }
 
@@ -155,9 +158,10 @@ public class RestExceptionHandler {
    */
   @ExceptionHandler(ResponseStatusException.class)
   public ResponseEntity<?> handleResponseStatusException(ResponseStatusException exception) {
-    log.with("fault", exception.getStatus())
-        .with("exception_message", exception.getMessage())
-        .warn("RestExceptionHandler is handling ResponseStatusException");
+    log.warn(
+        "RestExceptionHandler is handling ResponseStatusException",
+        kv("fault", exception.getStatus()),
+        kv("exception_message", exception.getMessage()));
 
     Fault fault = mapHttpStatusToFault(exception.getStatus());
     CTPException ourException = new CTPException(fault, exception.getMessage());
@@ -192,10 +196,10 @@ public class RestExceptionHandler {
 
     String errors =
         String.format("field=%s value=%s message=%s", ex.getName(), ex.getValue(), ex.getMessage());
-
-    log.with("validation_errors", errors)
-        .with("source_message", ex.getRootCause())
-        .warn("Unhandled MethodArgumentTypeMismatchException");
+    log.warn(
+        "Unhandled MethodArgumentTypeMismatchException",
+        kv("validation_errors", errors),
+        kv("source_message", ex.getRootCause()));
     CTPException ourException =
         new CTPException(CTPException.Fault.VALIDATION_FAILED, PROVIDED_JSON_INCORRECT);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
@@ -214,9 +218,11 @@ public class RestExceptionHandler {
 
     String errors = String.format("field=%s message=%s", ex.getParameterName(), ex.getMessage());
 
-    log.with("validation_errors", errors)
-        .with("source_message", ex.getMessage())
-        .warn("Unhandled MethodArgumentTypeMismatchException");
+    log.warn(
+        "Unhandled MissingServletRequestParameterException",
+        kv("validation_errors", errors),
+        kv("source_message", ex.getMessage()));
+
     CTPException ourException =
         new CTPException(CTPException.Fault.VALIDATION_FAILED, PROVIDED_JSON_INCORRECT);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
@@ -235,9 +241,10 @@ public class RestExceptionHandler {
     String errors =
         String.format("field=%s message=%s", ex.getFieldError().getField(), ex.getMessage());
 
-    log.with("validation_errors", errors)
-        .with("source_message", ex.getMessage())
-        .warn("Unhandled BindException");
+    log.warn(
+        "Unhandled BindException",
+        kv("validation_errors", errors),
+        kv("source_message", ex.getMessage()));
     CTPException ourException =
         new CTPException(CTPException.Fault.VALIDATION_FAILED, ex.getMessage());
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
@@ -256,9 +263,10 @@ public class RestExceptionHandler {
     String errors =
         String.format("field=%s message=%s", ex.getMostSpecificCause(), ex.getMessage());
 
-    log.with("validation_errors", errors)
-        .with("source_message", ex.getMessage())
-        .warn("Unhandled HttpMessageConversionException");
+    log.warn(
+        "Unhandled HttpMessageConversionException",
+        kv("validation_errors", errors),
+        kv("source_message", ex.getMessage()));
     CTPException ourException =
         new CTPException(CTPException.Fault.VALIDATION_FAILED, PROVIDED_JSON_INCORRECT);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
@@ -279,9 +287,11 @@ public class RestExceptionHandler {
             .map(e -> String.format("field=%s message=%s", e.getField(), e.getDefaultMessage()))
             .collect(Collectors.joining(","));
 
-    log.with("validation_errors", errors)
-        .with("source_message", ex.getSourceMessage())
-        .warn("Unhandled InvalidRequestException");
+    log.warn(
+        "Unhandled InvalidRequestException",
+        kv("validation_errors", errors),
+        kv("source_message", ex.getSourceMessage()));
+
     CTPException ourException =
         new CTPException(CTPException.Fault.VALIDATION_FAILED, INVALID_JSON);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
@@ -317,8 +327,11 @@ public class RestExceptionHandler {
   public ResponseEntity<?> handleMethodArgumentNotValidException(
       MethodArgumentNotValidException ex) {
     String message = createCleanedUpErrorMessage(ex);
-    log.with("parameter", ex.getParameter().getParameterName())
-        .warn("Uncaught MethodArgumentNotValidException. {}", message);
+
+    log.warn(
+        "Uncaught MethodArgumentNotValidException. {} {}",
+        kv("message", message),
+        kv("parameter", ex.getParameter().getParameterName()));
 
     CTPException ourException = new CTPException(CTPException.Fault.VALIDATION_FAILED, message);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);

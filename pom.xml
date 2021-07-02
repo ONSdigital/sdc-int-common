@@ -6,7 +6,7 @@
   <groupId>ons.sdc.int.common</groupId>
   <artifactId>common</artifactId>
   <!-- version auto updated by Travis mvn release -->
-  <version>1.0.17-SNAPSHOT</version>
+  <version>1.0.18-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>SDC : Integrations Common</name>
   <description>Parent project with common modules for SDC Integrations application projects</description>
@@ -49,7 +49,6 @@
     <surefire.version>3.0.0-M5</surefire.version>
     <googlecloud.version>8.1.0</googlecloud.version>
     <guava.version>29.0-jre</guava.version>
-    <godaddylogging.version>1.2.5</godaddylogging.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <project.scm.id>ONS</project.scm.id>
@@ -112,7 +111,7 @@
       <dependency>
         <groupId>net.logstash.logback</groupId>
         <artifactId>logstash-logback-encoder</artifactId>
-        <version>4.11</version>
+        <version>6.6</version>
       </dependency>
 
       <dependency>
@@ -167,12 +166,6 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-csv</artifactId>
         <version>1.4</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.godaddy</groupId>
-        <artifactId>logging</artifactId>
-        <version>${godaddylogging.version}</version>
       </dependency>
 
       <dependency>

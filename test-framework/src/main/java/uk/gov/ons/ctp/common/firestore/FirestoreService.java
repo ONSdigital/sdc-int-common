@@ -1,13 +1,12 @@
 package uk.gov.ons.ctp.common.firestore;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.FieldPath;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.FirestoreOptions;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
 
@@ -16,9 +15,8 @@ import uk.gov.ons.ctp.common.error.CTPException.Fault;
  *
  * <p>It runs as a singleton so that it can reuse it's Firestore connection.
  */
+@Slf4j
 class FirestoreService {
-  private static final Logger log = LoggerFactory.getLogger(FirestoreService.class);
-
   private static FirestoreService instance = new FirestoreService();
 
   private Firestore firestore;
@@ -59,7 +57,7 @@ class FirestoreService {
               + "' for key '"
               + key
               + "'";
-      log.error(e, failureMessage);
+      log.error(failureMessage, e);
       throw new CTPException(Fault.SYSTEM_ERROR, e, failureMessage);
     }
 

@@ -1,15 +1,16 @@
 package uk.gov.ons.ctp.integration.ratelimiter.client;
 
+import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.InetAddressValidator;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
@@ -28,8 +29,8 @@ import uk.gov.ons.ctp.integration.ratelimiter.model.RateLimitRequest;
 import uk.gov.ons.ctp.integration.ratelimiter.model.RateLimitResponse;
 import uk.gov.ons.ctp.integration.ratelimiter.util.Encryptor;
 
+@Slf4j
 public class RateLimiterClient {
-  private static final Logger log = LoggerFactory.getLogger(RateLimiterClient.class);
 
   // Enum with domains known to limiter
   public enum Domain {
@@ -141,15 +142,16 @@ public class RateLimiterClient {
       ipAddress = null;
     }
 
-    log.with("domain", domain.domainName)
-        .with("productGroup", product.getProductGroup().name())
-        .with("individual", product.getIndividual().toString())
-        .with("deliveryChannel", product.getDeliveryChannel().name())
-        .with("caseType", caseType.name())
-        .with("ipAddress", ipAddress)
-        .with("uprn", uprn.getValue())
-        .with("encrypted-telNo", encrypt(telNo))
-        .info("Fulfilment rate limit. Going to call Rate Limiter Service");
+    log.info(
+        "Fulfilment rate limit. Going to call Rate Limiter Service",
+        kv("domain", domain.domainName),
+        kv("productGroup", product.getProductGroup().name()),
+        kv("individual", product.getIndividual().toString()),
+        kv("deliveryChannel", product.getDeliveryChannel().name()),
+        kv("caseType", caseType.name()),
+        kv("ipAddress", ipAddress),
+        kv("uprn", uprn.getValue()),
+        kv("encrypted-telNo", encrypt(telNo)));
 
     // Make it easy to access limiter parameters by adding to a hashmap
     Map<String, String> params = new HashMap<String, String>();
@@ -163,7 +165,7 @@ public class RateLimiterClient {
 
     // Create request
     RateLimitRequest request = createRateLimitRequestForFulfilment(domain, params);
-    log.with(request).debug("RateLimiterRequest for fulfilment");
+    log.debug("RateLimiterRequest for fulfilment", kv("request", request));
 
     // Send request to limiter
     invokeRateLimiter("fulfilments", request);
@@ -190,12 +192,12 @@ public class RateLimiterClient {
     verifyArgumentSupplied("domain", domain);
 
     if (!isValidIpAddress(ipAddress)) {
-      log.with("ipAddress", ipAddress)
-          .info("Webform rate limit not checked due to invalid IP address");
+      log.info(
+          "Webform rate limit not checked due to invalid IP address", kv("ipAddress", ipAddress));
       return;
     }
 
-    log.with("ipAddress", ipAddress).info("Check webform rate limit");
+    log.info("Check webform rate limit", kv("ipAddress", ipAddress));
 
     // Make it easy to access limiter parameters by adding to a hashmap
     Map<String, String> params = new HashMap<String, String>();
@@ -205,7 +207,7 @@ public class RateLimiterClient {
     // Create request
     RateLimitRequest request =
         createRateLimitRequestWithAllDescriptors(domain, params, DESCRIPTORS_WEBFORM);
-    log.with(request).debug("RateLimiterRequest for Webform");
+    log.debug("RateLimiterRequest for Webform", kv("request", request));
 
     // Send request to limiter
     invokeRateLimiter("webform", request);
@@ -233,13 +235,14 @@ public class RateLimiterClient {
     verifyLoadSheddingModulus(loadSheddingModulus);
 
     if (!isValidIpAddress(ipAddress)) {
-      log.with("ipAddress", ipAddress)
-          .info("EQ Launch rate limit not checked due to invalid IP address");
+      log.info(
+          "EQ Launch rate limit not checked due to invalid IP address", kv("ipAddress", ipAddress));
       return;
     }
-    log.with("ipAddress", ipAddress)
-        .with("loadSheddingModulus", loadSheddingModulus)
-        .info("Check EQ Launch limit");
+    log.info(
+        "Check EQ Launch limit",
+        kv("ipAddress", ipAddress),
+        kv("loadSheddingModulus", loadSheddingModulus));
 
     Integer modulo = lastOctet(ipAddress) % loadSheddingModulus;
 
@@ -249,7 +252,7 @@ public class RateLimiterClient {
 
     RateLimitRequest request =
         createRateLimitRequestWithAllDescriptors(domain, params, DESCRIPTORS_EQ_LAUNCH);
-    log.with(request).debug("RateLimiterRequest for EQ Launch");
+    log.debug("RateLimiterRequest for EQ Launch", kv("request", request));
 
     invokeRateLimiter("EQ Launch", request);
   }
@@ -261,13 +264,15 @@ public class RateLimiterClient {
   private boolean isValidIpAddress(String ipAddress) {
     boolean valid = true;
     if (StringUtils.isBlank(ipAddress)) {
-      log.with("ipAddress", ipAddress)
-          .warn("Cannot accept blank IP address. This will not be used for rate limit check");
+      log.warn(
+          "Cannot accept blank IP address. This will not be used for rate limit check",
+          kv("ipAddress", ipAddress));
       valid = false;
     }
     if (!InetAddressValidator.getInstance().isValidInet4Address(ipAddress)) {
-      log.with("ipAddress", ipAddress)
-          .warn("IP address is not valid IPv4 format. This will not be used for rate limit check");
+      log.warn(
+          "IP address is not valid IPv4 format. This will not be used for rate limit check",
+          kv("ipAddress", ipAddress));
       valid = false;
     }
     return valid;
@@ -378,8 +383,10 @@ public class RateLimiterClient {
               if (throwable instanceof CallNotPermittedException) {
                 log.info("Circuit breaker is OPEN calling rate limiter for " + requestDescription);
               } else {
-                log.with("error", throwable.getMessage())
-                    .error(throwable, "Rate limiter failure for " + requestDescription);
+                log.error(
+                    "Rate limiter failure for " + requestDescription,
+                    kv("error", throwable.getMessage()),
+                    throwable);
               }
               return null;
             });
@@ -431,7 +438,7 @@ public class RateLimiterClient {
 
     StringBuilder failureDescription = new StringBuilder("Rate limit(s) breached:");
     String responseJson = limiterException.getReason();
-    log.with("responseJson", responseJson).debug("Limiter response");
+    log.debug("Limiter response", kv("responseJson", responseJson));
     RateLimitResponse limiterResponse = convertJsonToObject(responseJson);
     for (int i = 0; i < limiterResponse.getStatuses().size(); i++) {
       LimitStatus breachedLimit = limiterResponse.getStatuses().get(i);
@@ -478,8 +485,7 @@ public class RateLimiterClient {
     try {
       response = objectMapper.readValue(responseJson, RateLimitResponse.class);
     } catch (JsonProcessingException jsonException) {
-      log.with("jsonResponse", responseJson)
-          .warn("Failed to parse rate limiter exception response");
+      log.warn("Failed to parse rate limiter exception response", kv("jsonResponse", responseJson));
       throw new CTPException(
           Fault.SYSTEM_ERROR, jsonException, "Failed to parse rate limiter exception response");
     }

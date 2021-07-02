@@ -1,9 +1,10 @@
 package uk.gov.ons.ctp.common.event.persistence;
 
+import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import javax.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,11 +18,9 @@ import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
 /**
  * This class saves details about an event which Rabbit failed to sent into a Firestore collection.
  */
+@Slf4j
 @Service
 public class FirestoreEventPersistence implements EventPersistence {
-
-  private static final Logger log = LoggerFactory.getLogger(FirestoreEventPersistence.class);
-
   private RetryableCloudDataStore cloudDataStore;
   private CustomObjectMapper objectMapper;
 
@@ -57,7 +56,7 @@ public class FirestoreEventPersistence implements EventPersistence {
   public void persistEvent(EventType eventType, GenericEvent genericEvent) throws CTPException {
     String id = genericEvent.getEvent().getTransactionId();
 
-    log.with("id", id).debug("Storing event data in Firestore");
+    log.debug("Storing event data in Firestore", kv("id", id));
 
     EventBackupData eventData = new EventBackupData();
     eventData.setEventType(eventType);
@@ -71,6 +70,6 @@ public class FirestoreEventPersistence implements EventPersistence {
         eventData,
         genericEvent.getEvent().getTransactionId());
 
-    log.with("id", id).debug("Stored event data");
+    log.debug("Stored event data", kv("id", id));
   }
 }

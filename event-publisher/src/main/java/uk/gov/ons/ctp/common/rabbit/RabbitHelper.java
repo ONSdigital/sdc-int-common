@@ -1,8 +1,8 @@
 package uk.gov.ons.ctp.common.rabbit;
 
+import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import com.rabbitmq.client.AMQP.Queue.PurgeOk;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -10,6 +10,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.GetResponse;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.config.YmlConfigReader;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
@@ -31,9 +32,8 @@ import uk.gov.ons.ctp.common.event.model.EventPayload;
  * <p>The RabbitMQ Java API does not support concurrent usage of the Channel object, so this class
  * enforces this restriction with method level synchronisation.
  */
+@Slf4j
 public class RabbitHelper {
-  private static final Logger log = LoggerFactory.getLogger(RabbitHelper.class);
-
   private static final String RABBIT_YML_FILENAME = "rabbitmq.yml";
 
   private static RabbitHelper instance = null;
@@ -61,7 +61,7 @@ public class RabbitHelper {
       this.rabbit = factory.newConnection();
     } catch (IOException | TimeoutException e) {
       String errorMessage = "Failed to connect to RabbitMQ";
-      log.with("exchange", exchange).error(errorMessage, e);
+      log.error(errorMessage, kv("exchange", exchange), e);
       throw new CTPException(Fault.SYSTEM_ERROR, e, errorMessage);
     }
 
@@ -156,7 +156,7 @@ public class RabbitHelper {
       RoutingKey routingKey = RoutingKey.forType(eventType);
       if (routingKey == null) {
         String errorMessage = "Routing key for eventType '" + eventType + "' not configured";
-        log.with("eventType", eventType).error(errorMessage);
+        log.error(errorMessage, kv("eventType", eventType));
         throw new UnsupportedOperationException(errorMessage);
       }
 
@@ -192,7 +192,7 @@ public class RabbitHelper {
     } catch (IOException e) {
       channel = null;
       String errorMessage = "Failed to flush queue '" + queueName + "'";
-      log.with("queueName", queueName).error(errorMessage, e);
+      log.error(errorMessage, kv("queueName", queueName), e);
       throw new CTPException(Fault.SYSTEM_ERROR, e, errorMessage);
     }
   }
@@ -216,10 +216,12 @@ public class RabbitHelper {
 
     } catch (Exception e) {
       String errorMessage = "Failed to send message. Cause: " + e.getMessage();
-      log.with("eventType", eventType)
-          .with("source", source)
-          .with("channel", channel)
-          .error(errorMessage, e);
+      log.error(
+          errorMessage,
+          kv("eventType", eventType),
+          kv("source", source),
+          kv("channel", channel),
+          e);
       throw new CTPException(Fault.SYSTEM_ERROR, errorMessage, e);
     }
   }
@@ -299,7 +301,7 @@ public class RabbitHelper {
 
     } catch (IOException e) {
       String errorMessage = "Failed to convert message to object of type '" + clazz.getName() + "'";
-      log.with("queueName", queueName).error(errorMessage, e);
+      log.error(errorMessage, kv("queueName", queueName), e);
       throw new CTPException(Fault.SYSTEM_ERROR, e, errorMessage);
     }
   }
@@ -319,7 +321,7 @@ public class RabbitHelper {
     } catch (IOException e) {
       channel = null;
       String errorMessage = "Failed to flush queue '" + queueName + "'";
-      log.with("queueName", queueName).error(errorMessage, e);
+      log.error(errorMessage, kv("queueName", queueName), e);
       throw new CTPException(Fault.SYSTEM_ERROR, e, errorMessage);
     }
 

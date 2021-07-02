@@ -1,10 +1,11 @@
 package uk.gov.ons.ctp.common.event;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
+import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
+
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import uk.gov.ons.ctp.common.event.EventBuilder.SendInfo;
 import uk.gov.ons.ctp.common.event.model.AddressModification;
@@ -25,9 +26,8 @@ import uk.gov.ons.ctp.common.event.persistence.EventBackupData;
 import uk.gov.ons.ctp.common.event.persistence.EventPersistence;
 
 /** Service responsible for the publication of events. */
+@Slf4j
 public class EventPublisher {
-
-  private static final Logger log = LoggerFactory.getLogger(EventPublisher.class);
 
   private EventSender sender;
   private CircuitBreaker circuitBreaker;
@@ -200,12 +200,21 @@ public class EventPublisher {
    */
   public String sendEvent(
       EventType eventType, Source source, Channel channel, EventPayload payload) {
-
-    log.with(eventType).with(source).with(channel).with(payload).debug("Enter sendEvent()");
+    log.debug(
+        "Enter sendEvent",
+        kv("eventType", eventType),
+        kv("source", source),
+        kv("channel", channel),
+        kv("payload", payload));
 
     String transactionId = doSendEvent(eventType, new SendInfo(payload, source, channel));
 
-    log.with(eventType).with(source).with(channel).with(payload).debug("Exit sendEvent()");
+    log.debug(
+        "Exit sendEvent",
+        kv("eventType", eventType),
+        kv("source", source),
+        kv("channel", channel),
+        kv("payload", payload));
 
     return transactionId;
   }
@@ -220,7 +229,7 @@ public class EventPublisher {
     EventType type = event.getEventType();
     SendInfo sendInfo = type.getBuilder().create(event.getEvent());
     if (sendInfo == null) {
-      log.with("type", type).error("Unrecognised event type");
+      log.error("Unrecognised event type", kv("type", type));
       throw new UnsupportedOperationException("Unknown event: " + type);
     }
     String transactionId = doSendEvent(type, sendInfo);
@@ -232,9 +241,10 @@ public class EventPublisher {
     EventPayload payload = sendInfo.getPayload();
 
     if (!payload.getClass().equals(eventType.getPayloadType())) {
-      log.with("payloadType", payload.getClass())
-          .with("eventType", eventType)
-          .error("Payload incompatible for event type");
+      log.error(
+          "Payload incompatible for event type",
+          kv("payloadType", payload.getClass()),
+          kv("eventType", eventType));
       String errorMessage =
           "Payload type '"
               + payload.getClass()
@@ -246,14 +256,14 @@ public class EventPublisher {
 
     RoutingKey routingKey = RoutingKey.forType(eventType);
     if (routingKey == null) {
-      log.with("eventType", eventType).error("Routing key for eventType not configured");
+      log.error("Routing key for eventType not configured", kv("eventType", eventType));
       String errorMessage = "Routing key for eventType '" + eventType + "' not configured";
       throw new UnsupportedOperationException(errorMessage);
     }
 
     GenericEvent genericEvent = eventType.getBuilder().create(sendInfo);
     if (genericEvent == null) {
-      log.with("eventType", eventType).error("Payload for eventType not configured");
+      log.error("Payload for eventType not configured", kv("eventType", eventType));
       String errorMessage =
           payload.getClass().getName() + " for EventType '" + eventType + "' not supported yet";
       throw new UnsupportedOperationException(errorMessage);
@@ -263,11 +273,12 @@ public class EventPublisher {
       sendToRabbit(routingKey, genericEvent);
     } catch (Exception e) {
       boolean backup = eventPersistence != null;
-      log.with("eventType", eventType)
-          .with("routingKey", routingKey)
-          .with("backup", backup)
-          .error(e, "Failed to send event but will now backup to firestore");
-
+      log.error(
+          "Failed to send event but will now backup to firestore",
+          kv("eventType", eventType),
+          kv("routingKey", routingKey),
+          kv("backup", backup),
+          e);
       if (!backup) {
         throw new EventPublishException("Rabbit failed to send event", e);
       }
@@ -275,14 +286,17 @@ public class EventPublisher {
       // Save event to persistent store
       try {
         eventPersistence.persistEvent(eventType, genericEvent);
-        log.with("eventType", eventType)
-            .with("routingKey", routingKey)
-            .info("Event data saved to persistent store");
+        log.info(
+            "Event data saved to persistent store",
+            kv("eventType", eventType),
+            kv("routingKey", routingKey));
       } catch (Exception epe) {
         // There is no hope. Neither Rabbit or Persistence are working
-        log.with("eventType", eventType)
-            .with("routingKey", routingKey)
-            .error(epe, "Backup event persistence failed following Rabbit failure");
+        log.error(
+            "Backup event persistence failed following Rabbit failure",
+            kv("eventType", eventType),
+            kv("routingKey", routingKey),
+            epe);
         throw new EventPublishException(
             "Backup event persistence failed following Rabbit failure", e);
       }
@@ -314,12 +328,17 @@ public class EventPublisher {
   private void sendToRabbit(
       RoutingKey routingKey, GenericEvent genericEvent, String loggingMsgSuffix) {
     EventType eventType = genericEvent.getEvent().getType();
-    log.with("eventType", eventType)
-        .with("routingKey", routingKey)
-        .info("Sending message to rabbit {}", loggingMsgSuffix);
+
+    log.info(
+        "Sending message to rabbit " + loggingMsgSuffix,
+        kv("eventType", eventType),
+        kv("routingKey", routingKey));
+
     sender.sendEvent(routingKey, genericEvent);
-    log.with("eventType", eventType)
-        .with("routingKey", routingKey)
-        .info("Message sent successfully to rabbit");
+
+    log.info(
+        "Message sent successfully to rabbit",
+        kv("eventType", eventType),
+        kv("routingKey", routingKey));
   }
 }

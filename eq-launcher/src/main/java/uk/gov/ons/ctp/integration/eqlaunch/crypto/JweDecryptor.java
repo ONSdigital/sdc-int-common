@@ -1,18 +1,17 @@
 package uk.gov.ons.ctp.integration.eqlaunch.crypto;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
+import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
+
 import com.nimbusds.jose.JWSObject;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.integration.eqlaunch.crypto.JWEHelper.DecryptJwe;
 import uk.gov.ons.ctp.integration.eqlaunch.crypto.JWSHelper.DecodeJws;
 
 /** Decrypt a launch token. */
+@Slf4j
 public class JweDecryptor {
-
-  private static final Logger log = LoggerFactory.getLogger(JweDecryptor.class);
-
   private DecodeJws jwsHelper = new DecodeJws();
   private DecryptJwe jweHelper = new DecryptJwe();
   private KeyStore keyStore;
@@ -35,7 +34,7 @@ public class JweDecryptor {
     if (publicKey.isPresent()) {
       jws = jweHelper.decrypt(jwe, publicKey.get());
     } else {
-      log.with("kid", jweHelper.getKid(jwe)).error("Failed to retrieve public key to decrypt JWE");
+      log.error("Failed to retrieve public key to decrypt JWE", kv("kid", jweHelper.getKid(jwe)));
       throw new CTPException(
           CTPException.Fault.SYSTEM_ERROR, "Failed to retrieve public key to decrypt JWE");
     }
@@ -44,7 +43,7 @@ public class JweDecryptor {
     if (privateKey.isPresent()) {
       return jwsHelper.decode(jws, privateKey.get());
     } else {
-      log.with("kid", jwsHelper.getKid(jws)).error("Failed to retrieve private key to verify JWS");
+      log.error("Failed to retrieve private key to verify JWS", kv("kid", jwsHelper.getKid(jws)));
       throw new CTPException(
           CTPException.Fault.SYSTEM_ERROR, "Failed to retrieve private key to verify JWS");
     }

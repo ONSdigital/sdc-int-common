@@ -1,11 +1,10 @@
 package uk.gov.ons.ctp.common.firestore;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
 
@@ -22,11 +21,11 @@ import uk.gov.ons.ctp.common.error.CTPException.Fault;
  * 'Kubernetes Engine, Clusters, Connect button', which gives a full command of say 'gcloud beta
  * container clusters get-credentials rh-k8s-cluster --region europe-west2 --project census-rh-dev'
  */
+@Slf4j
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class FirestoreWait {
-  private static final Logger log = LoggerFactory.getLogger(FirestoreWait.class);
 
   // This is the name of the collection to search, eg, 'case'
   @NonNull private String collection;
