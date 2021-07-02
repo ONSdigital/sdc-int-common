@@ -1,7 +1,7 @@
 package uk.gov.ons.ctp.integration.eqlaunch.crypto;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
+import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
+
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -12,6 +12,7 @@ import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.RSAKey;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.ons.ctp.common.error.CTPException;
@@ -20,9 +21,8 @@ import uk.gov.ons.ctp.common.error.CTPException;
  * Helper class for signing provided claims, encoding as a JWS token or verifying and decoding
  * provided JWS.
  */
+@Slf4j
 public abstract class JWSHelper {
-
-  private static final Logger log = LoggerFactory.getLogger(JWSHelper.class);
 
   /**
    * Return key hint (Id) from JWS header
@@ -60,7 +60,7 @@ public abstract class JWSHelper {
       try {
         this.signer = new RSASSASigner(jwk);
       } catch (JOSEException e) {
-        log.with("kid", key.getKid()).error("Failed to create private JWSSigner to sign claims");
+        log.error("Failed to create private JWSSigner to sign claims", kv("kid", key.getKid()));
         throw new CTPException(
             CTPException.Fault.SYSTEM_ERROR, "Failed to create private JWSSigner to sign claims");
       }
@@ -74,7 +74,7 @@ public abstract class JWSHelper {
      * @throws CTPException on error
      */
     public JWSObject encode(Map<String, Object> claims) throws CTPException {
-      log.with(key.getKid()).debug("Encoding with public key");
+      log.debug("Encoding with public key", kv("kid", key.getKid()));
       Payload jwsClaims = buildClaims(claims);
       JWSObject jwsObject = new JWSObject(jwsHeader, jwsClaims);
 
@@ -82,7 +82,7 @@ public abstract class JWSHelper {
         jwsObject.sign(this.signer);
         return jwsObject;
       } catch (JOSEException e) {
-        log.with("kid", key.getKid()).error("Failed to sign claims");
+        log.error("Failed to sign claims", kv("kid", key.getKid()), e);
         throw new CTPException(CTPException.Fault.SYSTEM_ERROR, "Failed to sign claims");
       }
     }
@@ -122,11 +122,11 @@ public abstract class JWSHelper {
           }
           return payload.toString();
         } else {
-          log.with("kid", key.getKid()).error("Failed to verify JWS signature");
+          log.error("Failed to verify JWS signature", kv("kid", key.getKid()));
           throw new CTPException(CTPException.Fault.SYSTEM_ERROR, "Failed to verify JWS signature");
         }
       } catch (JOSEException e) {
-        log.with("kid", key.getKid()).error("Failed to verify JWS signature");
+        log.error("Failed to verify JWS signature", kv("kid", key.getKid()));
         throw new CTPException(CTPException.Fault.SYSTEM_ERROR, "Failed to verify JWS signature");
       }
     }

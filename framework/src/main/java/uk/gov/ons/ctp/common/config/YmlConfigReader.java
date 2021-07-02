@@ -6,14 +6,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
 
@@ -28,8 +27,8 @@ import uk.gov.ons.ctp.common.error.CTPException.Fault;
  * of the environment variable named 'RABBITMQ_USERNAME'. It can also be replaced with the contents
  * of 'RabbitMQ.UserName'.
  */
+@Slf4j
 public class YmlConfigReader {
-  private static final Logger log = LoggerFactory.getLogger(YmlConfigReader.class);
 
   private Map<String, String> envVariables = null;
 

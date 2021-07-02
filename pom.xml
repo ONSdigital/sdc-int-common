@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>ons.sdc.int.common</groupId>
   <artifactId>common</artifactId>
@@ -43,10 +45,9 @@
     <java.version>11</java.version>
     <jacoco.version>0.8.3</jacoco.version>
     <orika.version>1.5.2</orika.version>
-    <surefire.version>3.0.0-M3</surefire.version>
+    <surefire.version>3.0.0-M5</surefire.version>
     <googlecloud.version>8.1.0</googlecloud.version>
     <guava.version>29.0-jre</guava.version>
-    <godaddylogging.version>1.2.5</godaddylogging.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <project.scm.id>ONS</project.scm.id>
@@ -109,7 +110,7 @@
       <dependency>
         <groupId>net.logstash.logback</groupId>
         <artifactId>logstash-logback-encoder</artifactId>
-        <version>4.11</version>
+        <version>6.6</version>
       </dependency>
 
       <dependency>
@@ -164,12 +165,6 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-csv</artifactId>
         <version>1.4</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.godaddy</groupId>
-        <artifactId>logging</artifactId>
-        <version>${godaddylogging.version}</version>
       </dependency>
 
       <dependency>

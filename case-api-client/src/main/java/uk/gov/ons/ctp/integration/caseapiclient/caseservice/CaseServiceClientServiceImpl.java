@@ -1,9 +1,10 @@
 package uk.gov.ons.ctp.integration.caseapiclient.caseservice;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
+import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
+
 import java.util.List;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import uk.gov.ons.ctp.common.rest.RestClient;
@@ -12,8 +13,8 @@ import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.QuestionnaireI
 import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.SingleUseQuestionnaireIdDTO;
 
 /** This class is responsible for communications with the Case Service. */
+@Slf4j
 public class CaseServiceClientServiceImpl {
-  private static final Logger log = LoggerFactory.getLogger(CaseServiceClientServiceImpl.class);
   private static final String CASE_BY_ID_QUERY_PATH = "/cases/{case-id}";
   private static final String CASE_BY_UPRN_QUERY_PATH = "/cases/uprn/{uprn}";
   private static final String CASE_BY_CASE_REFERENCE_QUERY_PATH = "/cases/ref/{reference}";
@@ -29,8 +30,8 @@ public class CaseServiceClientServiceImpl {
   }
 
   public CaseContainerDTO getCaseById(UUID caseId, Boolean listCaseEvents) {
-    log.with("caseId", caseId)
-        .debug("getCaseById() calling Case Service to find case details by ID");
+    log.debug(
+        "getCaseById() calling Case Service to find case details by ID", kv("caseId", caseId));
 
     // Build map for query params
     MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
@@ -40,14 +41,13 @@ public class CaseServiceClientServiceImpl {
     CaseContainerDTO caseDetails =
         caseServiceClient.getResource(
             CASE_BY_ID_QUERY_PATH, CaseContainerDTO.class, null, queryParams, caseId.toString());
-    log.with("caseId", caseId).debug("getCaseById() found case details for case ID");
-
+    log.debug("getCaseById() found case details for case ID", kv("caseId", caseId));
     return caseDetails;
   }
 
   public List<CaseContainerDTO> getCaseByUprn(Long uprn, Boolean listCaseEvents) {
-    log.with("uprn", uprn)
-        .debug("getCaseByUprn() calling Case Service to find case details by Uprn");
+    log.debug(
+        "getCaseByUprn() calling Case Service to find case details by Uprn", kv("uprn", uprn));
 
     // Build map for query params
     MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
@@ -63,29 +63,29 @@ public class CaseServiceClientServiceImpl {
             queryParams,
             Long.toString(uprn));
 
-    log.with("uprn", uprn).debug("getCaseByUprn() found case details by Uprn");
-
+    log.debug("getCaseByUprn() found case details by Uprn", kv("uprn", uprn));
     return cases;
   }
 
   public List<CaseContainerDTO> getCcsCaseByPostcode(String postcode) {
-    log.with("postcode", postcode)
-        .debug("getCcsCaseByPostcode() calling Case Service to find ccs case details by postcode");
+    log.debug(
+        "getCcsCaseByPostcode() calling Case Service to find ccs case details by postcode",
+        kv("postcode", postcode));
 
     // Ask Case Service to find ccs case details
     List<CaseContainerDTO> cases =
         caseServiceClient.getResources(
             CCS_CASE_BY_POSTCODE_QUERY_PATH, CaseContainerDTO[].class, null, null, postcode);
 
-    log.with("postcode", postcode).debug("getCaseByPostcode() found ccs case details by postcode");
+    log.debug("getCaseByPostcode() found ccs case details by postcode", kv("postcode", postcode));
 
     return cases;
   }
 
   public CaseContainerDTO getCaseByCaseRef(Long caseReference, Boolean listCaseEvents) {
-    log.with("caseReference", caseReference)
-        .debug(
-            "getCaseByCaseReference() calling Case Service to find case details by case reference");
+    log.debug(
+        "getCaseByCaseReference() calling Case Service to find case details by case reference",
+        kv("caseReference", caseReference));
 
     // Build map for query params
     MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
@@ -100,17 +100,17 @@ public class CaseServiceClientServiceImpl {
             queryParams,
             caseReference);
 
-    log.with("caseReference", caseReference)
-        .debug("getCaseByCaseReference() found case details by case reference");
-
+    log.debug(
+        "getCaseByCaseReference() found case details by case reference",
+        kv("caseReference", caseReference));
     return caseDetails;
   }
 
   public QuestionnaireIdDTO getReusableQuestionnaireId(UUID caseId) {
-    log.with("caseId", caseId)
-        .debug(
-            "getReusableQuestionnaireId() calling Case Service to find questionnaire id "
-                + "by case ID");
+    log.debug(
+        "getReusableQuestionnaireId() calling Case Service to find questionnaire id "
+            + "by case ID",
+        kv("caseId", caseId));
 
     QuestionnaireIdDTO questionnaireId = null;
 
@@ -121,18 +121,20 @@ public class CaseServiceClientServiceImpl {
             null,
             null,
             caseId.toString());
-    log.with("questionnaireId", questionnaireId)
-        .debug("getReusableQuestionnaireId() found questionnaire id for case ID");
+    log.debug(
+        "getReusableQuestionnaireId() found questionnaire id for case ID",
+        kv("questionnaireId", questionnaireId));
 
     return questionnaireId;
   }
 
   public SingleUseQuestionnaireIdDTO getSingleUseQuestionnaireId(
       UUID caseId, boolean individual, UUID individualCaseId) {
-    log.with("caseId", caseId)
-        .with("individual", individual)
-        .with("individualCaseId", individualCaseId)
-        .debug("getNewQuestionnaireIdForCase() calling Case Service to get new questionnaire ID");
+    log.debug(
+        "getNewQuestionnaireIdForCase() calling Case Service to get new questionnaire ID",
+        kv("caseId", caseId),
+        kv("individual", individual),
+        kv("individualCaseId", individualCaseId));
 
     // Build map for query params
     MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
@@ -152,11 +154,12 @@ public class CaseServiceClientServiceImpl {
             queryParams,
             caseId.toString());
 
-    log.with("caseId", caseId)
-        .with("questionnaireId", newQuestionnaireId.getQuestionnaireId())
-        .with("formType", newQuestionnaireId.getFormType())
-        .with("questionnaireType", newQuestionnaireId.getQuestionnaireId())
-        .debug("getNewQuestionnaireIdForCase() generated new questionnaireId");
+    log.debug(
+        "getNewQuestionnaireIdForCase() generated new questionnaireId",
+        kv("caseId", caseId),
+        kv("questionnaireId", newQuestionnaireId.getQuestionnaireId()),
+        kv("formType", newQuestionnaireId.getFormType()),
+        kv("questionnaireType", newQuestionnaireId.getQuestionnaireId()));
 
     return newQuestionnaireId;
   }

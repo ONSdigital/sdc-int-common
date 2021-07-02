@@ -58,11 +58,6 @@
     </dependency>
 
     <dependency>
-      <groupId>com.godaddy</groupId>
-      <artifactId>logging</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>ons.sdc.int.common</groupId>
       <artifactId>framework</artifactId>
       <version>${project.version}</version>
