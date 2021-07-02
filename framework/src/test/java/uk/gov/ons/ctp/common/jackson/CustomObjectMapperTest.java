@@ -12,7 +12,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 import lombok.Data;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** Test for common custom object mapper */
 public class CustomObjectMapperTest {

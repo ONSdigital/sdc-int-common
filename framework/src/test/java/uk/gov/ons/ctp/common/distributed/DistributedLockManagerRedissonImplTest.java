@@ -1,14 +1,15 @@
 package uk.gov.ons.ctp.common.distributed;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
 import java.util.concurrent.TimeUnit;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 
@@ -20,7 +21,7 @@ import org.redisson.api.RedissonClient;
  * assumptions about redisson functionality are ... as we assume. But testing any further of
  * redisson itself would be extremely difficult and something we trust redisson has done.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DistributedLockManagerRedissonImplTest {
 
   @Mock private RedissonClient redissonClient;
@@ -39,7 +40,7 @@ public class DistributedLockManagerRedissonImplTest {
 
     DistributedLockManagerRedissonImpl impl =
         new DistributedLockManagerRedissonImpl("test-root", redissonClient, 10);
-    Assert.assertTrue(impl.lock("test-lock"));
+    assertTrue(impl.lock("test-lock"));
   }
 
   /**
@@ -55,7 +56,7 @@ public class DistributedLockManagerRedissonImplTest {
 
     DistributedLockManagerRedissonImpl impl =
         new DistributedLockManagerRedissonImpl("test-root", redissonClient, 10);
-    Assert.assertFalse(impl.lock("test-lock"));
+    assertFalse(impl.lock("test-lock"));
   }
 
   /**
@@ -72,7 +73,7 @@ public class DistributedLockManagerRedissonImplTest {
 
     DistributedLockManagerRedissonImpl impl =
         new DistributedLockManagerRedissonImpl("root", redissonClient, 10);
-    Assert.assertTrue(impl.lock("fred"));
+    assertTrue(impl.lock("fred"));
   }
 
   /**
@@ -88,6 +89,6 @@ public class DistributedLockManagerRedissonImplTest {
 
     DistributedLockManagerRedissonImpl impl =
         new DistributedLockManagerRedissonImpl("root", redissonClient, 10);
-    Assert.assertFalse(impl.lock("fred"));
+    assertFalse(impl.lock("fred"));
   }
 }

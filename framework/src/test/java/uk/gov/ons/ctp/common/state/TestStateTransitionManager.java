@@ -1,16 +1,16 @@
 package uk.gov.ons.ctp.common.state;
 
-import static junit.framework.TestCase.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static uk.gov.ons.ctp.common.state.BasicStateTransitionManager.TRANSITION_ERROR_MSG;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.ons.ctp.common.error.CTPException;
 
 /**
@@ -23,7 +23,7 @@ public class TestStateTransitionManager {
   private StateTransitionManager<TestState, TestEvent> stm;
 
   /** Setup the transitions */
-  @Before
+  @BeforeEach
   public void setUp() {
     Map<TestState, Map<TestEvent, TestState>> transitions = new HashMap<>();
     Map<TestEvent, TestState> transitionMapForSubmitted = new HashMap<>();

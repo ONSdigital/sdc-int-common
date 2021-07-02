@@ -49,6 +49,13 @@
     </dependency>
 
     <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+  <!--
+    <dependency>
       <groupId>org.junit.vintage</groupId>
       <artifactId>junit-vintage-engine</artifactId>
       <exclusions>
@@ -58,6 +65,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+     -->
 
     <!-- ONS libraries -->
 

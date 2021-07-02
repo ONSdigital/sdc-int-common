@@ -136,6 +136,13 @@
       <artifactId>logging</artifactId>
     </dependency>
 
+   <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  <!-- FIXME
     <dependency>
       <groupId>org.junit.vintage</groupId>
       <artifactId>junit-vintage-engine</artifactId>
@@ -147,6 +154,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+  -->
 
     <!-- Testing -->
 

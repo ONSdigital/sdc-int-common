@@ -1,15 +1,15 @@
 package uk.gov.ons.ctp.common.cloud;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
@@ -21,12 +21,12 @@ import org.springframework.test.util.ReflectionTestUtils;
  * /Users/peterbochel/.config/gcloud/application_default_credentials.json GOOGLE_CLOUD_PROJECT =
  * census-rh-peterb
  */
-@Ignore
+@Disabled
 public class Firestore_IT extends CloudTestBase {
   private static final String FIRESTORE_PROJECT_ENV_NAME = "GOOGLE_CLOUD_PROJECT";
   private static FirestoreDataStore firestoreDataStore;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() {
     firestoreDataStore = new FirestoreDataStore();
     ReflectionTestUtils.setField(
@@ -34,7 +34,7 @@ public class Firestore_IT extends CloudTestBase {
     firestoreDataStore.create();
   }
 
-  @Before
+  @BeforeEach
   public void clearTestData() throws Exception {
     // Add data to collection
     firestoreDataStore.deleteObject(TEST_SCHEMA, CASE1.getId());
@@ -136,7 +136,7 @@ public class Firestore_IT extends CloudTestBase {
       firestoreDataStore.search(
           String.class, TEST_SCHEMA, searchByForename, CASE1.getContact().getForename());
     } catch (Exception e) {
-      assertTrue(e.getCause().getMessage(), e.getCause().getMessage().contains("e"));
+      assertTrue(e.getCause().getMessage().contains("e"), e.getCause().getMessage());
       exceptionCaught = true;
     }
     assertTrue(exceptionCaught);

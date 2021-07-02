@@ -1,6 +1,8 @@
 package uk.gov.ons.ctp.common;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 public class TestHelperTest {
 
@@ -9,14 +11,14 @@ public class TestHelperTest {
     TestHelper.validateAsDateTime("2019-04-10T15:32:38.941+01:00");
   }
 
-  @Test(expected = AssertionError.class)
+  @Test
   public void testValidateAsDateTimeWithNullDateTime() {
-    TestHelper.validateAsDateTime(null);
+    assertThrows(AssertionError.class, () -> TestHelper.validateAsDateTime(null));
   }
 
-  @Test(expected = AssertionError.class)
+  @Test
   public void testValidateAsDateTimeWithInvalidDateTime() {
-    TestHelper.validateAsDateTime("2019-04-10T15:32pm");
+    assertThrows(AssertionError.class, () -> TestHelper.validateAsDateTime("2019-04-10T15:32pm"));
   }
 
   @Test
@@ -25,14 +27,14 @@ public class TestHelperTest {
     TestHelper.validateAsUUID(uuid);
   }
 
-  @Test(expected = AssertionError.class)
+  @Test
   public void testValidateAsUUIDNull() {
-    TestHelper.validateAsUUID(null);
+    assertThrows(AssertionError.class, () -> TestHelper.validateAsUUID(null));
   }
 
-  @Test(expected = AssertionError.class)
+  @Test
   public void testValidateAsUUIDInvalid() {
     String uuid = "2344-234234";
-    TestHelper.validateAsUUID(uuid);
+    assertThrows(AssertionError.class, () -> TestHelper.validateAsUUID(uuid));
   }
 }

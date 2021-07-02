@@ -1,15 +1,15 @@
 package uk.gov.ons.ctp.common.error;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -22,7 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
 
 /** Test of the Controller Advice for Spring MVC exception handling */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RestExceptionHandlerTest {
 
   @RestController
@@ -37,7 +37,7 @@ public class RestExceptionHandlerTest {
 
   @Mock private TestController testController;
 
-  @Before
+  @BeforeEach
   public void setup() {
     mockMvc =
         MockMvcBuilders.standaloneSetup(testController)
