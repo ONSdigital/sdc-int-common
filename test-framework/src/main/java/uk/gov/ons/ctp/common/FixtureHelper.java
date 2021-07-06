@@ -3,7 +3,7 @@ package uk.gov.ons.ctp.common;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.io.File;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -142,12 +142,11 @@ public class FixtureHelper {
     String clazzName = clazz.getSimpleName().replaceAll("[\\[\\]]", "");
     String path =
         generatePath(callerClassName, clazzName, callerMethodName, qualifier, packageOnly);
-    try {
-      File file = new File(ClassLoader.getSystemResource(path).getFile());
-      dummies = Arrays.asList(mapper.readValue(file, clazz));
+    try (InputStream is = FixtureHelper.class.getClassLoader().getResourceAsStream(path)) {
+      dummies = Arrays.asList(mapper.readValue(is, clazz));
     } catch (Throwable t) {
       log.debug("Problem loading fixture {} reason {}", path, t.getMessage());
-      throw new RuntimeException("Failed to load fixture: " + path);
+      throw new RuntimeException("Failed to load fixture: " + path, t);
     }
     return dummies;
   }
@@ -171,9 +170,8 @@ public class FixtureHelper {
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
     ObjectNode jsonNode = null;
     String path = generatePath(callerClassName, null, callerMethodName, qualifier, packageOnly);
-    try {
-      File file = new File(ClassLoader.getSystemResource(path).getFile());
-      jsonNode = (ObjectNode) mapper.readTree(file);
+    try (InputStream is = FixtureHelper.class.getClassLoader().getResourceAsStream(path)) {
+      jsonNode = (ObjectNode) mapper.readTree(is);
     } catch (Throwable t) {
       log.debug("Problem loading fixture {} reason {}", path, t.getMessage());
       throw new RuntimeException("Failed to load fixture: " + path);
