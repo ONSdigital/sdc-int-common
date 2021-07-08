@@ -1,7 +1,7 @@
 package uk.gov.ons.ctp.common.error;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -9,8 +9,8 @@ import com.jayway.jsonpath.JsonPath;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /** Test of teh CTP Exception */
 public class CTPExceptionTest {
@@ -22,7 +22,7 @@ public class CTPExceptionTest {
    *
    * @throws Exception oh dear
    */
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     mapper = new ObjectMapper();
     mapper.enable(SerializationFeature.INDENT_OUTPUT);

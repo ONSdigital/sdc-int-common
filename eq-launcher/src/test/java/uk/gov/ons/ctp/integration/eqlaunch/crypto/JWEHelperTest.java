@@ -1,7 +1,7 @@
 package uk.gov.ons.ctp.integration.eqlaunch.crypto;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JOSEObjectType;
@@ -16,7 +16,7 @@ import com.nimbusds.jose.crypto.RSAEncrypter;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.integration.eqlaunch.crypto.JWEHelper.DecryptJwe;
 import uk.gov.ons.ctp.integration.eqlaunch.crypto.JWEHelper.EncryptJwe;

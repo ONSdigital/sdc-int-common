@@ -1,15 +1,15 @@
 package uk.gov.ons.ctp.common.event;
 
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import uk.gov.ons.ctp.common.FixtureHelper;
@@ -20,7 +20,7 @@ import uk.gov.ons.ctp.common.event.EventPublisher.Source;
 import uk.gov.ons.ctp.common.event.model.SurveyLaunchedResponse;
 
 /** EventPublisher tests specific to the scenario in which event persistence is turned off. */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class EventPublisherWithoutPersistanceTest {
 
   @InjectMocks private EventPublisher eventPublisher;
@@ -43,7 +43,7 @@ public class EventPublisherWithoutPersistanceTest {
                   Channel.RH,
                   surveyLaunchedResponse);
             });
-    assertTrue(e.getMessage(), e.getMessage().matches(".* failed to send .*"));
+    assertTrue(e.getMessage().matches(".* failed to send .*"), e.getMessage());
   }
 
   private <T> T loadJson(Class<T[]> clazz) {

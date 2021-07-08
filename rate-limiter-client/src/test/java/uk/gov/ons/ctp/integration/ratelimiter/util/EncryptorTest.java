@@ -1,9 +1,10 @@
 package uk.gov.ons.ctp.integration.ratelimiter.util;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EncryptorTest {
   //
@@ -40,18 +41,18 @@ public class EncryptorTest {
     assertEquals("02380263345", Encryptor.decrypt("crazy777", ENCRYPTED_3));
   }
 
-  @Test(expected = Exception.class)
-  public void shouldRejectDecryptionWithWrongPassword() throws Exception {
-    Encryptor.decrypt("password8", ENCRYPTED_1);
+  @Test
+  public void shouldRejectDecryptionWithWrongPassword() {
+    assertThrows(Exception.class, () -> Encryptor.decrypt("password8", ENCRYPTED_1));
   }
 
-  @Test(expected = Exception.class)
-  public void shouldRejectDecryptionWithBadSource() throws Exception {
-    Encryptor.decrypt("password", "BadEncryptionString");
+  @Test
+  public void shouldRejectDecryptionWithBadSource() {
+    assertThrows(Exception.class, () -> Encryptor.decrypt("password", "BadEncryptionString"));
   }
 
-  @Test(expected = RuntimeException.class)
-  public void shouldRejectEncryptionWithNullPassword() throws Exception {
-    Encryptor.aesEncrypt(null, "123");
+  @Test
+  public void shouldRejectEncryptionWithNullPassword() {
+    assertThrows(RuntimeException.class, () -> Encryptor.aesEncrypt(null, "123"));
   }
 }

@@ -1,8 +1,8 @@
 package uk.gov.ons.ctp.common.cloud;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -26,23 +26,23 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.ons.ctp.common.error.CTPException;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class FirestoreDataStoreTest extends CloudTestBase {
 
   private static FirestoreDataStore firestoreDataStore = new FirestoreDataStore();
 
   @Mock private Firestore firestore;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     ReflectionTestUtils.setField(firestoreDataStore, "firestore", firestore);
   }
@@ -66,10 +66,10 @@ public class FirestoreDataStoreTest extends CloudTestBase {
     try {
       firestoreDataStore.storeObject(TEST_SCHEMA, CASE1.getId(), CASE1);
     } catch (CTPException e) {
-      assertTrue(e.getMessage(), e.getMessage().contains("Failed to create object"));
+      assertTrue(e.getMessage().contains("Failed to create object"), e.getMessage());
       assertTrue(
-          e.getCause().getMessage(),
-          e.getCause().getMessage().contains("fake Firestore exception"));
+          e.getCause().getMessage().contains("fake Firestore exception"),
+          e.getCause().getMessage());
       exceptionCaught = true;
     }
     assertTrue(exceptionCaught);
@@ -98,10 +98,10 @@ public class FirestoreDataStoreTest extends CloudTestBase {
     try {
       firestoreDataStore.storeObject(TEST_SCHEMA, CASE1.getId(), CASE1);
     } catch (DataStoreContentionException e) {
-      assertTrue(e.getMessage(), e.getMessage().contains("contention on schema 'TEST_SCHEMA'"));
+      assertTrue(e.getMessage().contains("contention on schema 'TEST_SCHEMA'"), e.getMessage());
       exceptionCaught = true;
     }
-    assertTrue("Failed to detect datastore contention", exceptionCaught);
+    assertTrue(exceptionCaught, "Failed to detect datastore contention");
   }
 
   @Test
@@ -123,7 +123,7 @@ public class FirestoreDataStoreTest extends CloudTestBase {
     } catch (CTPException e) {
       ctpExceptionCreated = true;
     }
-    assertFalse("Incorrectly diagnoised datastore contention", contentionDetected);
+    assertFalse(contentionDetected, "Incorrectly diagnoised datastore contention");
     assertTrue(ctpExceptionCreated);
   }
 
@@ -162,7 +162,7 @@ public class FirestoreDataStoreTest extends CloudTestBase {
     try {
       firestoreDataStore.retrieveObject(DummyCase.class, TEST_SCHEMA, CASE1.getId());
     } catch (CTPException e) {
-      assertTrue(e.getMessage(), e.getMessage().contains("Firestore returned more than 1"));
+      assertTrue(e.getMessage().contains("Firestore returned more than 1"), e.getMessage());
       exceptionCaught = true;
     }
     assertTrue(exceptionCaught);
@@ -219,10 +219,10 @@ public class FirestoreDataStoreTest extends CloudTestBase {
       String[] searchCriteria = new String[] {"contact", "surname"};
       firestoreDataStore.search(DummyCase.class, TEST_SCHEMA, searchCriteria, "Smith");
     } catch (CTPException e) {
-      assertTrue(e.getMessage(), e.getMessage().contains("Failed to search"));
+      assertTrue(e.getMessage().contains("Failed to search"), e.getMessage());
       assertTrue(
-          e.getCause().getMessage(),
-          e.getCause().getMessage().contains("fake Firestore exception"));
+          e.getCause().getMessage().contains("fake Firestore exception"),
+          e.getCause().getMessage());
       exceptionCaught = true;
     }
     assertTrue(exceptionCaught);
@@ -238,10 +238,10 @@ public class FirestoreDataStoreTest extends CloudTestBase {
       String[] searchCriteria = new String[] {"contact", "surname"};
       firestoreDataStore.search(DummyCase.class, TEST_SCHEMA, searchCriteria, "Smith");
     } catch (CTPException e) {
-      assertTrue(e.getMessage(), e.getMessage().contains("Failed to convert"));
+      assertTrue(e.getMessage().contains("Failed to convert"), e.getMessage());
       assertTrue(
-          e.getCause().getMessage(),
-          e.getCause().getMessage().contains("Could not deserialize object"));
+          e.getCause().getMessage().contains("Could not deserialize object"),
+          e.getCause().getMessage());
       exceptionCaught = true;
     }
     assertTrue(exceptionCaught);
@@ -268,10 +268,10 @@ public class FirestoreDataStoreTest extends CloudTestBase {
     try {
       firestoreDataStore.deleteObject(TEST_SCHEMA, CASE1.getId());
     } catch (CTPException e) {
-      assertTrue(e.getMessage(), e.getMessage().contains("Failed to delete"));
+      assertTrue(e.getMessage().contains("Failed to delete"), e.getMessage());
       assertTrue(
-          e.getCause().getMessage(),
-          e.getCause().getMessage().contains("fake Firestore exception"));
+          e.getCause().getMessage().contains("fake Firestore exception"),
+          e.getCause().getMessage());
       exceptionCaught = true;
     }
     assertTrue(exceptionCaught);
@@ -303,8 +303,8 @@ public class FirestoreDataStoreTest extends CloudTestBase {
 
     Set<String> collectionNames = firestoreDataStore.getCollectionNames();
 
-    assertTrue(collectionNames.toString(), collectionNames.contains("collectionA"));
-    assertTrue(collectionNames.toString(), collectionNames.contains("collectionB"));
+    assertTrue(collectionNames.contains("collectionA"), collectionNames.toString());
+    assertTrue(collectionNames.contains("collectionB"), collectionNames.toString());
     assertEquals(2, collectionNames.size());
   }
 

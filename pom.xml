@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>ons.sdc.int.common</groupId>
   <artifactId>common</artifactId>
@@ -41,6 +43,7 @@
   <properties>
     <springboot.version>2.5.0</springboot.version>
     <java.version>11</java.version>
+    <junit.version>5.7.2</junit.version>
     <jacoco.version>0.8.3</jacoco.version>
     <orika.version>1.5.2</orika.version>
     <surefire.version>3.0.0-M5</surefire.version>
@@ -166,11 +169,11 @@
       </dependency>
 
       <dependency>
-        <groupId>org.testng</groupId>
-        <artifactId>testng</artifactId>
-        <version>6.11</version>
-        <scope>test</scope>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <version>${junit.version}</version>
       </dependency>
+
     </dependencies>
   </dependencyManagement>
 
@@ -265,18 +268,11 @@
           <version>${surefire.version}</version>
           <configuration>
             <argLine>
+              --add-opens java.base/java.lang=ALL-UNNAMED
               --illegal-access=permit
             </argLine>
             <threadCount>1</threadCount>
           </configuration>
-          <!-- REQUIRED for unit tests to run -->
-          <dependencies>
-            <dependency>
-              <groupId>org.apache.maven.surefire</groupId>
-              <artifactId>surefire-junit47</artifactId>
-              <version>${surefire.version}</version>
-            </dependency>
-          </dependencies>
         </plugin>
 
         <plugin>

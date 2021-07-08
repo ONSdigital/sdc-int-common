@@ -1,21 +1,21 @@
 package uk.gov.ons.ctp.common.event;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.ons.ctp.common.event.EventPublisherTestUtil.assertHeader;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import uk.gov.ons.ctp.common.FixtureHelper;
@@ -31,7 +31,7 @@ import uk.gov.ons.ctp.common.event.persistence.FirestoreEventPersistence;
 /**
  * EventPublisher tests specific to failure scenarios when running with event persistence enabled.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class EventPublisherWithPersistenceTest {
 
   @InjectMocks private EventPublisher eventPublisher;
@@ -80,8 +80,8 @@ public class EventPublisherWithPersistenceTest {
                     Channel.RH,
                     surveyLaunchedResponse));
     assertTrue(
-        e.getMessage(),
-        e.getMessage().matches(".* event persistence failed following Rabbit failure"));
+        e.getMessage().matches(".* event persistence failed following Rabbit failure"),
+        e.getMessage());
   }
 
   private <T> T loadJson(Class<T[]> clazz) {

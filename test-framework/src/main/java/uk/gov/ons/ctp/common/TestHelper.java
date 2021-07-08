@@ -1,7 +1,7 @@
 package uk.gov.ons.ctp.common;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -58,7 +58,7 @@ public class TestHelper {
    * @throws AssertionError if the supplied dateTime string is null or in the correct time format.
    */
   public static void validateAsDateTime(String dateTimeAsString) {
-    assertNotNull("datetime cannot be null", dateTimeAsString);
+    assertNotNull(dateTimeAsString, "datetime cannot be null");
 
     String dateTimePattern = DateTimeUtil.DATE_FORMAT_IN_JSON;
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
@@ -76,7 +76,7 @@ public class TestHelper {
    * @throws AssertionError if the string is null or not in UUID format.
    */
   public static void validateAsUUID(String uuidAsString) {
-    assertNotNull("uuid cannot be null", uuidAsString);
+    assertNotNull(uuidAsString, "uuid cannot be null");
 
     try {
       UUID.fromString(uuidAsString);

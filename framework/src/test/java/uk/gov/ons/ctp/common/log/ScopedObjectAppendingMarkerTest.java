@@ -12,7 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.logstash.logback.marker.LogstashMarker;
 import net.logstash.logback.marker.SingleFieldAppendingMarker;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ScopedObjectAppendingMarkerTest {
 

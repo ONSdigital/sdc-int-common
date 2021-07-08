@@ -1,13 +1,13 @@
 package uk.gov.ons.ctp.integration.eqlaunch.service.impl;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.ons.ctp.common.FixtureHelper;
 import uk.gov.ons.ctp.common.domain.Channel;
 import uk.gov.ons.ctp.common.domain.Language;
@@ -288,9 +288,9 @@ public class TestEqLaunchService_payloadCreation {
             accountServiceLogoutUrl);
 
     assertEquals(
-        "expectedMap should equal the cleaned map from the complex call",
         expectedMap,
-        cleanPayloadMap(payloadMapFromComplexCall));
+        cleanPayloadMap(payloadMapFromComplexCall),
+        "expectedMap should equal the cleaned map from the complex call");
 
     EqLaunchData launchData =
         build(coreLaunchData, caseContainer, userId, accountServiceUrl, accountServiceLogoutUrl);
@@ -308,9 +308,9 @@ public class TestEqLaunchService_payloadCreation {
     Map<String, Object> payloadMapFromSimpleCall = mapper.readValue(decrypted, typeRef);
 
     assertEquals(
-        "expectedMap should equal the cleaned map from the simple call",
         expectedMap,
-        cleanPayloadMap(payloadMapFromSimpleCall));
+        cleanPayloadMap(payloadMapFromSimpleCall),
+        "expectedMap should equal the cleaned map from the simple call");
   }
 
   /**
@@ -367,9 +367,9 @@ public class TestEqLaunchService_payloadCreation {
         eqLaunchService.createPayloadMap(launchData, null, null, "flusher", null, null);
 
     assertEquals(
-        "expectedMap should equal the cleaned map from the complex call",
         expectedMap,
-        cleanPayloadMap(payloadMapFromComplexCall));
+        cleanPayloadMap(payloadMapFromComplexCall),
+        "expectedMap should equal the cleaned map from the complex call");
 
     // Run code under test to get encrypted payload string
     String payloadStringFromSimpleCall = eqLaunchService.getEqFlushLaunchJwe(launchData);
@@ -384,9 +384,9 @@ public class TestEqLaunchService_payloadCreation {
     Map<String, Object> payloadMapFromSimpleCall = mapper.readValue(decrypted, typeRef);
 
     assertEquals(
-        "expectedMap should equal the cleaned map from the simple call",
         expectedMap,
-        cleanPayloadMap(payloadMapFromSimpleCall));
+        cleanPayloadMap(payloadMapFromSimpleCall),
+        "expectedMap should equal the cleaned map from the simple call");
   }
 
   @Test
@@ -427,10 +427,7 @@ public class TestEqLaunchService_payloadCreation {
         eqLaunchService.createPayloadMap(
             coreLaunchData, caseData, agentId, null, null, accountServiceLogoutUrl);
 
-    assertEquals(
-        "expectedMap should equal the cleaned map from the complex call",
-        expectedMap,
-        cleanPayloadMap(payloadMapFromComplexCall));
+    assertEquals(expectedMap, cleanPayloadMap(payloadMapFromComplexCall));
 
     EqLaunchData launchData =
         build(coreLaunchData, caseData, agentId, null, accountServiceLogoutUrl);
@@ -447,10 +444,7 @@ public class TestEqLaunchService_payloadCreation {
         new TypeReference<HashMap<String, Object>>() {};
     Map<String, Object> payloadMapFromSimpleCall = mapper.readValue(decrypted, typeRef);
 
-    assertEquals(
-        "expectedMap should equal the cleaned map from the simple call",
-        expectedMap,
-        cleanPayloadMap(payloadMapFromSimpleCall));
+    assertEquals(expectedMap, cleanPayloadMap(payloadMapFromSimpleCall));
   }
 
   @Test
@@ -487,10 +481,7 @@ public class TestEqLaunchService_payloadCreation {
         eqLaunchService.createPayloadMap(
             coreLaunchData, caseData, agentId, null, null, accountServiceLogoutUrl);
 
-    assertEquals(
-        "expectedMap should equal the cleaned map from the complex call",
-        expectedMap,
-        cleanPayloadMap(payloadMapFromComplexCall));
+    assertEquals(expectedMap, cleanPayloadMap(payloadMapFromComplexCall));
   }
 
   private Map<String, Object> cleanPayloadMap(Map<String, Object> payloadMap) {

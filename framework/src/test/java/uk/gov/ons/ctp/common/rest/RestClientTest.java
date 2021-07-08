@@ -1,10 +1,10 @@
 package uk.gov.ons.ctp.common.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withNoContent;
@@ -13,7 +13,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -110,7 +110,7 @@ public class RestClientTest {
             });
 
     mockServer.verify();
-    assertTrue(exception.getMessage(), exception.getMessage().contains("No response"));
+    assertTrue(exception.getMessage().contains("No response"), exception.getMessage());
   }
 
   /**
@@ -118,7 +118,7 @@ public class RestClientTest {
    *
    * @throws CTPException
    */
-  @Test(expected = ResponseStatusException.class)
+  @Test
   public void testGetTimeoutURLInvalid() throws CTPException {
     RestClientConfig config =
         RestClientConfig.builder()
@@ -129,7 +129,9 @@ public class RestClientTest {
             .connectionManagerMaxTotal(11)
             .build();
     RestClient restClient = new RestClient(config);
-    restClient.getResource("/hairColor/blue/shoeSize/10", FakeDTO.class);
+    assertThrows(
+        ResponseStatusException.class,
+        () -> restClient.getResource("/hairColor/blue/shoeSize/10", FakeDTO.class));
   }
 
   /**

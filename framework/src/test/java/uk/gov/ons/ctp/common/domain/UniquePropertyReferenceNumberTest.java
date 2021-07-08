@@ -1,11 +1,12 @@
 package uk.gov.ons.ctp.common.domain;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.SneakyThrows;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class UniquePropertyReferenceNumberTest {
   private static final String UPRN_MAX = "9999999999999";
@@ -31,9 +32,9 @@ public class UniquePropertyReferenceNumberTest {
     final UniquePropertyReferenceNumber uprn =
         deserialise(UPRN_MAX, UniquePropertyReferenceNumber.class);
     assertEquals(
-        "resulting UPRN should match expected value: " + UPRN_MAX,
         (Long) A_UPRN.getValue(),
-        Long.valueOf(uprn.getValue()));
+        Long.valueOf(uprn.getValue()),
+        "resulting UPRN should match expected value: " + UPRN_MAX);
   }
 
   private ObjectMapper getObjectMapper() {
@@ -61,19 +62,23 @@ public class UniquePropertyReferenceNumberTest {
     assertEquals(ANOTHER_UPRN, deser.getAnotherUprn());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testUprnMinFail() {
-    new UniquePropertyReferenceNumber(UPRN_MIN_FAIL);
+    assertThrows(
+        IllegalArgumentException.class, () -> new UniquePropertyReferenceNumber(UPRN_MIN_FAIL));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testUprnMaxFail() {
-    new UniquePropertyReferenceNumber(UPRN_MAX_FAIL);
+    assertThrows(
+        IllegalArgumentException.class, () -> new UniquePropertyReferenceNumber(UPRN_MAX_FAIL));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testUprnConversionFail() {
-    new UniquePropertyReferenceNumber(UPRN_CONVERSION_FAIL);
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new UniquePropertyReferenceNumber(UPRN_CONVERSION_FAIL));
   }
 
   @Test

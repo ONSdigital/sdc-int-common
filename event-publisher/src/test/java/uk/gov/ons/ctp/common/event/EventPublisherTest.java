@@ -2,11 +2,12 @@ package uk.gov.ons.ctp.common.event;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -15,15 +16,15 @@ import static uk.gov.ons.ctp.common.event.EventPublisherTestUtil.assertHeader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Date;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.ons.ctp.common.FixtureHelper;
@@ -62,7 +63,7 @@ import uk.gov.ons.ctp.common.event.persistence.EventBackupData;
 import uk.gov.ons.ctp.common.event.persistence.FirestoreEventPersistence;
 import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class EventPublisherTest {
 
   @InjectMocks private EventPublisher eventPublisher;
@@ -87,7 +88,7 @@ public class EventPublisherTest {
 
   private Date startOfTestDateTime;
 
-  @Before
+  @BeforeEach
   public void setup() {
     this.startOfTestDateTime = new Date();
   }
@@ -372,12 +373,18 @@ public class EventPublisherTest {
     assertSendUac(EventType.UAC_UPDATED);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void shouldRejectSendForMismatchingPayload() {
     Feedback feedbackResponse = loadJson(Feedback[].class);
 
-    eventPublisher.sendEvent(
-        EventType.SAMPLE_UNIT_VALIDATED, Source.RESPONDENT_HOME, Channel.RH, feedbackResponse);
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            eventPublisher.sendEvent(
+                EventType.SAMPLE_UNIT_VALIDATED,
+                Source.RESPONDENT_HOME,
+                Channel.RH,
+                feedbackResponse));
   }
 
   // -- replay send backup event tests ...
@@ -526,19 +533,19 @@ public class EventPublisherTest {
     verifyEventSent(ev, questionnaireLinkedEventCaptor.getValue());
   }
 
-  @Test(expected = UnsupportedOperationException.class)
-  public void shouldRejectEventWithoutPayload() throws Exception {
+  @Test
+  public void shouldRejectEventWithoutPayload() {
     QuestionnaireLinkedEvent ev = aQuestionnaireLinkedEvent();
     ev.getEvent().setType(EventType.SAMPLE_UNIT_VALIDATED);
-    sendBackupEvent(ev);
+    assertThrows(UnsupportedOperationException.class, () -> sendBackupEvent(ev));
   }
 
-  @Test(expected = EventPublishException.class)
-  public void shouldRejectMalformedEventBackupJson() throws Exception {
+  @Test
+  public void shouldRejectMalformedEventBackupJson() {
     QuestionnaireLinkedEvent ev = aQuestionnaireLinkedEvent();
     EventBackupData data = createEvent(ev);
     data.setEvent("xx" + data.getEvent()); // create broken Json
-    eventPublisher.sendEvent(data);
+    assertThrows(EventPublishException.class, () -> eventPublisher.sendEvent(data));
   }
 
   // --- helpers

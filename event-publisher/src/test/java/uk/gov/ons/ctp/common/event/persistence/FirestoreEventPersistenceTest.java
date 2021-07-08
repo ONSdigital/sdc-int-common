@@ -1,20 +1,20 @@
 package uk.gov.ons.ctp.common.event.persistence;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.ons.ctp.common.FixtureHelper;
 import uk.gov.ons.ctp.common.cloud.RetryableCloudDataStore;
@@ -22,7 +22,7 @@ import uk.gov.ons.ctp.common.event.EventPublisher.EventType;
 import uk.gov.ons.ctp.common.event.model.FulfilmentRequestedEvent;
 import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class FirestoreEventPersistenceTest {
 
   private ObjectMapper objectMapper = new CustomObjectMapper();
@@ -31,7 +31,7 @@ public class FirestoreEventPersistenceTest {
 
   @Mock RetryableCloudDataStore cloudDataStore;
 
-  @Before
+  @BeforeEach
   public void setup() {
     ReflectionTestUtils.setField(persistence, "gcpProject", "testing");
     ReflectionTestUtils.setField(persistence, "eventBackupSchemaName", "backupcollection");
@@ -61,11 +61,11 @@ public class FirestoreEventPersistenceTest {
 
     EventBackupData storedData = eventBackupCapture.getValue();
     assertEquals(EventType.RESPONDENT_AUTHENTICATED, storedData.getEventType());
-    assertTrue(storedData.toString(), storedData.getMessageFailureDateTimeInMillis() >= startTime);
+    assertTrue(storedData.getMessageFailureDateTimeInMillis() >= startTime, storedData.toString());
     assertTrue(
-        storedData.toString(),
-        storedData.getMessageFailureDateTimeInMillis() <= System.currentTimeMillis());
-    assertNull(storedData.toString(), storedData.getMessageSentDateTimeInMillis());
+        storedData.getMessageFailureDateTimeInMillis() <= System.currentTimeMillis(),
+        storedData.toString());
+    assertNull(storedData.getMessageSentDateTimeInMillis(), storedData.toString());
     assertEquals(expectedTransactionId, storedData.getId());
 
     String eventJson = storedData.getEvent();

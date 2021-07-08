@@ -3,7 +3,6 @@ package uk.gov.ons.ctp.integration.ratelimiter.client;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -12,10 +11,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
@@ -41,7 +41,8 @@ public abstract class RateLimiterClientTestBase {
   Domain domain = RateLimiterClient.Domain.RH;
 
   private void simulateCircuitBreaker() {
-    doAnswer(
+    Mockito.lenient()
+        .doAnswer(
             new Answer<Object>() {
               @SuppressWarnings("unchecked")
               @Override
@@ -65,7 +66,7 @@ public abstract class RateLimiterClientTestBase {
         .run(any(), any());
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {
     rateLimiterClient = new RateLimiterClient(restClient, circuitBreaker, ENCRYPT_PASSWORD);
     simulateCircuitBreaker();
