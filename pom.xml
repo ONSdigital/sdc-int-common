@@ -6,7 +6,7 @@
   <groupId>ons.sdc.int.common</groupId>
   <artifactId>common</artifactId>
   <!-- version auto updated by Travis mvn release -->
-  <version>1.0.18-SNAPSHOT</version>
+  <version>1.0.19-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>SDC : Integrations Common</name>
   <description>Parent project with common modules for SDC Integrations application projects</description>
