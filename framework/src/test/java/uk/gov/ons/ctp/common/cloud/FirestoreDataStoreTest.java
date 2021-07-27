@@ -38,7 +38,7 @@ import uk.gov.ons.ctp.common.error.CTPException;
 @ExtendWith(MockitoExtension.class)
 public class FirestoreDataStoreTest extends CloudTestBase {
 
-  private static FirestoreDataStore firestoreDataStore = new FirestoreDataStore();
+  private FirestoreDataStore firestoreDataStore = new FirestoreDataStore();
 
   @Mock private Firestore firestore;
 

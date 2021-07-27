@@ -3,6 +3,7 @@ package uk.gov.ons.ctp.common.cloud;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -10,6 +11,7 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.ResourceLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,6 +21,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
+import uk.gov.ons.ctp.common.util.LockKey;
 
 @EnableRetry
 @EnableConfigurationProperties
@@ -32,6 +35,7 @@ import uk.gov.ons.ctp.common.error.CTPException.Fault;
       "cloud-storage.backoff.max=300",
       "cloud-storage.backoff.max-attempts=3",
     })
+@ResourceLock(value = LockKey.SPRING_TEST, mode = READ_WRITE)
 public class RetryableCloudDataStoreSpringTest extends CloudTestBase {
 
   @MockBean private CloudDataStore cloudDataStore;
