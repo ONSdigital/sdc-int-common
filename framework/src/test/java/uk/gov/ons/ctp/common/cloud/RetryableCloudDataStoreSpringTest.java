@@ -21,6 +21,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
+import uk.gov.ons.ctp.common.util.LockKey;
 
 @EnableRetry
 @EnableConfigurationProperties
@@ -34,7 +35,7 @@ import uk.gov.ons.ctp.common.error.CTPException.Fault;
       "cloud-storage.backoff.max=300",
       "cloud-storage.backoff.max-attempts=3",
     })
-@ResourceLock(value = "RetryableCloudDataStoreSpringTest", mode = READ_WRITE)
+@ResourceLock(value = LockKey.SPRING_TEST, mode = READ_WRITE)
 public class RetryableCloudDataStoreSpringTest extends CloudTestBase {
 
   @MockBean private CloudDataStore cloudDataStore;

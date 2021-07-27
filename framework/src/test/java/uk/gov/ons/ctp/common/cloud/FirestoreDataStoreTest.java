@@ -3,7 +3,6 @@ package uk.gov.ons.ctp.common.cloud;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -30,7 +29,6 @@ import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -38,10 +36,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.ons.ctp.common.error.CTPException;
 
 @ExtendWith(MockitoExtension.class)
-@ResourceLock(value = "FirestoreDataStoreTest", mode = READ_WRITE)
 public class FirestoreDataStoreTest extends CloudTestBase {
 
-  private static FirestoreDataStore firestoreDataStore = new FirestoreDataStore();
+  private FirestoreDataStore firestoreDataStore = new FirestoreDataStore();
 
   @Mock private Firestore firestore;
 
