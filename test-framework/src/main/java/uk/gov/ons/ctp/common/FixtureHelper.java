@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
 
 /** Loads JSON representation of test DTOS for unit tests */
 @Slf4j
@@ -137,7 +138,7 @@ public class FixtureHelper {
       final String qualifier,
       final boolean packageOnly) {
     List<T> dummies = null;
-    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = new CustomObjectMapper();
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
     String clazzName = clazz.getSimpleName().replaceAll("[\\[\\]]", "");
     String path =
@@ -166,7 +167,7 @@ public class FixtureHelper {
       final String callerMethodName,
       final String qualifier,
       final boolean packageOnly) {
-    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = new CustomObjectMapper();
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
     ObjectNode jsonNode = null;
     String path = generatePath(callerClassName, null, callerMethodName, qualifier, packageOnly);

@@ -1,12 +1,15 @@
 package uk.gov.ons.ctp.integration.common.product;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
 
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import uk.gov.ons.ctp.common.utility.ParallelTestLocks;
 import uk.gov.ons.ctp.integration.common.product.model.Product;
 import uk.gov.ons.ctp.integration.common.product.model.Product.CaseType;
 import uk.gov.ons.ctp.integration.common.product.model.Product.DeliveryChannel;
@@ -20,6 +23,7 @@ import uk.gov.ons.ctp.integration.common.product.model.Product.RequestChannel;
  *
  * @author philwhiles
  */
+@ResourceLock(value = ParallelTestLocks.SPRING_TEST, mode = READ_WRITE)
 @ContextConfiguration(classes = {ProductReference.class})
 public abstract class ProductReferenceTest {
 
