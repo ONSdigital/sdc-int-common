@@ -252,8 +252,7 @@
                 <goal>check</goal>
               </goals>
               <configuration>
-<!--                <configLocation>https://raw.githubusercontent.com/ONSdigital/sdc-int-common/main/standards/ons-checkstyle-config.xml</configLocation>-->
-                <configLocation>/Users/wardlk/Development/int/sdc-int-common/standards/ons-checkstyle-config.xml</configLocation>
+                <configLocation>https://raw.githubusercontent.com/ONSdigital/sdc-int-common/main/standards/ons-checkstyle-config.xml</configLocation>
                 <encoding>UTF-8</encoding>
                 <consoleOutput>true</consoleOutput>
                 <violationSeverity>info</violationSeverity>
