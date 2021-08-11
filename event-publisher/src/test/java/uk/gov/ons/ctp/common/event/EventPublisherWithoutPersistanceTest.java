@@ -10,8 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.amqp.AmqpException;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import uk.gov.ons.ctp.common.FixtureHelper;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.event.EventPublisher.Channel;
@@ -24,14 +22,13 @@ import uk.gov.ons.ctp.common.event.model.SurveyLaunchedResponse;
 public class EventPublisherWithoutPersistanceTest {
 
   @InjectMocks private EventPublisher eventPublisher;
-  @Mock private RabbitTemplate template;
-  @Mock private SpringRabbitEventSender sender;
+  @Mock private EventSender sender;
 
   @Test
   public void eventSendingFailsWithException() throws CTPException {
     SurveyLaunchedResponse surveyLaunchedResponse = loadJson(SurveyLaunchedResponse[].class);
 
-    Mockito.doThrow(new AmqpException("Failed to send")).when(sender).sendEvent(any(), any());
+    Mockito.doThrow(new RuntimeException("Failed to send")).when(sender).sendEvent(any(), any());
 
     Exception e =
         assertThrows(

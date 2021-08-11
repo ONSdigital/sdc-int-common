@@ -21,7 +21,6 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import uk.gov.ons.ctp.common.FixtureHelper;
 import uk.gov.ons.ctp.common.event.EventPublisher.Channel;
@@ -37,8 +36,7 @@ import uk.gov.ons.ctp.common.event.persistence.FirestoreEventPersistence;
 public class EventPublisherWithCircuitBreakerTest {
 
   @InjectMocks private EventPublisher eventPublisher;
-  @Mock private RabbitTemplate template;
-  @Mock private SpringRabbitEventSender sender;
+  @Mock private EventSender sender;
   @Mock private FirestoreEventPersistence eventPersistence;
   @Mock private CircuitBreaker circuitBreaker;
 

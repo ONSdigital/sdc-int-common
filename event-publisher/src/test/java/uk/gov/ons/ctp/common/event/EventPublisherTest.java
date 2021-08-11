@@ -25,7 +25,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.ons.ctp.common.FixtureHelper;
 import uk.gov.ons.ctp.common.event.EventPublisher.Channel;
@@ -67,8 +66,7 @@ import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
 public class EventPublisherTest {
 
   @InjectMocks private EventPublisher eventPublisher;
-  @Mock private RabbitTemplate template;
-  @Mock private SpringRabbitEventSender sender;
+  @Mock private EventSender sender;
   @Mock private FirestoreEventPersistence eventPersistence;
 
   ObjectMapper objectMapper = new CustomObjectMapper();
