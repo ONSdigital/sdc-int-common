@@ -12,10 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.ons.ctp.common.FixtureHelper;
 import uk.gov.ons.ctp.common.error.CTPException;
-import uk.gov.ons.ctp.common.event.EventPublisher.Channel;
-import uk.gov.ons.ctp.common.event.EventPublisher.EventType;
-import uk.gov.ons.ctp.common.event.EventPublisher.Source;
-import uk.gov.ons.ctp.common.event.model.SurveyLaunchedResponse;
+import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
 
 /** EventPublisher tests specific to the scenario in which event persistence is turned off. */
 @ExtendWith(MockitoExtension.class)
@@ -26,7 +23,7 @@ public class EventPublisherWithoutPersistanceTest {
 
   @Test
   public void eventSendingFailsWithException() throws CTPException {
-    SurveyLaunchedResponse surveyLaunchedResponse = loadJson(SurveyLaunchedResponse[].class);
+    SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
 
     Mockito.doThrow(new RuntimeException("Failed to send")).when(sender).sendEvent(any(), any());
 
@@ -35,7 +32,7 @@ public class EventPublisherWithoutPersistanceTest {
             Exception.class,
             () -> {
               eventPublisher.sendEvent(
-                  EventType.SURVEY_LAUNCHED,
+                  EventType.SURVEY_LAUNCH,
                   Source.RESPONDENT_HOME,
                   Channel.RH,
                   surveyLaunchedResponse);

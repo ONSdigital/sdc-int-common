@@ -23,12 +23,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import uk.gov.ons.ctp.common.FixtureHelper;
-import uk.gov.ons.ctp.common.event.EventPublisher.Channel;
-import uk.gov.ons.ctp.common.event.EventPublisher.EventType;
-import uk.gov.ons.ctp.common.event.EventPublisher.RoutingKey;
-import uk.gov.ons.ctp.common.event.EventPublisher.Source;
-import uk.gov.ons.ctp.common.event.model.SurveyLaunchedEvent;
-import uk.gov.ons.ctp.common.event.model.SurveyLaunchedResponse;
+import uk.gov.ons.ctp.common.event.model.SurveyLaunchEvent;
+import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
 import uk.gov.ons.ctp.common.event.persistence.FirestoreEventPersistence;
 
 /** EventPublisher tests with circuit breaker */
@@ -40,7 +36,7 @@ public class EventPublisherWithCircuitBreakerTest {
   @Mock private FirestoreEventPersistence eventPersistence;
   @Mock private CircuitBreaker circuitBreaker;
 
-  @Captor private ArgumentCaptor<SurveyLaunchedEvent> surveyLaunchedEventCaptor;
+  @Captor private ArgumentCaptor<SurveyLaunchEvent> surveyLaunchedEventCaptor;
 
   private void mockCircuitBreakerRun() {
     doAnswer(
@@ -82,21 +78,20 @@ public class EventPublisherWithCircuitBreakerTest {
   @Test
   public void shouldSendEventThroughCircuitBreaker() throws Exception {
     mockCircuitBreakerRun();
-    SurveyLaunchedResponse surveyLaunchedResponse = loadJson(SurveyLaunchedResponse[].class);
+    SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
 
     String transactionId =
         eventPublisher.sendEvent(
-            EventType.SURVEY_LAUNCHED, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
+            EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.SURVEY_LAUNCHED);
+    RoutingKey routingKey = RoutingKey.forType(EventType.SURVEY_LAUNCH);
     verify(sender, times(1)).sendEvent(eq(routingKey), surveyLaunchedEventCaptor.capture());
-    SurveyLaunchedEvent event = surveyLaunchedEventCaptor.getValue();
-    assertHeader(
-        event, transactionId, EventType.SURVEY_LAUNCHED, Source.RESPONDENT_HOME, Channel.RH);
+    SurveyLaunchEvent event = surveyLaunchedEventCaptor.getValue();
+    assertHeader(event, transactionId, EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
     assertEquals(surveyLaunchedResponse, event.getPayload().getResponse());
 
     // since it succeeded, the event is NOT sent to firestore
-    verify(eventPersistence, never()).persistEvent(eq(EventType.SURVEY_LAUNCHED), any());
+    verify(eventPersistence, never()).persistEvent(eq(EventType.SURVEY_LAUNCH), any());
   }
 
   @Test
@@ -104,16 +99,16 @@ public class EventPublisherWithCircuitBreakerTest {
     mockCircuitBreakerFail();
     Mockito.doThrow(new RuntimeException("rabbit fail")).when(sender).sendEvent(any(), any());
 
-    SurveyLaunchedResponse surveyLaunchedResponse = loadJson(SurveyLaunchedResponse[].class);
+    SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
 
     eventPublisher.sendEvent(
-        EventType.SURVEY_LAUNCHED, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
+        EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.SURVEY_LAUNCHED);
+    RoutingKey routingKey = RoutingKey.forType(EventType.SURVEY_LAUNCH);
     verify(sender).sendEvent(eq(routingKey), surveyLaunchedEventCaptor.capture());
 
     // since it failed, the event is sent to firestore
-    verify(eventPersistence).persistEvent(eq(EventType.SURVEY_LAUNCHED), any());
+    verify(eventPersistence).persistEvent(eq(EventType.SURVEY_LAUNCH), any());
   }
 
   private <T> T loadJson(Class<T[]> clazz) {

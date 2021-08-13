@@ -9,7 +9,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.springframework.cloud.gcp.pubsub.core.PubSubTemplate;
 import org.springframework.util.concurrent.ListenableFuture;
-import uk.gov.ons.ctp.common.event.EventPublisher.RoutingKey;
 import uk.gov.ons.ctp.common.event.model.GenericEvent;
 import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
 
@@ -26,7 +25,7 @@ public class PubSubEventSender implements EventSender {
   @Override
   public void sendEvent(RoutingKey routingKey, GenericEvent genericEvent) {
     String body = convertObjectToJson(genericEvent);
-    String topic = routingKey.getKey(); // FIXME change to getTopic()
+    String topic = routingKey.getTopic();
 
     PubsubMessage pubsubMessage =
         PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8(body)).build();
