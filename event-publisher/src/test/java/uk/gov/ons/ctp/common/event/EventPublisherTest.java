@@ -91,7 +91,7 @@ public class EventPublisherTest {
         eventPublisher.sendEvent(
             EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.SURVEY_LAUNCH);
+    EventTopic routingKey = EventTopic.forType(EventType.SURVEY_LAUNCH);
     verify(sender, times(1)).sendEvent(eq(routingKey), surveyLaunchedEventCaptor.capture());
     SurveyLaunchEvent event = surveyLaunchedEventCaptor.getValue();
     assertHeader(event, transactionId, EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
@@ -110,7 +110,7 @@ public class EventPublisherTest {
             Channel.RH,
             respondentAuthenticatedResponse);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.UAC_AUTHENTICATE);
+    EventTopic routingKey = EventTopic.forType(EventType.UAC_AUTHENTICATE);
     verify(sender, times(1))
         .sendEvent(eq(routingKey), respondentAuthenticatedEventCaptor.capture());
     UacAuthenticateEvent event = respondentAuthenticatedEventCaptor.getValue();
@@ -128,7 +128,7 @@ public class EventPublisherTest {
         eventPublisher.sendEvent(
             EventType.FULFILMENT, Source.CONTACT_CENTRE_API, Channel.CC, fulfilmentRequest);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.FULFILMENT);
+    EventTopic routingKey = EventTopic.forType(EventType.FULFILMENT);
     verify(sender, times(1)).sendEvent(eq(routingKey), fulfilmentRequestedEventCaptor.capture());
     FulfilmentEvent event = fulfilmentRequestedEventCaptor.getValue();
 
@@ -144,7 +144,7 @@ public class EventPublisherTest {
         eventPublisher.sendEvent(
             EventType.REFUSAL, Source.CONTACT_CENTRE_API, Channel.CC, respondentRefusalDetails);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.REFUSAL);
+    EventTopic routingKey = EventTopic.forType(EventType.REFUSAL);
     verify(sender, times(1)).sendEvent(eq(routingKey), respondentRefusalEventCaptor.capture());
     RefusalEvent event = respondentRefusalEventCaptor.getValue();
 
@@ -178,7 +178,7 @@ public class EventPublisherTest {
     String transactionId =
         eventPublisher.sendEvent(type, Source.CONTACT_CENTRE_API, Channel.CC, payload);
 
-    RoutingKey routingKey = RoutingKey.forType(type);
+    EventTopic routingKey = EventTopic.forType(type);
     verify(sender).sendEvent(eq(routingKey), caseEventCaptor.capture());
     CaseEvent event = caseEventCaptor.getValue();
 
@@ -197,7 +197,7 @@ public class EventPublisherTest {
     String transactionId =
         eventPublisher.sendEvent(type, Source.CONTACT_CENTRE_API, Channel.CC, payload);
 
-    RoutingKey routingKey = RoutingKey.forType(type);
+    EventTopic routingKey = EventTopic.forType(type);
     verify(sender).sendEvent(eq(routingKey), uacEventCaptor.capture());
     UacEvent event = uacEventCaptor.getValue();
 
@@ -228,7 +228,7 @@ public class EventPublisherTest {
     FulfilmentEvent ev = aFulfilmentRequestedEvent();
     sendBackupEvent(ev);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.FULFILMENT);
+    EventTopic routingKey = EventTopic.forType(EventType.FULFILMENT);
     verify(sender).sendEvent(eq(routingKey), fulfilmentRequestedEventCaptor.capture());
     verifyEventSent(ev, fulfilmentRequestedEventCaptor.getValue());
   }
@@ -238,7 +238,7 @@ public class EventPublisherTest {
     UacAuthenticateEvent ev = aRespondentAuthenticatedEvent();
     sendBackupEvent(ev);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.UAC_AUTHENTICATE);
+    EventTopic routingKey = EventTopic.forType(EventType.UAC_AUTHENTICATE);
     verify(sender).sendEvent(eq(routingKey), respondentAuthenticatedEventCaptor.capture());
     verifyEventSent(ev, respondentAuthenticatedEventCaptor.getValue());
   }
@@ -248,7 +248,7 @@ public class EventPublisherTest {
     RefusalEvent ev = aRefusalEvent();
     sendBackupEvent(ev);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.REFUSAL);
+    EventTopic routingKey = EventTopic.forType(EventType.REFUSAL);
     verify(sender).sendEvent(eq(routingKey), respondentRefusalEventCaptor.capture());
     verifyEventSent(ev, respondentRefusalEventCaptor.getValue());
   }
@@ -259,7 +259,7 @@ public class EventPublisherTest {
     ev.getEvent().setType(EventType.UAC_UPDATE);
     sendBackupEvent(ev);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.UAC_UPDATE);
+    EventTopic routingKey = EventTopic.forType(EventType.UAC_UPDATE);
     verify(sender).sendEvent(eq(routingKey), uacEventCaptor.capture());
     verifyEventSent(ev, uacEventCaptor.getValue());
   }
@@ -269,7 +269,7 @@ public class EventPublisherTest {
     SurveyLaunchEvent ev = aSurveyLaunchedEvent();
     sendBackupEvent(ev);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.SURVEY_LAUNCH);
+    EventTopic routingKey = EventTopic.forType(EventType.SURVEY_LAUNCH);
     verify(sender).sendEvent(eq(routingKey), surveyLaunchedEventCaptor.capture());
     verifyEventSent(ev, surveyLaunchedEventCaptor.getValue());
   }
@@ -280,7 +280,7 @@ public class EventPublisherTest {
     ev.getEvent().setType(EventType.CASE_UPDATE);
     sendBackupEvent(ev);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.CASE_UPDATE);
+    EventTopic routingKey = EventTopic.forType(EventType.CASE_UPDATE);
     verify(sender).sendEvent(eq(routingKey), caseEventCaptor.capture());
     verifyEventSent(ev, caseEventCaptor.getValue());
   }

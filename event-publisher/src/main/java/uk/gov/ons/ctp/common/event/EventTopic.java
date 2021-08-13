@@ -3,7 +3,7 @@ package uk.gov.ons.ctp.common.event;
 import lombok.Getter;
 
 @Getter
-public enum RoutingKey {
+public enum EventTopic {
   FULFILMENT("event_fulfilment", EventType.FULFILMENT),
   UAC_AUTHENTICATE("event_uac-authenticate", EventType.UAC_AUTHENTICATE),
   SURVEY_LAUNCH("event_survey-launch", EventType.SURVEY_LAUNCH),
@@ -14,13 +14,13 @@ public enum RoutingKey {
   private String topic;
   private EventType type;
 
-  private RoutingKey(String topic, EventType type) {
+  private EventTopic(String topic, EventType type) {
     this.topic = topic;
     this.type = type;
   }
 
-  public static RoutingKey forType(EventType type) {
-    for (RoutingKey routingKey : values()) {
+  public static EventTopic forType(EventType type) {
+    for (EventTopic routingKey : values()) {
       if (routingKey.type == type) {
         return routingKey;
       }

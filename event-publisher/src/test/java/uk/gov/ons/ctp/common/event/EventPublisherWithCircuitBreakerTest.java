@@ -84,7 +84,7 @@ public class EventPublisherWithCircuitBreakerTest {
         eventPublisher.sendEvent(
             EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.SURVEY_LAUNCH);
+    EventTopic routingKey = EventTopic.forType(EventType.SURVEY_LAUNCH);
     verify(sender, times(1)).sendEvent(eq(routingKey), surveyLaunchedEventCaptor.capture());
     SurveyLaunchEvent event = surveyLaunchedEventCaptor.getValue();
     assertHeader(event, transactionId, EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
@@ -104,7 +104,7 @@ public class EventPublisherWithCircuitBreakerTest {
     eventPublisher.sendEvent(
         EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.SURVEY_LAUNCH);
+    EventTopic routingKey = EventTopic.forType(EventType.SURVEY_LAUNCH);
     verify(sender).sendEvent(eq(routingKey), surveyLaunchedEventCaptor.capture());
 
     // since it failed, the event is sent to firestore

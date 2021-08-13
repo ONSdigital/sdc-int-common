@@ -23,7 +23,7 @@ public class PubSubEventSender implements EventSender {
   }
 
   @Override
-  public void sendEvent(RoutingKey routingKey, GenericEvent genericEvent) {
+  public void sendEvent(EventTopic routingKey, GenericEvent genericEvent) {
     String body = convertObjectToJson(genericEvent);
     String topic = routingKey.getTopic();
 

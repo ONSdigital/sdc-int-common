@@ -126,7 +126,7 @@ public class EventPublisher {
       throw new IllegalArgumentException(errorMessage);
     }
 
-    RoutingKey routingKey = RoutingKey.forType(eventType);
+    EventTopic routingKey = EventTopic.forType(eventType);
     if (routingKey == null) {
       log.error("Routing key for eventType not configured", kv("eventType", eventType));
       String errorMessage = "Routing key for eventType '" + eventType + "' not configured";
@@ -177,7 +177,7 @@ public class EventPublisher {
     return genericEvent.getEvent().getTransactionId();
   }
 
-  private void sendToRabbit(RoutingKey routingKey, GenericEvent genericEvent) {
+  private void sendToRabbit(EventTopic routingKey, GenericEvent genericEvent) {
     if (circuitBreaker == null) {
       sendToRabbit(routingKey, genericEvent, "");
     } else {
@@ -198,7 +198,7 @@ public class EventPublisher {
   }
 
   private void sendToRabbit(
-      RoutingKey routingKey, GenericEvent genericEvent, String loggingMsgSuffix) {
+      EventTopic routingKey, GenericEvent genericEvent, String loggingMsgSuffix) {
     EventType eventType = genericEvent.getEvent().getType();
 
     log.info(
