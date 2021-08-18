@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import uk.gov.ons.ctp.common.domain.Channel;
+import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.event.model.GenericEvent;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

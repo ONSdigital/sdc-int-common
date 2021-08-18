@@ -23,6 +23,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import uk.gov.ons.ctp.common.FixtureHelper;
+import uk.gov.ons.ctp.common.domain.Channel;
+import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.event.model.SurveyLaunchEvent;
 import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
 import uk.gov.ons.ctp.common.event.persistence.FirestoreEventPersistence;

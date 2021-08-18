@@ -6,9 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.gov.ons.ctp.common.event.Channel;
+import uk.gov.ons.ctp.common.domain.Channel;
+import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.event.EventType;
-import uk.gov.ons.ctp.common.event.Source;
 import uk.gov.ons.ctp.common.jackson.CustomDateSerialiser;
 
 @Data
