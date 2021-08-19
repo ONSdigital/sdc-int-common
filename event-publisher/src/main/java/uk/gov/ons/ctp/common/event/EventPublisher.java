@@ -2,26 +2,13 @@ package uk.gov.ons.ctp.common.event;
 
 import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
 
-import java.util.Arrays;
-import java.util.List;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import uk.gov.ons.ctp.common.domain.Channel;
+import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.event.EventBuilder.SendInfo;
-import uk.gov.ons.ctp.common.event.model.AddressModification;
-import uk.gov.ons.ctp.common.event.model.AddressNotValid;
-import uk.gov.ons.ctp.common.event.model.AddressTypeChanged;
-import uk.gov.ons.ctp.common.event.model.CollectionCase;
 import uk.gov.ons.ctp.common.event.model.EventPayload;
-import uk.gov.ons.ctp.common.event.model.Feedback;
-import uk.gov.ons.ctp.common.event.model.FulfilmentRequest;
 import uk.gov.ons.ctp.common.event.model.GenericEvent;
-import uk.gov.ons.ctp.common.event.model.NewAddress;
-import uk.gov.ons.ctp.common.event.model.QuestionnaireLinkedDetails;
-import uk.gov.ons.ctp.common.event.model.RespondentAuthenticatedResponse;
-import uk.gov.ons.ctp.common.event.model.RespondentRefusalDetails;
-import uk.gov.ons.ctp.common.event.model.SurveyLaunchedResponse;
-import uk.gov.ons.ctp.common.event.model.UAC;
 import uk.gov.ons.ctp.common.event.persistence.EventBackupData;
 import uk.gov.ons.ctp.common.event.persistence.EventPersistence;
 
@@ -33,119 +20,6 @@ public class EventPublisher {
   private CircuitBreaker circuitBreaker;
 
   private EventPersistence eventPersistence;
-
-  @Getter
-  public enum RoutingKey {
-    //// @formatter:off
-    EVENT_FULFILMENT_REQUEST("event.fulfilment.request", EventType.FULFILMENT_REQUESTED),
-    EVENT_FULFILMENT_CONFIRMATION("event.fulfilment.confirmation", EventType.FULFILMENT_CONFIRMED),
-    EVENT_FULFILMENT_UNDELIVERED(
-        "event.fulfilment.undelivered", EventType.UNDELIVERED_MAIL_REPORTED),
-    EVENT_RESPONSE_AUTHENTICATION(
-        "event.response.authentication",
-        EventType.RESPONDENT_AUTHENTICATED,
-        EventType.SURVEY_LAUNCHED),
-    EVENT_RESPONSE_RECEIPT("event.response.receipt", EventType.RESPONSE_RECEIVED),
-    EVENT_RESPONDENT_REFUSAL("event.respondent.refusal", EventType.REFUSAL_RECEIVED),
-    EVENT_UAC_UPDATE("event.uac.update", EventType.UAC_UPDATED, EventType.UAC_CREATED),
-    EVENT_QUESTIONNAIRE_UPDATE("event.questionnaire.update", EventType.QUESTIONNAIRE_LINKED),
-    EVENT_CASE_UPDATE("event.case.update", EventType.CASE_UPDATED, EventType.CASE_CREATED),
-    EVENT_CASE_ADDRESS_UPDATE(
-        "event.case.address.update",
-        EventType.NEW_ADDRESS_REPORTED,
-        EventType.ADDRESS_MODIFIED,
-        EventType.ADDRESS_NOT_VALID,
-        EventType.ADDRESS_TYPE_CHANGED),
-    EVENT_CASE_APPOINTMENT("event.case.appointment", EventType.APPOINTMENT_REQUESTED),
-    EVENT_FIELD_CASE_UPDATE("event.fieldcase.update", EventType.FIELD_CASE_UPDATED),
-    EVENT_SAMPLE_UNIT_UPDATE("event.sampleunit.update", EventType.SAMPLE_UNIT_VALIDATED),
-    EVENT_CCS_PROPERTY_LISTING("event.ccs.propertylisting", EventType.CCS_PROPERTY_LISTED),
-    FEEDBACK("event.website.feedback", EventType.FEEDBACK);
-
-    private String key;
-    private List<EventType> eventTypes;
-
-    private RoutingKey(String key, EventType... types) {
-      this.key = key;
-      this.eventTypes = Arrays.asList(types);
-    }
-
-    public static RoutingKey forType(EventType eventType) {
-      for (RoutingKey routingKey : values()) {
-        if (routingKey.eventTypes.contains(eventType)) {
-          return routingKey;
-        }
-      }
-      return null;
-    }
-  }
-
-  @Getter
-  public enum EventType {
-    ADDRESS_MODIFIED(AddressModification.class, EventBuilder.ADDRESS_MODIFIED),
-    ADDRESS_NOT_VALID(AddressNotValid.class, EventBuilder.ADDRESS_NOT_VALID),
-    ADDRESS_TYPE_CHANGED(AddressTypeChanged.class, EventBuilder.ADDRESS_TYPE_CHANGED),
-    APPOINTMENT_REQUESTED,
-    CASE_CREATED(CollectionCase.class, EventBuilder.CASE_CREATED),
-    CASE_UPDATED(CollectionCase.class, EventBuilder.CASE_UPDATED),
-    CCS_PROPERTY_LISTED,
-    FIELD_CASE_UPDATED,
-    FULFILMENT_CONFIRMED,
-    FULFILMENT_REQUESTED(FulfilmentRequest.class, EventBuilder.FULFILMENT_REQUESTED),
-    NEW_ADDRESS_REPORTED(NewAddress.class, EventBuilder.NEW_ADDRESS_REPORTED),
-    QUESTIONNAIRE_LINKED(QuestionnaireLinkedDetails.class, EventBuilder.QUESTIONNAIRE_LINKED),
-    REFUSAL_RECEIVED(RespondentRefusalDetails.class, EventBuilder.REFUSAL_RECEIVED),
-    RESPONDENT_AUTHENTICATED(
-        RespondentAuthenticatedResponse.class, EventBuilder.RESPONDENT_AUTHENTICATED),
-    RESPONSE_RECEIVED,
-    SAMPLE_UNIT_VALIDATED,
-    SURVEY_LAUNCHED(SurveyLaunchedResponse.class, EventBuilder.SURVEY_LAUNCHED),
-    UAC_CREATED(UAC.class, EventBuilder.UAC_CREATED),
-    UAC_UPDATED(UAC.class, EventBuilder.UAC_UPDATED),
-    UNDELIVERED_MAIL_REPORTED,
-    FEEDBACK(Feedback.class, EventBuilder.FEEDBACK);
-
-    private Class<? extends EventPayload> payloadType;
-    private EventBuilder builder;
-
-    private EventType() {
-      this.builder = EventBuilder.NONE;
-    }
-
-    private EventType(Class<? extends EventPayload> payloadType, EventBuilder builder) {
-      this.payloadType = payloadType;
-      this.builder = builder;
-    }
-  }
-
-  @Getter
-  public enum Source {
-    ACTION_EXPORTER,
-    ADDRESS_RESOLUTION,
-    CASE_SERVICE,
-    CONTACT_CENTRE_API,
-    FIELDWORK_GATEWAY,
-    NOTIFY_GATEWAY,
-    RECEIPT_SERVICE,
-    RESPONDENT_HOME,
-    SAMPLE_LOADER;
-  }
-
-  @Getter
-  public enum Channel {
-    AD,
-    AR,
-    CC,
-    EQ,
-    FIELD,
-    PPO,
-    PQRS,
-    QM,
-    RH,
-    RM,
-    RO;
-  }
-  // @formatter:on
 
   private EventPublisher(
       EventSender eventSender, EventPersistence eventPersistence, CircuitBreaker circuitBreaker) {
@@ -254,7 +128,7 @@ public class EventPublisher {
       throw new IllegalArgumentException(errorMessage);
     }
 
-    RoutingKey routingKey = RoutingKey.forType(eventType);
+    EventTopic routingKey = EventTopic.forType(eventType);
     if (routingKey == null) {
       log.error("Routing key for eventType not configured", kv("eventType", eventType));
       String errorMessage = "Routing key for eventType '" + eventType + "' not configured";
@@ -305,7 +179,7 @@ public class EventPublisher {
     return genericEvent.getEvent().getTransactionId();
   }
 
-  private void sendToRabbit(RoutingKey routingKey, GenericEvent genericEvent) {
+  private void sendToRabbit(EventTopic routingKey, GenericEvent genericEvent) {
     if (circuitBreaker == null) {
       sendToRabbit(routingKey, genericEvent, "");
     } else {
@@ -326,7 +200,7 @@ public class EventPublisher {
   }
 
   private void sendToRabbit(
-      RoutingKey routingKey, GenericEvent genericEvent, String loggingMsgSuffix) {
+      EventTopic routingKey, GenericEvent genericEvent, String loggingMsgSuffix) {
     EventType eventType = genericEvent.getEvent().getType();
 
     log.info(

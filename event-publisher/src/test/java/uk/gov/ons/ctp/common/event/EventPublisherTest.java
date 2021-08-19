@@ -25,40 +25,25 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.ons.ctp.common.FixtureHelper;
-import uk.gov.ons.ctp.common.event.EventPublisher.Channel;
-import uk.gov.ons.ctp.common.event.EventPublisher.EventType;
-import uk.gov.ons.ctp.common.event.EventPublisher.RoutingKey;
-import uk.gov.ons.ctp.common.event.EventPublisher.Source;
-import uk.gov.ons.ctp.common.event.model.AddressModification;
-import uk.gov.ons.ctp.common.event.model.AddressModifiedEvent;
-import uk.gov.ons.ctp.common.event.model.AddressNotValid;
-import uk.gov.ons.ctp.common.event.model.AddressNotValidEvent;
-import uk.gov.ons.ctp.common.event.model.AddressTypeChanged;
-import uk.gov.ons.ctp.common.event.model.AddressTypeChangedEvent;
+import uk.gov.ons.ctp.common.domain.Channel;
+import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.event.model.CaseEvent;
 import uk.gov.ons.ctp.common.event.model.CollectionCase;
 import uk.gov.ons.ctp.common.event.model.EventPayload;
-import uk.gov.ons.ctp.common.event.model.Feedback;
-import uk.gov.ons.ctp.common.event.model.FeedbackEvent;
+import uk.gov.ons.ctp.common.event.model.FulfilmentEvent;
 import uk.gov.ons.ctp.common.event.model.FulfilmentRequest;
-import uk.gov.ons.ctp.common.event.model.FulfilmentRequestedEvent;
 import uk.gov.ons.ctp.common.event.model.GenericEvent;
 import uk.gov.ons.ctp.common.event.model.Header;
-import uk.gov.ons.ctp.common.event.model.NewAddress;
-import uk.gov.ons.ctp.common.event.model.NewAddressReportedEvent;
-import uk.gov.ons.ctp.common.event.model.QuestionnaireLinkedDetails;
-import uk.gov.ons.ctp.common.event.model.QuestionnaireLinkedEvent;
-import uk.gov.ons.ctp.common.event.model.RespondentAuthenticatedEvent;
-import uk.gov.ons.ctp.common.event.model.RespondentAuthenticatedResponse;
-import uk.gov.ons.ctp.common.event.model.RespondentRefusalDetails;
-import uk.gov.ons.ctp.common.event.model.RespondentRefusalEvent;
-import uk.gov.ons.ctp.common.event.model.SurveyLaunchedEvent;
-import uk.gov.ons.ctp.common.event.model.SurveyLaunchedResponse;
+import uk.gov.ons.ctp.common.event.model.RefusalDetails;
+import uk.gov.ons.ctp.common.event.model.RefusalEvent;
+import uk.gov.ons.ctp.common.event.model.SurveyLaunchEvent;
+import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
 import uk.gov.ons.ctp.common.event.model.UAC;
-import uk.gov.ons.ctp.common.event.model.UACEvent;
+import uk.gov.ons.ctp.common.event.model.UacAuthenticateEvent;
+import uk.gov.ons.ctp.common.event.model.UacAuthenticateResponse;
+import uk.gov.ons.ctp.common.event.model.UacEvent;
 import uk.gov.ons.ctp.common.event.persistence.EventBackupData;
 import uk.gov.ons.ctp.common.event.persistence.FirestoreEventPersistence;
 import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
@@ -67,24 +52,17 @@ import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
 public class EventPublisherTest {
 
   @InjectMocks private EventPublisher eventPublisher;
-  @Mock private RabbitTemplate template;
-  @Mock private SpringRabbitEventSender sender;
+  @Mock private EventSender sender;
   @Mock private FirestoreEventPersistence eventPersistence;
 
   ObjectMapper objectMapper = new CustomObjectMapper();
 
-  @Captor private ArgumentCaptor<FulfilmentRequestedEvent> fulfilmentRequestedEventCaptor;
-  @Captor private ArgumentCaptor<RespondentAuthenticatedEvent> respondentAuthenticatedEventCaptor;
-  @Captor private ArgumentCaptor<RespondentRefusalEvent> respondentRefusalEventCaptor;
-  @Captor private ArgumentCaptor<UACEvent> uacEventCaptor;
-  @Captor private ArgumentCaptor<SurveyLaunchedEvent> surveyLaunchedEventCaptor;
-  @Captor private ArgumentCaptor<AddressModifiedEvent> addressModifiedEventCaptor;
-  @Captor private ArgumentCaptor<AddressNotValidEvent> addressNotValidEventCaptor;
-  @Captor private ArgumentCaptor<AddressTypeChangedEvent> addressTypeChangedEventCaptor;
+  @Captor private ArgumentCaptor<FulfilmentEvent> fulfilmentRequestedEventCaptor;
+  @Captor private ArgumentCaptor<UacAuthenticateEvent> respondentAuthenticatedEventCaptor;
+  @Captor private ArgumentCaptor<RefusalEvent> respondentRefusalEventCaptor;
+  @Captor private ArgumentCaptor<UacEvent> uacEventCaptor;
+  @Captor private ArgumentCaptor<SurveyLaunchEvent> surveyLaunchedEventCaptor;
   @Captor private ArgumentCaptor<CaseEvent> caseEventCaptor;
-  @Captor private ArgumentCaptor<FeedbackEvent> feedbackEventCaptor;
-  @Captor private ArgumentCaptor<NewAddressReportedEvent> newAddressReportedEventCaptor;
-  @Captor private ArgumentCaptor<QuestionnaireLinkedEvent> questionnaireLinkedEventCaptor;
 
   private Date startOfTestDateTime;
 
@@ -109,43 +87,38 @@ public class EventPublisherTest {
 
   @Test
   public void sendEventSurveyLaunchedPayload() {
-    SurveyLaunchedResponse surveyLaunchedResponse = loadJson(SurveyLaunchedResponse[].class);
+    SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
 
     String transactionId =
         eventPublisher.sendEvent(
-            EventType.SURVEY_LAUNCHED, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
+            EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.SURVEY_LAUNCHED);
+    EventTopic routingKey = EventTopic.forType(EventType.SURVEY_LAUNCH);
     verify(sender, times(1)).sendEvent(eq(routingKey), surveyLaunchedEventCaptor.capture());
-    SurveyLaunchedEvent event = surveyLaunchedEventCaptor.getValue();
-    assertHeader(
-        event, transactionId, EventType.SURVEY_LAUNCHED, Source.RESPONDENT_HOME, Channel.RH);
+    SurveyLaunchEvent event = surveyLaunchedEventCaptor.getValue();
+    assertHeader(event, transactionId, EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
     assertEquals(surveyLaunchedResponse, event.getPayload().getResponse());
   }
 
   @Test
   public void sendEventRespondentAuthenticatedPayload() {
-    RespondentAuthenticatedResponse respondentAuthenticatedResponse =
-        loadJson(RespondentAuthenticatedResponse[].class);
+    UacAuthenticateResponse respondentAuthenticatedResponse =
+        loadJson(UacAuthenticateResponse[].class);
 
     String transactionId =
         eventPublisher.sendEvent(
-            EventType.RESPONDENT_AUTHENTICATED,
+            EventType.UAC_AUTHENTICATE,
             Source.RESPONDENT_HOME,
             Channel.RH,
             respondentAuthenticatedResponse);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.RESPONDENT_AUTHENTICATED);
+    EventTopic routingKey = EventTopic.forType(EventType.UAC_AUTHENTICATE);
     verify(sender, times(1))
         .sendEvent(eq(routingKey), respondentAuthenticatedEventCaptor.capture());
-    RespondentAuthenticatedEvent event = respondentAuthenticatedEventCaptor.getValue();
+    UacAuthenticateEvent event = respondentAuthenticatedEventCaptor.getValue();
 
     assertHeader(
-        event,
-        transactionId,
-        EventType.RESPONDENT_AUTHENTICATED,
-        Source.RESPONDENT_HOME,
-        Channel.RH);
+        event, transactionId, EventType.UAC_AUTHENTICATE, Source.RESPONDENT_HOME, Channel.RH);
     assertEquals(respondentAuthenticatedResponse, event.getPayload().getResponse());
   }
 
@@ -155,41 +128,29 @@ public class EventPublisherTest {
 
     String transactionId =
         eventPublisher.sendEvent(
-            EventType.FULFILMENT_REQUESTED,
-            Source.CONTACT_CENTRE_API,
-            Channel.CC,
-            fulfilmentRequest);
+            EventType.FULFILMENT, Source.CONTACT_CENTRE_API, Channel.CC, fulfilmentRequest);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.FULFILMENT_REQUESTED);
+    EventTopic routingKey = EventTopic.forType(EventType.FULFILMENT);
     verify(sender, times(1)).sendEvent(eq(routingKey), fulfilmentRequestedEventCaptor.capture());
-    FulfilmentRequestedEvent event = fulfilmentRequestedEventCaptor.getValue();
+    FulfilmentEvent event = fulfilmentRequestedEventCaptor.getValue();
 
-    assertHeader(
-        event,
-        transactionId,
-        EventType.FULFILMENT_REQUESTED,
-        Source.CONTACT_CENTRE_API,
-        Channel.CC);
+    assertHeader(event, transactionId, EventType.FULFILMENT, Source.CONTACT_CENTRE_API, Channel.CC);
     assertEquals("id-123", event.getPayload().getFulfilmentRequest().getCaseId());
   }
 
   @Test
   public void sendEventRespondentRefusalDetailsPayload() {
-    RespondentRefusalDetails respondentRefusalDetails = loadJson(RespondentRefusalDetails[].class);
+    RefusalDetails respondentRefusalDetails = loadJson(RefusalDetails[].class);
 
     String transactionId =
         eventPublisher.sendEvent(
-            EventType.REFUSAL_RECEIVED,
-            Source.CONTACT_CENTRE_API,
-            Channel.CC,
-            respondentRefusalDetails);
+            EventType.REFUSAL, Source.CONTACT_CENTRE_API, Channel.CC, respondentRefusalDetails);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.REFUSAL_RECEIVED);
+    EventTopic routingKey = EventTopic.forType(EventType.REFUSAL);
     verify(sender, times(1)).sendEvent(eq(routingKey), respondentRefusalEventCaptor.capture());
-    RespondentRefusalEvent event = respondentRefusalEventCaptor.getValue();
+    RefusalEvent event = respondentRefusalEventCaptor.getValue();
 
-    assertHeader(
-        event, transactionId, EventType.REFUSAL_RECEIVED, Source.CONTACT_CENTRE_API, Channel.CC);
+    assertHeader(event, transactionId, EventType.REFUSAL, Source.CONTACT_CENTRE_API, Channel.CC);
     assertEquals(respondentRefusalDetails, event.getPayload().getRefusal());
   }
 
@@ -201,7 +162,7 @@ public class EventPublisherTest {
 
     try {
       eventPublisher.sendEvent(
-          EventType.ADDRESS_MODIFIED,
+          EventType.UAC_AUTHENTICATE,
           Source.RECEIPT_SERVICE,
           Channel.CC,
           Mockito.mock(EventPayload.class));
@@ -213,47 +174,13 @@ public class EventPublisherTest {
     assertTrue(exceptionThrown);
   }
 
-  @Test
-  public void sendEventAddressModificationPayload() {
-    AddressModification addressModification = loadJson(AddressModification[].class);
-
-    String transactionId =
-        eventPublisher.sendEvent(
-            EventType.ADDRESS_MODIFIED, Source.RESPONDENT_HOME, Channel.RH, addressModification);
-
-    RoutingKey routingKey = RoutingKey.forType(EventType.ADDRESS_MODIFIED);
-    verify(sender, times(1)).sendEvent(eq(routingKey), addressModifiedEventCaptor.capture());
-    AddressModifiedEvent event = addressModifiedEventCaptor.getValue();
-
-    assertHeader(
-        event, transactionId, EventType.ADDRESS_MODIFIED, Source.RESPONDENT_HOME, Channel.RH);
-    assertEquals(addressModification, event.getPayload().getAddressModification());
-  }
-
-  @Test
-  public void shouldSentAddressNotValid() {
-    AddressNotValid payload = loadJson(AddressNotValid[].class);
-
-    String transactionId =
-        eventPublisher.sendEvent(
-            EventType.ADDRESS_NOT_VALID, Source.CONTACT_CENTRE_API, Channel.CC, payload);
-
-    RoutingKey routingKey = RoutingKey.forType(EventType.ADDRESS_NOT_VALID);
-    verify(sender).sendEvent(eq(routingKey), addressNotValidEventCaptor.capture());
-    AddressNotValidEvent event = addressNotValidEventCaptor.getValue();
-
-    assertHeader(
-        event, transactionId, EventType.ADDRESS_NOT_VALID, Source.CONTACT_CENTRE_API, Channel.CC);
-    assertEquals(payload, event.getPayload().getInvalidAddress());
-  }
-
   private void assertSendCase(EventType type) {
     CollectionCase payload = loadJson(CollectionCase[].class);
 
     String transactionId =
         eventPublisher.sendEvent(type, Source.CONTACT_CENTRE_API, Channel.CC, payload);
 
-    RoutingKey routingKey = RoutingKey.forType(type);
+    EventTopic routingKey = EventTopic.forType(type);
     verify(sender).sendEvent(eq(routingKey), caseEventCaptor.capture());
     CaseEvent event = caseEventCaptor.getValue();
 
@@ -262,91 +189,8 @@ public class EventPublisherTest {
   }
 
   @Test
-  public void shouldSendCaseCreated() {
-    assertSendCase(EventType.CASE_CREATED);
-  }
-
-  @Test
   public void shouldSendCaseUpdated() {
-    assertSendCase(EventType.CASE_UPDATED);
-  }
-
-  @Test
-  public void shouldSendAddressTypeChanged() {
-    AddressTypeChanged payload = loadJson(AddressTypeChanged[].class);
-
-    String transactionId =
-        eventPublisher.sendEvent(
-            EventType.ADDRESS_TYPE_CHANGED, Source.CONTACT_CENTRE_API, Channel.CC, payload);
-
-    RoutingKey routingKey = RoutingKey.forType(EventType.ADDRESS_TYPE_CHANGED);
-    verify(sender, times(1)).sendEvent(eq(routingKey), addressTypeChangedEventCaptor.capture());
-    AddressTypeChangedEvent event = addressTypeChangedEventCaptor.getValue();
-
-    assertHeader(
-        event,
-        transactionId,
-        EventType.ADDRESS_TYPE_CHANGED,
-        Source.CONTACT_CENTRE_API,
-        Channel.CC);
-    assertEquals(payload, event.getPayload().getAddressTypeChange());
-  }
-
-  @Test
-  public void sendEventFeedbackPayload() {
-    Feedback feedbackResponse = loadJson(Feedback[].class);
-
-    String transactionId =
-        eventPublisher.sendEvent(
-            EventType.FEEDBACK, Source.RESPONDENT_HOME, Channel.RH, feedbackResponse);
-
-    RoutingKey routingKey = RoutingKey.forType(EventType.FEEDBACK);
-    verify(sender, times(1)).sendEvent(eq(routingKey), feedbackEventCaptor.capture());
-    FeedbackEvent event = feedbackEventCaptor.getValue();
-
-    assertHeader(event, transactionId, EventType.FEEDBACK, Source.RESPONDENT_HOME, Channel.RH);
-    assertEquals(feedbackResponse, event.getPayload().getFeedback());
-  }
-
-  @Test
-  public void sendQuestionnaireLinkedPayload() {
-    QuestionnaireLinkedDetails questionnaireLinked = loadJson(QuestionnaireLinkedDetails[].class);
-
-    String transactionId =
-        eventPublisher.sendEvent(
-            EventType.QUESTIONNAIRE_LINKED,
-            Source.RESPONDENT_HOME,
-            Channel.RH,
-            questionnaireLinked);
-
-    RoutingKey routingKey = RoutingKey.forType(EventType.QUESTIONNAIRE_LINKED);
-    verify(sender, times(1)).sendEvent(eq(routingKey), questionnaireLinkedEventCaptor.capture());
-    QuestionnaireLinkedEvent event = questionnaireLinkedEventCaptor.getValue();
-
-    assertHeader(
-        event, transactionId, EventType.QUESTIONNAIRE_LINKED, Source.RESPONDENT_HOME, Channel.RH);
-    assertEquals(questionnaireLinked, event.getPayload().getUac());
-  }
-
-  @Test
-  public void shouldSendNewAddressReported() {
-    NewAddress payload = loadJson(NewAddress[].class);
-
-    String transactionId =
-        eventPublisher.sendEvent(
-            EventType.NEW_ADDRESS_REPORTED, Source.CONTACT_CENTRE_API, Channel.CC, payload);
-
-    RoutingKey routingKey = RoutingKey.forType(EventType.NEW_ADDRESS_REPORTED);
-    verify(sender, times(1)).sendEvent(eq(routingKey), newAddressReportedEventCaptor.capture());
-    NewAddressReportedEvent event = newAddressReportedEventCaptor.getValue();
-
-    assertHeader(
-        event,
-        transactionId,
-        EventType.NEW_ADDRESS_REPORTED,
-        Source.CONTACT_CENTRE_API,
-        Channel.CC);
-    assertEquals(payload, event.getPayload().getNewAddress());
+    assertSendCase(EventType.CASE_UPDATE);
   }
 
   private void assertSendUac(EventType type) {
@@ -355,194 +199,97 @@ public class EventPublisherTest {
     String transactionId =
         eventPublisher.sendEvent(type, Source.CONTACT_CENTRE_API, Channel.CC, payload);
 
-    RoutingKey routingKey = RoutingKey.forType(type);
+    EventTopic routingKey = EventTopic.forType(type);
     verify(sender).sendEvent(eq(routingKey), uacEventCaptor.capture());
-    UACEvent event = uacEventCaptor.getValue();
+    UacEvent event = uacEventCaptor.getValue();
 
     assertHeader(event, transactionId, type, Source.CONTACT_CENTRE_API, Channel.CC);
     assertEquals(payload, event.getPayload().getUac());
   }
 
   @Test
-  public void shouldSendUacCreated() {
-    assertSendUac(EventType.UAC_CREATED);
-  }
-
-  @Test
   public void shouldSendUacUpdated() {
-    assertSendUac(EventType.UAC_UPDATED);
+    assertSendUac(EventType.UAC_UPDATE);
   }
 
   @Test
   public void shouldRejectSendForMismatchingPayload() {
-    Feedback feedbackResponse = loadJson(Feedback[].class);
+    SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
 
     assertThrows(
         IllegalArgumentException.class,
         () ->
             eventPublisher.sendEvent(
-                EventType.SAMPLE_UNIT_VALIDATED,
-                Source.RESPONDENT_HOME,
-                Channel.RH,
-                feedbackResponse));
+                EventType.CASE_UPDATE, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse));
   }
 
   // -- replay send backup event tests ...
 
   @Test
   public void shouldSendBackupFulfilmentEvent() throws Exception {
-    FulfilmentRequestedEvent ev = aFulfilmentRequestedEvent();
+    FulfilmentEvent ev = aFulfilmentRequestedEvent();
     sendBackupEvent(ev);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.FULFILMENT_REQUESTED);
+    EventTopic routingKey = EventTopic.forType(EventType.FULFILMENT);
     verify(sender).sendEvent(eq(routingKey), fulfilmentRequestedEventCaptor.capture());
     verifyEventSent(ev, fulfilmentRequestedEventCaptor.getValue());
   }
 
   @Test
   public void shouldSendBackupRepondentAuthenticatedEvent() throws Exception {
-    RespondentAuthenticatedEvent ev = aRespondentAuthenticatedEvent();
+    UacAuthenticateEvent ev = aRespondentAuthenticatedEvent();
     sendBackupEvent(ev);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.RESPONDENT_AUTHENTICATED);
+    EventTopic routingKey = EventTopic.forType(EventType.UAC_AUTHENTICATE);
     verify(sender).sendEvent(eq(routingKey), respondentAuthenticatedEventCaptor.capture());
     verifyEventSent(ev, respondentAuthenticatedEventCaptor.getValue());
   }
 
   @Test
   public void shouldSendBackupRefusalReceivedEvent() throws Exception {
-    RespondentRefusalEvent ev = aRefusalEvent();
+    RefusalEvent ev = aRefusalEvent();
     sendBackupEvent(ev);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.REFUSAL_RECEIVED);
+    EventTopic routingKey = EventTopic.forType(EventType.REFUSAL);
     verify(sender).sendEvent(eq(routingKey), respondentRefusalEventCaptor.capture());
     verifyEventSent(ev, respondentRefusalEventCaptor.getValue());
   }
 
   @Test
-  public void shouldSendBackupUacCreatedEvent() throws Exception {
-    UACEvent ev = aUacEvent();
-    ev.getEvent().setType(EventType.UAC_CREATED);
-    sendBackupEvent(ev);
-
-    RoutingKey routingKey = RoutingKey.forType(EventType.UAC_CREATED);
-    verify(sender).sendEvent(eq(routingKey), uacEventCaptor.capture());
-    verifyEventSent(ev, uacEventCaptor.getValue());
-  }
-
-  @Test
   public void shouldSendBackupUacUpdatedEvent() throws Exception {
-    UACEvent ev = aUacEvent();
-    ev.getEvent().setType(EventType.UAC_UPDATED);
+    UacEvent ev = aUacEvent();
+    ev.getEvent().setType(EventType.UAC_UPDATE);
     sendBackupEvent(ev);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.UAC_UPDATED);
+    EventTopic routingKey = EventTopic.forType(EventType.UAC_UPDATE);
     verify(sender).sendEvent(eq(routingKey), uacEventCaptor.capture());
     verifyEventSent(ev, uacEventCaptor.getValue());
   }
 
   @Test
   public void shouldSendBackupSurveyLaunchedEvent() throws Exception {
-    SurveyLaunchedEvent ev = aSurveyLaunchedEvent();
+    SurveyLaunchEvent ev = aSurveyLaunchedEvent();
     sendBackupEvent(ev);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.SURVEY_LAUNCHED);
+    EventTopic routingKey = EventTopic.forType(EventType.SURVEY_LAUNCH);
     verify(sender).sendEvent(eq(routingKey), surveyLaunchedEventCaptor.capture());
     verifyEventSent(ev, surveyLaunchedEventCaptor.getValue());
   }
 
   @Test
-  public void shouldSendBackupAddressModifiedEvent() throws Exception {
-    AddressModifiedEvent ev = anAddressModifedEvent();
-    sendBackupEvent(ev);
-
-    RoutingKey routingKey = RoutingKey.forType(EventType.ADDRESS_MODIFIED);
-    verify(sender).sendEvent(eq(routingKey), addressModifiedEventCaptor.capture());
-    verifyEventSent(ev, addressModifiedEventCaptor.getValue());
-  }
-
-  @Test
-  public void shouldSendBackupAddressNotValidEvent() throws Exception {
-    AddressNotValidEvent ev = anAddressNotValidEvent();
-    sendBackupEvent(ev);
-
-    RoutingKey routingKey = RoutingKey.forType(EventType.ADDRESS_NOT_VALID);
-    verify(sender).sendEvent(eq(routingKey), addressNotValidEventCaptor.capture());
-    verifyEventSent(ev, addressNotValidEventCaptor.getValue());
-  }
-
-  @Test
-  public void shouldSendBackupAddressTypeChangedEvent() throws Exception {
-    AddressTypeChangedEvent ev = anAddressTypeChangedEvent();
-    sendBackupEvent(ev);
-
-    RoutingKey routingKey = RoutingKey.forType(EventType.ADDRESS_TYPE_CHANGED);
-    verify(sender).sendEvent(eq(routingKey), addressTypeChangedEventCaptor.capture());
-    verifyEventSent(ev, addressTypeChangedEventCaptor.getValue());
-  }
-
-  @Test
-  public void shouldSendBackupCaseCreatedEvent() throws Exception {
-    CaseEvent ev = aCaseEvent();
-    ev.getEvent().setType(EventType.CASE_CREATED);
-    sendBackupEvent(ev);
-
-    RoutingKey routingKey = RoutingKey.forType(EventType.CASE_CREATED);
-    verify(sender).sendEvent(eq(routingKey), caseEventCaptor.capture());
-    verifyEventSent(ev, caseEventCaptor.getValue());
-  }
-
-  @Test
   public void shouldSendBackupCaseUpdatedEvent() throws Exception {
     CaseEvent ev = aCaseEvent();
-    ev.getEvent().setType(EventType.CASE_UPDATED);
+    ev.getEvent().setType(EventType.CASE_UPDATE);
     sendBackupEvent(ev);
 
-    RoutingKey routingKey = RoutingKey.forType(EventType.CASE_UPDATED);
+    EventTopic routingKey = EventTopic.forType(EventType.CASE_UPDATE);
     verify(sender).sendEvent(eq(routingKey), caseEventCaptor.capture());
     verifyEventSent(ev, caseEventCaptor.getValue());
-  }
-
-  @Test
-  public void shouldSendBackupFeedbackEvent() throws Exception {
-    FeedbackEvent ev = aFeedbackEvent();
-    sendBackupEvent(ev);
-
-    RoutingKey routingKey = RoutingKey.forType(EventType.FEEDBACK);
-    verify(sender).sendEvent(eq(routingKey), feedbackEventCaptor.capture());
-    verifyEventSent(ev, feedbackEventCaptor.getValue());
-  }
-
-  @Test
-  public void shouldSendBackupNewAddressReportedEvent() throws Exception {
-    NewAddressReportedEvent ev = aNewAddressReportedEvent();
-    sendBackupEvent(ev);
-
-    RoutingKey routingKey = RoutingKey.forType(EventType.NEW_ADDRESS_REPORTED);
-    verify(sender).sendEvent(eq(routingKey), newAddressReportedEventCaptor.capture());
-    verifyEventSent(ev, newAddressReportedEventCaptor.getValue());
-  }
-
-  @Test
-  public void shouldSendBackupQuestionnaireLinkedEvent() throws Exception {
-    QuestionnaireLinkedEvent ev = aQuestionnaireLinkedEvent();
-    sendBackupEvent(ev);
-
-    RoutingKey routingKey = RoutingKey.forType(EventType.QUESTIONNAIRE_LINKED);
-    verify(sender).sendEvent(eq(routingKey), questionnaireLinkedEventCaptor.capture());
-    verifyEventSent(ev, questionnaireLinkedEventCaptor.getValue());
-  }
-
-  @Test
-  public void shouldRejectEventWithoutPayload() {
-    QuestionnaireLinkedEvent ev = aQuestionnaireLinkedEvent();
-    ev.getEvent().setType(EventType.SAMPLE_UNIT_VALIDATED);
-    assertThrows(UnsupportedOperationException.class, () -> sendBackupEvent(ev));
   }
 
   @Test
   public void shouldRejectMalformedEventBackupJson() {
-    QuestionnaireLinkedEvent ev = aQuestionnaireLinkedEvent();
+    SurveyLaunchEvent ev = aSurveyLaunchedEvent();
     EventBackupData data = createEvent(ev);
     data.setEvent("xx" + data.getEvent()); // create broken Json
     assertThrows(EventPublishException.class, () -> eventPublisher.sendEvent(data));
@@ -575,52 +322,28 @@ public class EventPublisherTest {
     return data;
   }
 
-  FulfilmentRequestedEvent aFulfilmentRequestedEvent() {
-    return FixtureHelper.loadPackageFixtures(FulfilmentRequestedEvent[].class).get(0);
+  FulfilmentEvent aFulfilmentRequestedEvent() {
+    return FixtureHelper.loadPackageFixtures(FulfilmentEvent[].class).get(0);
   }
 
-  RespondentRefusalEvent aRefusalEvent() {
-    return FixtureHelper.loadPackageFixtures(RespondentRefusalEvent[].class).get(0);
+  RefusalEvent aRefusalEvent() {
+    return FixtureHelper.loadPackageFixtures(RefusalEvent[].class).get(0);
   }
 
-  RespondentAuthenticatedEvent aRespondentAuthenticatedEvent() {
-    return FixtureHelper.loadPackageFixtures(RespondentAuthenticatedEvent[].class).get(0);
+  UacAuthenticateEvent aRespondentAuthenticatedEvent() {
+    return FixtureHelper.loadPackageFixtures(UacAuthenticateEvent[].class).get(0);
   }
 
-  UACEvent aUacEvent() {
-    return FixtureHelper.loadPackageFixtures(UACEvent[].class).get(0);
+  UacEvent aUacEvent() {
+    return FixtureHelper.loadPackageFixtures(UacEvent[].class).get(0);
   }
 
-  SurveyLaunchedEvent aSurveyLaunchedEvent() {
-    return FixtureHelper.loadPackageFixtures(SurveyLaunchedEvent[].class).get(0);
-  }
-
-  AddressModifiedEvent anAddressModifedEvent() {
-    return FixtureHelper.loadPackageFixtures(AddressModifiedEvent[].class).get(0);
-  }
-
-  AddressNotValidEvent anAddressNotValidEvent() {
-    return FixtureHelper.loadPackageFixtures(AddressNotValidEvent[].class).get(0);
-  }
-
-  AddressTypeChangedEvent anAddressTypeChangedEvent() {
-    return FixtureHelper.loadPackageFixtures(AddressTypeChangedEvent[].class).get(0);
+  SurveyLaunchEvent aSurveyLaunchedEvent() {
+    return FixtureHelper.loadPackageFixtures(SurveyLaunchEvent[].class).get(0);
   }
 
   CaseEvent aCaseEvent() {
     return FixtureHelper.loadPackageFixtures(CaseEvent[].class).get(0);
-  }
-
-  FeedbackEvent aFeedbackEvent() {
-    return FixtureHelper.loadPackageFixtures(FeedbackEvent[].class).get(0);
-  }
-
-  NewAddressReportedEvent aNewAddressReportedEvent() {
-    return FixtureHelper.loadPackageFixtures(NewAddressReportedEvent[].class).get(0);
-  }
-
-  QuestionnaireLinkedEvent aQuestionnaireLinkedEvent() {
-    return FixtureHelper.loadPackageFixtures(QuestionnaireLinkedEvent[].class).get(0);
   }
 
   private <T> T loadJson(Class<T[]> clazz) {

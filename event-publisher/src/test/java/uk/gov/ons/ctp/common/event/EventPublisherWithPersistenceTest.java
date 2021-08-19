@@ -16,16 +16,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.amqp.AmqpException;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import uk.gov.ons.ctp.common.FixtureHelper;
+import uk.gov.ons.ctp.common.domain.Channel;
+import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
-import uk.gov.ons.ctp.common.event.EventPublisher.Channel;
-import uk.gov.ons.ctp.common.event.EventPublisher.EventType;
-import uk.gov.ons.ctp.common.event.EventPublisher.Source;
-import uk.gov.ons.ctp.common.event.model.SurveyLaunchedEvent;
-import uk.gov.ons.ctp.common.event.model.SurveyLaunchedResponse;
+import uk.gov.ons.ctp.common.event.model.SurveyLaunchEvent;
+import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
 import uk.gov.ons.ctp.common.event.persistence.FirestoreEventPersistence;
 
 /**
@@ -35,37 +32,35 @@ import uk.gov.ons.ctp.common.event.persistence.FirestoreEventPersistence;
 public class EventPublisherWithPersistenceTest {
 
   @InjectMocks private EventPublisher eventPublisher;
-  @Mock private RabbitTemplate template;
-  @Mock private SpringRabbitEventSender sender;
+  @Mock private EventSender sender;
   @Mock private FirestoreEventPersistence eventPersistence;
 
   @Test
   public void eventPersistedWhenRabbitFails() throws CTPException {
-    SurveyLaunchedResponse surveyLaunchedResponse = loadJson(SurveyLaunchedResponse[].class);
+    SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
 
-    ArgumentCaptor<SurveyLaunchedEvent> eventCapture =
-        ArgumentCaptor.forClass(SurveyLaunchedEvent.class);
+    ArgumentCaptor<SurveyLaunchEvent> eventCapture =
+        ArgumentCaptor.forClass(SurveyLaunchEvent.class);
 
-    Mockito.doThrow(new AmqpException("Failed to send")).when(sender).sendEvent(any(), any());
+    Mockito.doThrow(new RuntimeException("Failed to send")).when(sender).sendEvent(any(), any());
 
     String transactionId =
         eventPublisher.sendEvent(
-            EventType.SURVEY_LAUNCHED, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
+            EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
 
     // Verify that the event was persistent following simulated Rabbit failure
     verify(eventPersistence, times(1))
-        .persistEvent(eq(EventType.SURVEY_LAUNCHED), eventCapture.capture());
-    SurveyLaunchedEvent event = eventCapture.getValue();
-    assertHeader(
-        event, transactionId, EventType.SURVEY_LAUNCHED, Source.RESPONDENT_HOME, Channel.RH);
+        .persistEvent(eq(EventType.SURVEY_LAUNCH), eventCapture.capture());
+    SurveyLaunchEvent event = eventCapture.getValue();
+    assertHeader(event, transactionId, EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
     assertEquals(surveyLaunchedResponse, event.getPayload().getResponse());
   }
 
   @Test
   public void exceptionThrownWhenRabbitAndFirestoreFail() throws CTPException {
-    SurveyLaunchedResponse surveyLaunchedResponse = loadJson(SurveyLaunchedResponse[].class);
+    SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
 
-    Mockito.doThrow(new AmqpException("Failed to send")).when(sender).sendEvent(any(), any());
+    Mockito.doThrow(new RuntimeException("Failed to send")).when(sender).sendEvent(any(), any());
     Mockito.doThrow(new CTPException(Fault.SYSTEM_ERROR, "Firestore broken"))
         .when(eventPersistence)
         .persistEvent(any(), any());
@@ -75,7 +70,7 @@ public class EventPublisherWithPersistenceTest {
             Exception.class,
             () ->
                 eventPublisher.sendEvent(
-                    EventType.SURVEY_LAUNCHED,
+                    EventType.SURVEY_LAUNCH,
                     Source.RESPONDENT_HOME,
                     Channel.RH,
                     surveyLaunchedResponse));

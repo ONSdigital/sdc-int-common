@@ -1,7 +1,7 @@
 [
   {
     "event": {
-      "type": "CASE_CREATED",
+      "type": "CASE_UPDATE",
       "source": "RESPONDENT_HOME",
       "channel": "RH",
       "dateTime": "2020-06-29T13:25:36.042Z",
