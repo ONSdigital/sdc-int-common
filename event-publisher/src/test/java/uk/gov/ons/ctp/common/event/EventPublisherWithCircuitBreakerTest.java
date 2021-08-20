@@ -97,9 +97,9 @@ public class EventPublisherWithCircuitBreakerTest {
   }
 
   @Test
-  public void shouldNotSendEventToRabbitThroughCircuitBreakerWhenRabbitFails() throws Exception {
+  public void shouldNotPublishThroughCircuitBreakerWhenPubsubFails() throws Exception {
     mockCircuitBreakerFail();
-    Mockito.doThrow(new RuntimeException("rabbit fail")).when(sender).sendEvent(any(), any());
+    Mockito.doThrow(new RuntimeException("Publish fail")).when(sender).sendEvent(any(), any());
 
     SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
 

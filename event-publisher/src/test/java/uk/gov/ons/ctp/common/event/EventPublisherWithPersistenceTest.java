@@ -36,7 +36,7 @@ public class EventPublisherWithPersistenceTest {
   @Mock private FirestoreEventPersistence eventPersistence;
 
   @Test
-  public void eventPersistedWhenRabbitFails() throws CTPException {
+  public void eventPersistedWhenPublishFails() throws CTPException {
     SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
 
     ArgumentCaptor<SurveyLaunchEvent> eventCapture =
@@ -48,7 +48,7 @@ public class EventPublisherWithPersistenceTest {
         eventPublisher.sendEvent(
             EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
 
-    // Verify that the event was persistent following simulated Rabbit failure
+    // Verify that the event was persistent following simulated Publish failure
     verify(eventPersistence, times(1))
         .persistEvent(eq(EventType.SURVEY_LAUNCH), eventCapture.capture());
     SurveyLaunchEvent event = eventCapture.getValue();
@@ -57,7 +57,7 @@ public class EventPublisherWithPersistenceTest {
   }
 
   @Test
-  public void exceptionThrownWhenRabbitAndFirestoreFail() throws CTPException {
+  public void exceptionThrownWhenPublishAndFirestoreFail() throws CTPException {
     SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
 
     Mockito.doThrow(new RuntimeException("Failed to send")).when(sender).sendEvent(any(), any());
@@ -75,7 +75,7 @@ public class EventPublisherWithPersistenceTest {
                     Channel.RH,
                     surveyLaunchedResponse));
     assertTrue(
-        e.getMessage().matches(".* event persistence failed following Rabbit failure"),
+        e.getMessage().matches(".* event persistence failed following publish failure"),
         e.getMessage());
   }
 

@@ -70,8 +70,8 @@ public class RetryableCloudDataStoreImpl implements RetryableCloudDataStore {
 
   /**
    * When attempts to retry object storage have been exhausted this method is invoked and it can
-   * then throw the exception (triggering Rabbit retries). If this is not done then the message
-   * won't be eligible for another attempt or writing to the dead letter queue.
+   * then throw the exception (possibly triggering calling code retries). If this is not done then
+   * the message won't be eligible for another attempt or writing to the dead letter queue.
    *
    * @param e is the final exception in the storeObject retries.
    * @throws Exception the exception which caused the final attempt to fail.

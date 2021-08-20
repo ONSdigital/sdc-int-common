@@ -15,9 +15,7 @@ import uk.gov.ons.ctp.common.event.EventType;
 import uk.gov.ons.ctp.common.event.model.GenericEvent;
 import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
 
-/**
- * This class saves details about an event which Rabbit failed to sent into a Firestore collection.
- */
+/** Save details into Firestore, about an event which failed to publish. */
 @Slf4j
 @Service
 public class FirestoreEventPersistence implements EventPersistence {

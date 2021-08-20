@@ -30,7 +30,7 @@ public class EventPublisher {
 
   /**
    * Create method for creating an EventPublisher that will not attempt to persist events following
-   * a Rabbit failure.
+   * underlying publish failure.
    *
    * @param eventSender the impl of EventSender that will be used to ... send the event.
    * @return an EventPubisher object.
@@ -40,9 +40,9 @@ public class EventPublisher {
   }
 
   /**
-   * Create method for creating an EventPublisher that will persist events following a Rabbit
-   * failure. If Rabbit fails and the event is successfully persisted then all will appear well to
-   * the caller, with the only indication of the failure being that an error is logged.
+   * Create method for creating an EventPublisher that will persist events following a publishing
+   * failure. If publishing fails and the event is successfully persisted then all will appear well
+   * to the caller, with the only indication of the failure being that an error is logged.
    *
    * @param eventSender the impl of EventSender that will be used to ... send the event.
    * @param eventPersistence is an EventPersistence implementation which does the actual event
@@ -58,10 +58,10 @@ public class EventPublisher {
   /**
    * Method to publish an event.
    *
-   * <p>If no EventPersister has been set then a Rabbit failure results in an exception being
+   * <p>If no EventPersister has been set then a publishing failure results in an exception being
    * thrown.
    *
-   * <p>If an EventPersister is set then in the event of a Rabbit failure it will attempt to save
+   * <p>If an EventPersister is set then in the event of a publish failure it will attempt to save
    * the event into a persistent store. If event is persisted then this method returns as normal
    * with no exception. If event persistence fails then an error is logged and an exception is
    * thrown.
@@ -144,7 +144,7 @@ public class EventPublisher {
     }
 
     try {
-      sendToRabbit(routingKey, genericEvent);
+      publish(routingKey, genericEvent);
     } catch (Exception e) {
       boolean backup = eventPersistence != null;
       log.error(
@@ -154,7 +154,7 @@ public class EventPublisher {
           kv("backup", backup),
           e);
       if (!backup) {
-        throw new EventPublishException("Rabbit failed to send event", e);
+        throw new EventPublishException("Failed to publish event", e);
       }
 
       // Save event to persistent store
@@ -165,28 +165,28 @@ public class EventPublisher {
             kv("eventType", eventType),
             kv("routingKey", routingKey));
       } catch (Exception epe) {
-        // There is no hope. Neither Rabbit or Persistence are working
+        // There is no hope. Neither pub/sub or Persistence are working
         log.error(
-            "Backup event persistence failed following Rabbit failure",
+            "Backup event persistence failed following publish failure",
             kv("eventType", eventType),
             kv("routingKey", routingKey),
             epe);
         throw new EventPublishException(
-            "Backup event persistence failed following Rabbit failure", e);
+            "Backup event persistence failed following publish failure", e);
       }
     }
 
     return genericEvent.getEvent().getTransactionId();
   }
 
-  private void sendToRabbit(EventTopic routingKey, GenericEvent genericEvent) {
+  private void publish(EventTopic routingKey, GenericEvent genericEvent) {
     if (circuitBreaker == null) {
-      sendToRabbit(routingKey, genericEvent, "");
+      publish(routingKey, genericEvent, "");
     } else {
       try {
         this.circuitBreaker.run(
             () -> {
-              sendToRabbit(routingKey, genericEvent, "within circuit-breaker");
+              publish(routingKey, genericEvent, "within circuit-breaker");
               return null;
             },
             throwable -> {
@@ -199,20 +199,17 @@ public class EventPublisher {
     }
   }
 
-  private void sendToRabbit(
-      EventTopic routingKey, GenericEvent genericEvent, String loggingMsgSuffix) {
+  private void publish(EventTopic eventTopic, GenericEvent genericEvent, String loggingMsgSuffix) {
     EventType eventType = genericEvent.getEvent().getType();
 
     log.info(
-        "Sending message to rabbit " + loggingMsgSuffix,
+        "Publishing message " + loggingMsgSuffix,
         kv("eventType", eventType),
-        kv("routingKey", routingKey));
+        kv("eventTopic", eventTopic));
 
-    sender.sendEvent(routingKey, genericEvent);
+    sender.sendEvent(eventTopic, genericEvent);
 
     log.info(
-        "Message sent successfully to rabbit",
-        kv("eventType", eventType),
-        kv("routingKey", routingKey));
+        "Message successfully published", kv("eventType", eventType), kv("eventTopic", eventTopic));
   }
 }

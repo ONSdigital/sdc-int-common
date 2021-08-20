@@ -39,7 +39,7 @@ public class EventPublisherWithoutPersistanceTest {
                   Channel.RH,
                   surveyLaunchedResponse);
             });
-    assertTrue(e.getMessage().matches(".* failed to send .*"), e.getMessage());
+    assertTrue(e.getMessage().matches("Failed to publish .*"), e.getMessage());
   }
 
   private <T> T loadJson(Class<T[]> clazz) {
