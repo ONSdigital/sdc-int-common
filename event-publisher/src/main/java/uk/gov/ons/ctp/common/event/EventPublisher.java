@@ -128,8 +128,8 @@ public class EventPublisher {
       throw new IllegalArgumentException(errorMessage);
     }
 
-    EventTopic routingKey = EventTopic.forType(eventType);
-    if (routingKey == null) {
+    EventTopic eventTopic = EventTopic.forType(eventType);
+    if (eventTopic == null) {
       log.error("Routing key for eventType not configured", kv("eventType", eventType));
       String errorMessage = "Routing key for eventType '" + eventType + "' not configured";
       throw new UnsupportedOperationException(errorMessage);
@@ -144,13 +144,13 @@ public class EventPublisher {
     }
 
     try {
-      publish(routingKey, genericEvent);
+      publish(eventTopic, genericEvent);
     } catch (Exception e) {
       boolean backup = eventPersistence != null;
       log.error(
           "Failed to send event but will now backup to firestore",
           kv("eventType", eventType),
-          kv("routingKey", routingKey),
+          kv("eventTopic", eventTopic),
           kv("backup", backup),
           e);
       if (!backup) {
@@ -163,13 +163,13 @@ public class EventPublisher {
         log.info(
             "Event data saved to persistent store",
             kv("eventType", eventType),
-            kv("routingKey", routingKey));
+            kv("eventTopic", eventTopic));
       } catch (Exception epe) {
         // There is no hope. Neither pub/sub or Persistence are working
         log.error(
             "Backup event persistence failed following publish failure",
             kv("eventType", eventType),
-            kv("routingKey", routingKey),
+            kv("eventTopic", eventTopic),
             epe);
         throw new EventPublishException(
             "Backup event persistence failed following publish failure", e);
@@ -179,14 +179,14 @@ public class EventPublisher {
     return genericEvent.getEvent().getTransactionId();
   }
 
-  private void publish(EventTopic routingKey, GenericEvent genericEvent) {
+  private void publish(EventTopic eventTopic, GenericEvent genericEvent) {
     if (circuitBreaker == null) {
-      publish(routingKey, genericEvent, "");
+      publish(eventTopic, genericEvent, "");
     } else {
       try {
         this.circuitBreaker.run(
             () -> {
-              publish(routingKey, genericEvent, "within circuit-breaker");
+              publish(eventTopic, genericEvent, "within circuit-breaker");
               return null;
             },
             throwable -> {
