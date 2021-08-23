@@ -86,8 +86,8 @@ public class EventPublisherWithCircuitBreakerTest {
         eventPublisher.sendEvent(
             EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
 
-    EventTopic routingKey = EventTopic.forType(EventType.SURVEY_LAUNCH);
-    verify(sender, times(1)).sendEvent(eq(routingKey), surveyLaunchedEventCaptor.capture());
+    EventTopic eventTopic = EventTopic.forType(EventType.SURVEY_LAUNCH);
+    verify(sender, times(1)).sendEvent(eq(eventTopic), surveyLaunchedEventCaptor.capture());
     SurveyLaunchEvent event = surveyLaunchedEventCaptor.getValue();
     assertHeader(event, transactionId, EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
     assertEquals(surveyLaunchedResponse, event.getPayload().getResponse());
@@ -97,17 +97,17 @@ public class EventPublisherWithCircuitBreakerTest {
   }
 
   @Test
-  public void shouldNotSendEventToRabbitThroughCircuitBreakerWhenRabbitFails() throws Exception {
+  public void shouldNotPublishThroughCircuitBreakerWhenPubsubFails() throws Exception {
     mockCircuitBreakerFail();
-    Mockito.doThrow(new RuntimeException("rabbit fail")).when(sender).sendEvent(any(), any());
+    Mockito.doThrow(new RuntimeException("Publish fail")).when(sender).sendEvent(any(), any());
 
     SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
 
     eventPublisher.sendEvent(
         EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
 
-    EventTopic routingKey = EventTopic.forType(EventType.SURVEY_LAUNCH);
-    verify(sender).sendEvent(eq(routingKey), surveyLaunchedEventCaptor.capture());
+    EventTopic eventTopic = EventTopic.forType(EventType.SURVEY_LAUNCH);
+    verify(sender).sendEvent(eq(eventTopic), surveyLaunchedEventCaptor.capture());
 
     // since it failed, the event is sent to firestore
     verify(eventPersistence).persistEvent(eq(EventType.SURVEY_LAUNCH), any());

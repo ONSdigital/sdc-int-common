@@ -93,8 +93,8 @@ public class EventPublisherTest {
         eventPublisher.sendEvent(
             EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
 
-    EventTopic routingKey = EventTopic.forType(EventType.SURVEY_LAUNCH);
-    verify(sender, times(1)).sendEvent(eq(routingKey), surveyLaunchedEventCaptor.capture());
+    EventTopic eventTopic = EventTopic.forType(EventType.SURVEY_LAUNCH);
+    verify(sender, times(1)).sendEvent(eq(eventTopic), surveyLaunchedEventCaptor.capture());
     SurveyLaunchEvent event = surveyLaunchedEventCaptor.getValue();
     assertHeader(event, transactionId, EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
     assertEquals(surveyLaunchedResponse, event.getPayload().getResponse());
@@ -112,9 +112,9 @@ public class EventPublisherTest {
             Channel.RH,
             respondentAuthenticatedResponse);
 
-    EventTopic routingKey = EventTopic.forType(EventType.UAC_AUTHENTICATE);
+    EventTopic eventTopic = EventTopic.forType(EventType.UAC_AUTHENTICATE);
     verify(sender, times(1))
-        .sendEvent(eq(routingKey), respondentAuthenticatedEventCaptor.capture());
+        .sendEvent(eq(eventTopic), respondentAuthenticatedEventCaptor.capture());
     UacAuthenticateEvent event = respondentAuthenticatedEventCaptor.getValue();
 
     assertHeader(
@@ -130,8 +130,8 @@ public class EventPublisherTest {
         eventPublisher.sendEvent(
             EventType.FULFILMENT, Source.CONTACT_CENTRE_API, Channel.CC, fulfilmentRequest);
 
-    EventTopic routingKey = EventTopic.forType(EventType.FULFILMENT);
-    verify(sender, times(1)).sendEvent(eq(routingKey), fulfilmentRequestedEventCaptor.capture());
+    EventTopic eventTopic = EventTopic.forType(EventType.FULFILMENT);
+    verify(sender, times(1)).sendEvent(eq(eventTopic), fulfilmentRequestedEventCaptor.capture());
     FulfilmentEvent event = fulfilmentRequestedEventCaptor.getValue();
 
     assertHeader(event, transactionId, EventType.FULFILMENT, Source.CONTACT_CENTRE_API, Channel.CC);
@@ -146,8 +146,8 @@ public class EventPublisherTest {
         eventPublisher.sendEvent(
             EventType.REFUSAL, Source.CONTACT_CENTRE_API, Channel.CC, respondentRefusalDetails);
 
-    EventTopic routingKey = EventTopic.forType(EventType.REFUSAL);
-    verify(sender, times(1)).sendEvent(eq(routingKey), respondentRefusalEventCaptor.capture());
+    EventTopic eventTopic = EventTopic.forType(EventType.REFUSAL);
+    verify(sender, times(1)).sendEvent(eq(eventTopic), respondentRefusalEventCaptor.capture());
     RefusalEvent event = respondentRefusalEventCaptor.getValue();
 
     assertHeader(event, transactionId, EventType.REFUSAL, Source.CONTACT_CENTRE_API, Channel.CC);
@@ -180,8 +180,8 @@ public class EventPublisherTest {
     String transactionId =
         eventPublisher.sendEvent(type, Source.CONTACT_CENTRE_API, Channel.CC, payload);
 
-    EventTopic routingKey = EventTopic.forType(type);
-    verify(sender).sendEvent(eq(routingKey), caseEventCaptor.capture());
+    EventTopic eventTopic = EventTopic.forType(type);
+    verify(sender).sendEvent(eq(eventTopic), caseEventCaptor.capture());
     CaseEvent event = caseEventCaptor.getValue();
 
     assertHeader(event, transactionId, type, Source.CONTACT_CENTRE_API, Channel.CC);
@@ -199,8 +199,8 @@ public class EventPublisherTest {
     String transactionId =
         eventPublisher.sendEvent(type, Source.CONTACT_CENTRE_API, Channel.CC, payload);
 
-    EventTopic routingKey = EventTopic.forType(type);
-    verify(sender).sendEvent(eq(routingKey), uacEventCaptor.capture());
+    EventTopic eventTopic = EventTopic.forType(type);
+    verify(sender).sendEvent(eq(eventTopic), uacEventCaptor.capture());
     UacEvent event = uacEventCaptor.getValue();
 
     assertHeader(event, transactionId, type, Source.CONTACT_CENTRE_API, Channel.CC);
@@ -230,8 +230,8 @@ public class EventPublisherTest {
     FulfilmentEvent ev = aFulfilmentRequestedEvent();
     sendBackupEvent(ev);
 
-    EventTopic routingKey = EventTopic.forType(EventType.FULFILMENT);
-    verify(sender).sendEvent(eq(routingKey), fulfilmentRequestedEventCaptor.capture());
+    EventTopic eventTopic = EventTopic.forType(EventType.FULFILMENT);
+    verify(sender).sendEvent(eq(eventTopic), fulfilmentRequestedEventCaptor.capture());
     verifyEventSent(ev, fulfilmentRequestedEventCaptor.getValue());
   }
 
@@ -240,8 +240,8 @@ public class EventPublisherTest {
     UacAuthenticateEvent ev = aRespondentAuthenticatedEvent();
     sendBackupEvent(ev);
 
-    EventTopic routingKey = EventTopic.forType(EventType.UAC_AUTHENTICATE);
-    verify(sender).sendEvent(eq(routingKey), respondentAuthenticatedEventCaptor.capture());
+    EventTopic eventTopic = EventTopic.forType(EventType.UAC_AUTHENTICATE);
+    verify(sender).sendEvent(eq(eventTopic), respondentAuthenticatedEventCaptor.capture());
     verifyEventSent(ev, respondentAuthenticatedEventCaptor.getValue());
   }
 
@@ -250,8 +250,8 @@ public class EventPublisherTest {
     RefusalEvent ev = aRefusalEvent();
     sendBackupEvent(ev);
 
-    EventTopic routingKey = EventTopic.forType(EventType.REFUSAL);
-    verify(sender).sendEvent(eq(routingKey), respondentRefusalEventCaptor.capture());
+    EventTopic eventTopic = EventTopic.forType(EventType.REFUSAL);
+    verify(sender).sendEvent(eq(eventTopic), respondentRefusalEventCaptor.capture());
     verifyEventSent(ev, respondentRefusalEventCaptor.getValue());
   }
 
@@ -261,8 +261,8 @@ public class EventPublisherTest {
     ev.getEvent().setType(EventType.UAC_UPDATE);
     sendBackupEvent(ev);
 
-    EventTopic routingKey = EventTopic.forType(EventType.UAC_UPDATE);
-    verify(sender).sendEvent(eq(routingKey), uacEventCaptor.capture());
+    EventTopic eventTopic = EventTopic.forType(EventType.UAC_UPDATE);
+    verify(sender).sendEvent(eq(eventTopic), uacEventCaptor.capture());
     verifyEventSent(ev, uacEventCaptor.getValue());
   }
 
@@ -271,8 +271,8 @@ public class EventPublisherTest {
     SurveyLaunchEvent ev = aSurveyLaunchedEvent();
     sendBackupEvent(ev);
 
-    EventTopic routingKey = EventTopic.forType(EventType.SURVEY_LAUNCH);
-    verify(sender).sendEvent(eq(routingKey), surveyLaunchedEventCaptor.capture());
+    EventTopic eventTopic = EventTopic.forType(EventType.SURVEY_LAUNCH);
+    verify(sender).sendEvent(eq(eventTopic), surveyLaunchedEventCaptor.capture());
     verifyEventSent(ev, surveyLaunchedEventCaptor.getValue());
   }
 
@@ -282,8 +282,8 @@ public class EventPublisherTest {
     ev.getEvent().setType(EventType.CASE_UPDATE);
     sendBackupEvent(ev);
 
-    EventTopic routingKey = EventTopic.forType(EventType.CASE_UPDATE);
-    verify(sender).sendEvent(eq(routingKey), caseEventCaptor.capture());
+    EventTopic eventTopic = EventTopic.forType(EventType.CASE_UPDATE);
+    verify(sender).sendEvent(eq(eventTopic), caseEventCaptor.capture());
     verifyEventSent(ev, caseEventCaptor.getValue());
   }
 

@@ -20,9 +20,9 @@ public enum EventTopic {
   }
 
   public static EventTopic forType(EventType type) {
-    for (EventTopic routingKey : values()) {
-      if (routingKey.type == type) {
-        return routingKey;
+    for (EventTopic eventTopic : values()) {
+      if (eventTopic.type == type) {
+        return eventTopic;
       }
     }
     return null;

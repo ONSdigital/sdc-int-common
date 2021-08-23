@@ -7,10 +7,10 @@ import lombok.ToString;
 import uk.gov.ons.ctp.common.event.EventType;
 
 /**
- * This class holds data about an event which Rabbit failed to send.
+ * This class holds data about an event which failed to send.
  *
- * <p>If Rabbit fails to send an event then an instance of this object is persisted into the backup
- * event collection in Firestore for later resending.
+ * <p>If the underlying send mechanism fails to send an event then an instance of this object is
+ * persisted into the backup event collection in Firestore for later resending.
  */
 @Data
 @NoArgsConstructor
