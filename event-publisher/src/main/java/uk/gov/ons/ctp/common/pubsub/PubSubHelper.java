@@ -69,7 +69,7 @@ public class PubSubHelper {
       }
       NativePubSubEventSender sender =
           new NativePubSubEventSender(
-              projectId, addRmProperties, channelProvider, credentialsProvider);
+              projectId, channelProvider, credentialsProvider, useEmulatorPubSub);
       eventPublisher = EventPublisher.createWithoutEventPersistence(sender);
 
       defaultSubscriberStubSettings =

@@ -19,21 +19,20 @@ import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
 public class NativePubSubEventSender implements EventSender {
 
   private ObjectMapper objectMapper;
-  private boolean addRmProperties;
   private String projectId;
   private TransportChannelProvider channelProvider;
   private CredentialsProvider credentialsProvider;
+  private boolean usePubSub;
 
   public NativePubSubEventSender(
       String projectId,
-      boolean addRmProperties,
       TransportChannelProvider channelProvider,
-      CredentialsProvider credentialsProvider)
+      CredentialsProvider credentialsProvider, Boolean usePubSub)
       throws CTPException {
-    this.addRmProperties = addRmProperties;
     this.projectId = projectId;
     this.channelProvider = channelProvider;
     this.credentialsProvider = credentialsProvider;
+    this.usePubSub = usePubSub;
     objectMapper = new CustomObjectMapper();
   }
 
@@ -45,13 +44,12 @@ public class NativePubSubEventSender implements EventSender {
     Publisher publisher = null;
     try {
       // Create a publisher instance with default settings bound to the topic
-      if (channelProvider != null && credentialsProvider != null) {
+      if (usePubSub) {
         publisher =
             Publisher.newBuilder(topicName)
                 .setChannelProvider(channelProvider)
                 .setCredentialsProvider(credentialsProvider)
                 .build();
-        System.out.println("boop");
       } else {
         publisher = Publisher.newBuilder(topicName).build();
       }
