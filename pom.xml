@@ -86,11 +86,6 @@
         <version>2.0.2</version>
       </dependency>
 
-      <dependency>
-        <groupId>com.google.cloud</groupId>
-        <artifactId>google-cloud-pubsub</artifactId>
-      </dependency>
-
       <!-- need separate jaxb deps after java11 removed them -->
       <dependency>
         <groupId>javax.xml.bind</groupId>
