@@ -100,7 +100,9 @@ public class PubSubHelper {
 
   /** Cleans up and destroys instance of PubSubHelper. */
   public static synchronized void destroy() {
-    channel.shutdown();
+    if (channel != null) {
+      channel.shutdown();
+    }
     instance = null;
   }
 

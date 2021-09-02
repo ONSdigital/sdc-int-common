@@ -27,7 +27,8 @@ public class NativePubSubEventSender implements EventSender {
   public NativePubSubEventSender(
       String projectId,
       TransportChannelProvider channelProvider,
-      CredentialsProvider credentialsProvider, Boolean usePubSub)
+      CredentialsProvider credentialsProvider,
+      Boolean usePubSub)
       throws CTPException {
     this.projectId = projectId;
     this.channelProvider = channelProvider;
