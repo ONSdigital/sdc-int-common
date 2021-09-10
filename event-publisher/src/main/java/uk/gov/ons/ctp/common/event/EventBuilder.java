@@ -61,7 +61,23 @@ public abstract class EventBuilder {
    */
   public abstract SendInfo create(String json);
 
+  /**
+   * Create event payload from json string.
+   *
+   * @param json string of serialised event payload JSON.
+   * @return object containing deserialised payload
+   */
+  public abstract EventPayload createPayload(String json);
+
   <T extends GenericEvent> T deserialiseEventJson(String json, Class<T> clazz) {
+    try {
+      return objectMapper.readValue(json, clazz);
+    } catch (JsonProcessingException e) {
+      throw new EventPublishException(e);
+    }
+  }
+
+  <T extends EventPayload> T deserialisePayloadJson(String json, Class<T> clazz) {
     try {
       return objectMapper.readValue(json, clazz);
     } catch (JsonProcessingException e) {
@@ -108,6 +124,11 @@ public abstract class EventBuilder {
     public SendInfo create(String json) {
       return null;
     }
+
+    @Override
+    public EventPayload createPayload(String json) {
+      return null;
+    }
   }
 
   public static class FulfilmentBuilder extends EventBuilder {
@@ -128,6 +149,11 @@ public abstract class EventBuilder {
       EventPayload payload = ((FulfilmentEvent) genericEvent).getPayload().getFulfilmentRequest();
       return build(genericEvent, payload);
     }
+
+    @Override
+    public EventPayload createPayload(String json) {
+      return deserialisePayloadJson(json, FulfilmentRequest.class);
+    }
   }
 
   public static class SurveyLaunchBuilder extends EventBuilder {
@@ -145,6 +171,11 @@ public abstract class EventBuilder {
       GenericEvent genericEvent = deserialiseEventJson(json, SurveyLaunchEvent.class);
       EventPayload payload = ((SurveyLaunchEvent) genericEvent).getPayload().getResponse();
       return build(genericEvent, payload);
+    }
+
+    @Override
+    public EventPayload createPayload(String json) {
+      return deserialisePayloadJson(json, SurveyLaunchResponse.class);
     }
   }
 
@@ -166,6 +197,11 @@ public abstract class EventBuilder {
       EventPayload payload = ((UacAuthenticateEvent) genericEvent).getPayload().getResponse();
       return build(genericEvent, payload);
     }
+
+    @Override
+    public EventPayload createPayload(String json) {
+      return deserialisePayloadJson(json, UacAuthenticateResponse.class);
+    }
   }
 
   public static class CaseUpdateBuilder extends EventBuilder {
@@ -184,6 +220,11 @@ public abstract class EventBuilder {
       GenericEvent genericEvent = deserialiseEventJson(json, CaseEvent.class);
       EventPayload payload = ((CaseEvent) genericEvent).getPayload().getCollectionCase();
       return build(genericEvent, payload);
+    }
+
+    @Override
+    public EventPayload createPayload(String json) {
+      return deserialisePayloadJson(json, CollectionCase.class);
     }
   }
 
@@ -205,6 +246,11 @@ public abstract class EventBuilder {
       EventPayload payload = ((RefusalEvent) genericEvent).getPayload().getRefusal();
       return build(genericEvent, payload);
     }
+
+    @Override
+    public EventPayload createPayload(String json) {
+      return deserialisePayloadJson(json, RefusalDetails.class);
+    }
   }
 
   public static class UacUpdateBuilder extends EventBuilder {
@@ -223,6 +269,11 @@ public abstract class EventBuilder {
       GenericEvent genericEvent = deserialiseEventJson(json, UacEvent.class);
       EventPayload payload = ((UacEvent) genericEvent).getPayload().getUac();
       return build(genericEvent, payload);
+    }
+
+    @Override
+    public EventPayload createPayload(String json) {
+      return deserialisePayloadJson(json, UAC.class);
     }
   }
 }
