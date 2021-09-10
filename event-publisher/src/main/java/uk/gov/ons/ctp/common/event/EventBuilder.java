@@ -51,7 +51,7 @@ public abstract class EventBuilder {
    * @param sendInfo object containing payload , source and channel.
    * @return event
    */
-  abstract GenericEvent create(SendInfo sendInfo);
+  public abstract GenericEvent create(SendInfo sendInfo);
 
   /**
    * Create information required to send the event based on the serialised backup event supplied.
@@ -100,7 +100,7 @@ public abstract class EventBuilder {
 
   public static class NullEventBuilder extends EventBuilder {
     @Override
-    GenericEvent create(SendInfo sendInfo) {
+    public GenericEvent create(SendInfo sendInfo) {
       return null;
     }
 
@@ -112,7 +112,7 @@ public abstract class EventBuilder {
 
   public static class FulfilmentBuilder extends EventBuilder {
     @Override
-    GenericEvent create(SendInfo sendInfo) {
+    public GenericEvent create(SendInfo sendInfo) {
       FulfilmentEvent fulfilmentRequestedEvent = new FulfilmentEvent();
       fulfilmentRequestedEvent.setEvent(
           buildHeader(EventType.FULFILMENT, sendInfo.getSource(), sendInfo.getChannel()));
@@ -132,7 +132,7 @@ public abstract class EventBuilder {
 
   public static class SurveyLaunchBuilder extends EventBuilder {
     @Override
-    GenericEvent create(SendInfo sendInfo) {
+    public GenericEvent create(SendInfo sendInfo) {
       SurveyLaunchEvent surveyLaunchedEvent = new SurveyLaunchEvent();
       surveyLaunchedEvent.setEvent(
           buildHeader(EventType.SURVEY_LAUNCH, sendInfo.getSource(), sendInfo.getChannel()));
@@ -150,7 +150,7 @@ public abstract class EventBuilder {
 
   public static class UacAuthenticateBuilder extends EventBuilder {
     @Override
-    GenericEvent create(SendInfo sendInfo) {
+    public GenericEvent create(SendInfo sendInfo) {
       UacAuthenticateEvent respondentAuthenticatedEvent = new UacAuthenticateEvent();
       respondentAuthenticatedEvent.setEvent(
           buildHeader(EventType.UAC_AUTHENTICATE, sendInfo.getSource(), sendInfo.getChannel()));
@@ -170,7 +170,7 @@ public abstract class EventBuilder {
 
   public static class CaseUpdateBuilder extends EventBuilder {
     @Override
-    GenericEvent create(SendInfo sendInfo) {
+    public GenericEvent create(SendInfo sendInfo) {
       CaseEvent caseEvent = new CaseEvent();
       caseEvent.setEvent(
           buildHeader(EventType.CASE_UPDATE, sendInfo.getSource(), sendInfo.getChannel()));
@@ -189,7 +189,7 @@ public abstract class EventBuilder {
 
   public static class RefusalBuilder extends EventBuilder {
     @Override
-    GenericEvent create(SendInfo sendInfo) {
+    public GenericEvent create(SendInfo sendInfo) {
       RefusalEvent respondentRefusalEvent = new RefusalEvent();
       respondentRefusalEvent.setEvent(
           buildHeader(EventType.REFUSAL, sendInfo.getSource(), sendInfo.getChannel()));
@@ -209,7 +209,7 @@ public abstract class EventBuilder {
 
   public static class UacUpdateBuilder extends EventBuilder {
     @Override
-    GenericEvent create(SendInfo sendInfo) {
+    public GenericEvent create(SendInfo sendInfo) {
       UacEvent uacEvent = new UacEvent();
       uacEvent.setEvent(
           buildHeader(EventType.UAC_UPDATE, sendInfo.getSource(), sendInfo.getChannel()));
