@@ -59,7 +59,7 @@ public abstract class EventBuilder {
    * @param json string of serialised event backup JSON.
    * @return object containing deserialised payload , source and channel.
    */
-  abstract SendInfo create(String json);
+  public abstract SendInfo create(String json);
 
   <T extends GenericEvent> T deserialiseEventJson(String json, Class<T> clazz) {
     try {
@@ -105,7 +105,7 @@ public abstract class EventBuilder {
     }
 
     @Override
-    SendInfo create(String json) {
+    public SendInfo create(String json) {
       return null;
     }
   }
@@ -123,7 +123,7 @@ public abstract class EventBuilder {
     }
 
     @Override
-    SendInfo create(String json) {
+    public SendInfo create(String json) {
       GenericEvent genericEvent = deserialiseEventJson(json, FulfilmentEvent.class);
       EventPayload payload = ((FulfilmentEvent) genericEvent).getPayload().getFulfilmentRequest();
       return build(genericEvent, payload);
@@ -141,7 +141,7 @@ public abstract class EventBuilder {
     }
 
     @Override
-    SendInfo create(String json) {
+    public SendInfo create(String json) {
       GenericEvent genericEvent = deserialiseEventJson(json, SurveyLaunchEvent.class);
       EventPayload payload = ((SurveyLaunchEvent) genericEvent).getPayload().getResponse();
       return build(genericEvent, payload);
@@ -161,7 +161,7 @@ public abstract class EventBuilder {
     }
 
     @Override
-    SendInfo create(String json) {
+    public SendInfo create(String json) {
       GenericEvent genericEvent = deserialiseEventJson(json, UacAuthenticateEvent.class);
       EventPayload payload = ((UacAuthenticateEvent) genericEvent).getPayload().getResponse();
       return build(genericEvent, payload);
@@ -180,7 +180,7 @@ public abstract class EventBuilder {
     }
 
     @Override
-    SendInfo create(String json) {
+    public SendInfo create(String json) {
       GenericEvent genericEvent = deserialiseEventJson(json, CaseEvent.class);
       EventPayload payload = ((CaseEvent) genericEvent).getPayload().getCollectionCase();
       return build(genericEvent, payload);
@@ -200,7 +200,7 @@ public abstract class EventBuilder {
     }
 
     @Override
-    SendInfo create(String json) {
+    public SendInfo create(String json) {
       GenericEvent genericEvent = deserialiseEventJson(json, RefusalEvent.class);
       EventPayload payload = ((RefusalEvent) genericEvent).getPayload().getRefusal();
       return build(genericEvent, payload);
@@ -219,7 +219,7 @@ public abstract class EventBuilder {
     }
 
     @Override
-    SendInfo create(String json) {
+    public SendInfo create(String json) {
       GenericEvent genericEvent = deserialiseEventJson(json, UacEvent.class);
       EventPayload payload = ((UacEvent) genericEvent).getPayload().getUac();
       return build(genericEvent, payload);
