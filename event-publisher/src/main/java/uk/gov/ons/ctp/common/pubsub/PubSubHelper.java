@@ -369,7 +369,11 @@ public class PubSubHelper {
     // Use routing key for queue name as well as binding. This gives the queue a 'fake' name, but
     // it saves the Cucumber tests from having to decide on a queue name
     String eventTopicName = eventTopic.getTopic();
-    return eventTopicName + "_cuc";
+    String subSuffix =
+        (eventType.equals(EventType.CASE_UPDATE) || eventType.equals(EventType.UAC_UPDATE))
+            ? "_rh"
+            : "_cuc";
+    return eventTopicName + subSuffix;
   }
 
   private SubscriberStubSettings buildSubscriberStubSettings(long wait) throws IOException {
