@@ -94,6 +94,24 @@ public class EventPublisher {
   }
 
   /**
+   * Method to publish an event given EventPayload as a JSON string.
+   *
+   * <p>See javadoc for <code>sendEvent</code> with <code>EventPayload</code> object, which this
+   * method calls.
+   *
+   * @param eventType the event type
+   * @param source the source
+   * @param channel the channel
+   * @param jsonEventPayload message payload for event as JSON String.
+   * @return String UUID transaction Id for event
+   */
+  public String sendEvent(
+      EventType eventType, Source source, Channel channel, String jsonEventPayload) {
+    EventPayload payload = eventType.getBuilder().createPayload(jsonEventPayload);
+    return sendEvent(eventType, source, channel, payload);
+  }
+
+  /**
    * Send a backup event that would have previously been stored in cloud data storage.
    *
    * @param event backup event , typically recovered from firestore.
