@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>eq-launcher</artifactId>
@@ -77,23 +79,21 @@
     </dependency>
 
     <dependency>
-       <groupId>org.bouncycastle</groupId>
-       <artifactId>bcprov-jdk15on</artifactId>
-       <version>1.64</version>
-     </dependency>
-
-    <dependency>
-       <groupId>org.bouncycastle</groupId>
-       <artifactId>bcpkix-jdk15on</artifactId>
-       <version>1.64</version>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15on</artifactId>
+      <version>1.64</version>
     </dependency>
 
-   <!-- WARNING changing the version of Nimbus may lead to loss of a deprecated Algorithm that may break EQ compatibility -->
-   <dependency>
-     <groupId>com.nimbusds</groupId>
-     <artifactId>nimbus-jose-jwt</artifactId>
-     <version>8.1</version> <!--$NO-MVN-MAN-VER$-->
-   </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpkix-jdk15on</artifactId>
+      <version>1.64</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.nimbusds</groupId>
+      <artifactId>nimbus-jose-jwt</artifactId>
+    </dependency>
 
   </dependencies>
 
@@ -112,12 +112,12 @@
           </execution>
         </executions>
       </plugin>
-      
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
       </plugin>
-      
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -129,7 +129,7 @@
           </systemPropertyVariables>
         </configuration>
       </plugin>
-      
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>

@@ -295,6 +295,20 @@ public class EventPublisherTest {
     assertThrows(EventPublishException.class, () -> eventPublisher.sendEvent(data));
   }
 
+  @Test
+  public void shouldSendEventWithJsonPayload() {
+    String payload = FixtureHelper.loadPackageObjectNode("SurveyLaunchResponse").toString();
+
+    String transactionId =
+        eventPublisher.sendEvent(
+            EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, payload);
+
+    EventTopic eventTopic = EventTopic.forType(EventType.SURVEY_LAUNCH);
+    verify(sender, times(1)).sendEvent(eq(eventTopic), surveyLaunchedEventCaptor.capture());
+    SurveyLaunchEvent event = surveyLaunchedEventCaptor.getValue();
+    assertHeader(event, transactionId, EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
+  }
+
   // --- helpers
 
   private void sendBackupEvent(GenericEvent ev) throws Exception {

@@ -181,6 +181,12 @@
         <version>${junit.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>com.nimbusds</groupId>
+        <artifactId>nimbus-jose-jwt</artifactId>
+        <!-- WARNING changing the version of Nimbus may lead to loss of a deprecated Algorithm that may break EQ compatibility -->
+        <version>8.1</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
