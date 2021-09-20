@@ -203,7 +203,7 @@ public class PubSubHelper {
    * subscription.
    *
    * @param <T> is the class of object we are expected to recieve.
-   * @param eventType is the name of the queue to read from.
+   * @param eventType is the name of the topic to read from.
    * @param clazz is the class that the message should be converted to.
    * @param maxWaitTimeMillis is the maximum amount of time the caller is prepared to wait for the
    *     message to appear.
@@ -217,7 +217,7 @@ public class PubSubHelper {
 
     String message = getMessage(subscriberName, maxWaitTimeMillis);
 
-    // Return to caller if nothing read from queue
+    // Return to caller if nothing read from subscription
     if (message == null) {
       log.info(
           "PubSub getMessage. Message is null. Unable to convert to class '"
@@ -265,7 +265,7 @@ public class PubSubHelper {
     do {
       messageBody = retrieveMessage(subscription, maxWaitTimeMillis);
       if (messageBody != null) {
-        log.info("Message read from queue");
+        log.info("Message read from subscription");
         break;
       }
 
@@ -322,7 +322,7 @@ public class PubSubHelper {
       }
       return msg;
     } catch (IOException e) {
-      String errorMessage = "Failed to flush queue '" + subscription + "'";
+      String errorMessage = "Failed to flush subscription '" + subscription + "'";
       log.error(errorMessage, kv("subscription", subscription), e);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e, errorMessage);
     }
@@ -366,9 +366,10 @@ public class PubSubHelper {
       throw new UnsupportedOperationException(errorMessage);
     }
 
-    // Use routing key for queue name as well as binding. This gives the queue a 'fake' name, but
-    // it saves the Cucumber tests from having to decide on a queue name
+    // Use routing key for subscription name as well as binding. This gives the subscription a 'fake' name, but
+    // it saves the Cucumber tests from having to decide on a subscription name
     String eventTopicName = eventTopic.getTopic();
+    //TODO this needs to be parameterized as contact centre svc will also be consuming messages
     String subSuffix =
         (eventType.equals(EventType.CASE_UPDATE) || eventType.equals(EventType.UAC_UPDATE))
             ? "_rh"
