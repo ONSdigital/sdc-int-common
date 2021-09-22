@@ -366,10 +366,11 @@ public class PubSubHelper {
       throw new UnsupportedOperationException(errorMessage);
     }
 
-    // Use routing key for subscription name as well as binding. This gives the subscription a 'fake' name, but
+    // Use routing key for subscription name as well as binding. This gives the subscription a
+    // 'fake' name, but
     // it saves the Cucumber tests from having to decide on a subscription name
     String eventTopicName = eventTopic.getTopic();
-    //TODO this needs to be parameterized as contact centre svc will also be consuming messages
+    // TODO this needs to be parameterized as contact centre svc will also be consuming messages
     String subSuffix =
         (eventType.equals(EventType.CASE_UPDATE) || eventType.equals(EventType.UAC_UPDATE))
             ? "_rh"

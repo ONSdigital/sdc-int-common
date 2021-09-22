@@ -12,6 +12,9 @@ import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.event.model.CaseEvent;
 import uk.gov.ons.ctp.common.event.model.CasePayload;
 import uk.gov.ons.ctp.common.event.model.CollectionCase;
+import uk.gov.ons.ctp.common.event.model.CollectionExercise;
+import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdateEvent;
+import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdatePayload;
 import uk.gov.ons.ctp.common.event.model.EventPayload;
 import uk.gov.ons.ctp.common.event.model.FulfilmentEvent;
 import uk.gov.ons.ctp.common.event.model.FulfilmentPayload;
@@ -21,8 +24,11 @@ import uk.gov.ons.ctp.common.event.model.Header;
 import uk.gov.ons.ctp.common.event.model.RefusalDetails;
 import uk.gov.ons.ctp.common.event.model.RefusalEvent;
 import uk.gov.ons.ctp.common.event.model.RefusalPayload;
+import uk.gov.ons.ctp.common.event.model.Survey;
 import uk.gov.ons.ctp.common.event.model.SurveyLaunchEvent;
 import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
+import uk.gov.ons.ctp.common.event.model.SurveyUpdateEvent;
+import uk.gov.ons.ctp.common.event.model.SurveyUpdatePayload;
 import uk.gov.ons.ctp.common.event.model.UAC;
 import uk.gov.ons.ctp.common.event.model.UacAuthenticateEvent;
 import uk.gov.ons.ctp.common.event.model.UacAuthenticateResponse;
@@ -38,10 +44,13 @@ public abstract class EventBuilder {
   public static final EventBuilder NONE = new NullEventBuilder();
   public static final EventBuilder FULFILMENT = new FulfilmentBuilder();
   public static final EventBuilder SURVEY_LAUNCH = new SurveyLaunchBuilder();
+  public static final EventBuilder SURVEY_UPDATE = new SurveyUpdateBuilder();
   public static final EventBuilder UAC_AUTHENTICATE = new UacAuthenticateBuilder();
   public static final EventBuilder CASE_UPDATE = new CaseUpdateBuilder();
   public static final EventBuilder REFUSAL = new RefusalBuilder();
   public static final EventBuilder UAC_UPDATE = new UacUpdateBuilder();
+  public static final EventBuilder COLLECTION_EXCERSISE_UPDATE =
+      new CollectionExerciseUpdateBuilder();
 
   ObjectMapper objectMapper = new CustomObjectMapper();
 
@@ -274,6 +283,59 @@ public abstract class EventBuilder {
     @Override
     EventPayload createPayload(String json) {
       return deserialisePayloadJson(json, UAC.class);
+    }
+  }
+
+  public static class SurveyUpdateBuilder extends EventBuilder {
+    @Override
+    GenericEvent create(SendInfo sendInfo) {
+      SurveyUpdateEvent surveyUpdateEvent = new SurveyUpdateEvent();
+      surveyUpdateEvent.setEvent(
+          buildHeader(EventType.SURVEY_UPDATE, sendInfo.getSource(), sendInfo.getChannel()));
+      SurveyUpdatePayload surveyUpdatePayload =
+          new SurveyUpdatePayload((Survey) sendInfo.getPayload());
+      surveyUpdateEvent.setPayload(surveyUpdatePayload);
+      return surveyUpdateEvent;
+    }
+
+    @Override
+    SendInfo create(String json) {
+      GenericEvent genericEvent = deserialiseEventJson(json, SurveyUpdateEvent.class);
+      EventPayload payload = ((SurveyUpdateEvent) genericEvent).getPayload().getSurvey();
+      return build(genericEvent, payload);
+    }
+
+    @Override
+    EventPayload createPayload(String json) {
+      return deserialisePayloadJson(json, Survey.class);
+    }
+  }
+
+  public static class CollectionExerciseUpdateBuilder extends EventBuilder {
+    @Override
+    GenericEvent create(SendInfo sendInfo) {
+      CollectionExerciseUpdateEvent collectionExerciseUpdateEvent =
+          new CollectionExerciseUpdateEvent();
+      collectionExerciseUpdateEvent.setEvent(
+          buildHeader(
+              EventType.COLLECTION_EXERCISE_UPDATE, sendInfo.getSource(), sendInfo.getChannel()));
+      CollectionExerciseUpdatePayload collectionExerciseUpdateEventPayload =
+          new CollectionExerciseUpdatePayload((CollectionExercise) sendInfo.getPayload());
+      collectionExerciseUpdateEvent.setPayload(collectionExerciseUpdateEventPayload);
+      return collectionExerciseUpdateEvent;
+    }
+
+    @Override
+    SendInfo create(String json) {
+      GenericEvent genericEvent = deserialiseEventJson(json, CollectionExerciseUpdateEvent.class);
+      EventPayload payload =
+          ((CollectionExerciseUpdateEvent) genericEvent).getPayload().getCollectionExercise();
+      return build(genericEvent, payload);
+    }
+
+    @Override
+    EventPayload createPayload(String json) {
+      return deserialisePayloadJson(json, CollectionExercise.class);
     }
   }
 }
