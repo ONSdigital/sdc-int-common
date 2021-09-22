@@ -12,6 +12,7 @@ import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
 import com.google.cloud.pubsub.v1.stub.GrpcSubscriberStub;
 import com.google.cloud.pubsub.v1.stub.SubscriberStub;
 import com.google.cloud.pubsub.v1.stub.SubscriberStubSettings;
+import com.google.protobuf.Timestamp;
 import com.google.pubsub.v1.AcknowledgeRequest;
 import com.google.pubsub.v1.ProjectName;
 import com.google.pubsub.v1.ProjectSubscriptionName;
@@ -19,11 +20,14 @@ import com.google.pubsub.v1.PullRequest;
 import com.google.pubsub.v1.PullResponse;
 import com.google.pubsub.v1.PushConfig;
 import com.google.pubsub.v1.ReceivedMessage;
+import com.google.pubsub.v1.SeekRequest;
 import com.google.pubsub.v1.Subscription;
 import com.google.pubsub.v1.TopicName;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.threeten.bp.Duration;
@@ -135,8 +139,33 @@ public class PubSubHelper {
    * @param eventType is the type of the event that PubSubHelper has a Subscription listening to.
    */
   public synchronized void flushTopic(EventType eventType) throws CTPException {
-    deleteSubscription(eventType);
+    //    deleteSubscription(eventType);
     createSubscription(eventType);
+    try {
+      String subscriptionId = buildSubscriberId(eventType);
+      ProjectSubscriptionName subscriptionName =
+          ProjectSubscriptionName.of(this.projectId, subscriptionId);
+      String subFullname = subscriptionName.toString();
+
+      SubscriberStub subscriberStub = GrpcSubscriberStub.create(defaultSubscriberStubSettings);
+
+      SubscriptionAdminClient subscriptionAdminClient =
+          SubscriptionAdminClient.create(subscriberStub);
+
+      Instant now = Instant.now().plus(2, ChronoUnit.HOURS);
+      ;
+      Timestamp timestamp =
+          Timestamp.newBuilder().setSeconds(now.getEpochSecond()).setNanos(now.getNano()).build();
+
+      SeekRequest seekRequest =
+          SeekRequest.newBuilder().setSubscription(subFullname).setTime(timestamp).build();
+      subscriptionAdminClient.seek(seekRequest);
+
+    } catch (IOException e) {
+      String errorMessage = "Failed to delete subscription";
+      log.error(errorMessage, e);
+      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e, errorMessage);
+    }
   }
 
   /**
@@ -366,10 +395,11 @@ public class PubSubHelper {
       throw new UnsupportedOperationException(errorMessage);
     }
 
-    // Use routing key for subscription name as well as binding. This gives the subscription a 'fake' name, but
+    // Use routing key for subscription name as well as binding. This gives the subscription a
+    // 'fake' name, but
     // it saves the Cucumber tests from having to decide on a subscription name
     String eventTopicName = eventTopic.getTopic();
-    //TODO this needs to be parameterized as contact centre svc will also be consuming messages
+    // TODO this needs to be parameterized as contact centre svc will also be consuming messages
     String subSuffix =
         (eventType.equals(EventType.CASE_UPDATE) || eventType.equals(EventType.UAC_UPDATE))
             ? "_rh"
