@@ -27,7 +27,6 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import java.io.IOException;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.threeten.bp.Duration;
@@ -138,31 +137,31 @@ public class PubSubHelper {
    *
    * @param eventType is the type of the event that PubSubHelper has a Subscription listening to.
    */
-  public synchronized void flushTopic(EventType eventType) throws CTPException {
-    //    deleteSubscription(eventType);
-    createSubscription(eventType);
+  public synchronized void flushSubscription(EventType eventType) throws CTPException {
     try {
-      String subscriptionId = buildSubscriberId(eventType);
-      ProjectSubscriptionName subscriptionName =
-          ProjectSubscriptionName.of(this.projectId, subscriptionId);
-      String subFullname = subscriptionName.toString();
+      // Creates the subscription only if it doesnt exist
+      createSubscription(eventType);
 
       SubscriberStub subscriberStub = GrpcSubscriberStub.create(defaultSubscriberStubSettings);
-
       SubscriptionAdminClient subscriptionAdminClient =
           SubscriptionAdminClient.create(subscriberStub);
 
-      Instant now = Instant.now().plus(2, ChronoUnit.HOURS);
-      ;
+      String subscriptionId = buildSubscriberId(eventType);
+      String subscriptionName =
+          ProjectSubscriptionName.of(this.projectId, subscriptionId).toString();
+
+      // Googles method to purge Subscriptions
+      // ref: https://cloud.google.com/pubsub/docs/replay-overview
+      // ref:
+      // https://stackoverflow.com/questions/39398173/best-practices-for-draining-or-clearing-a-google-cloud-pubsub-topic/39398346
+      Instant now = Instant.now();
       Timestamp timestamp =
           Timestamp.newBuilder().setSeconds(now.getEpochSecond()).setNanos(now.getNano()).build();
-
       SeekRequest seekRequest =
-          SeekRequest.newBuilder().setSubscription(subFullname).setTime(timestamp).build();
+          SeekRequest.newBuilder().setSubscription(subscriptionName).setTime(timestamp).build();
       subscriptionAdminClient.seek(seekRequest);
-
     } catch (IOException e) {
-      String errorMessage = "Failed to delete subscription";
+      String errorMessage = "Failed to flush subscription";
       log.error(errorMessage, e);
       throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e, errorMessage);
     }
