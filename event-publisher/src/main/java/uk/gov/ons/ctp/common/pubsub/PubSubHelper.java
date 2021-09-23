@@ -12,6 +12,7 @@ import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
 import com.google.cloud.pubsub.v1.stub.GrpcSubscriberStub;
 import com.google.cloud.pubsub.v1.stub.SubscriberStub;
 import com.google.cloud.pubsub.v1.stub.SubscriberStubSettings;
+import com.google.protobuf.Timestamp;
 import com.google.pubsub.v1.AcknowledgeRequest;
 import com.google.pubsub.v1.ProjectName;
 import com.google.pubsub.v1.ProjectSubscriptionName;
@@ -19,11 +20,13 @@ import com.google.pubsub.v1.PullRequest;
 import com.google.pubsub.v1.PullResponse;
 import com.google.pubsub.v1.PushConfig;
 import com.google.pubsub.v1.ReceivedMessage;
+import com.google.pubsub.v1.SeekRequest;
 import com.google.pubsub.v1.Subscription;
 import com.google.pubsub.v1.TopicName;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.threeten.bp.Duration;
@@ -134,9 +137,34 @@ public class PubSubHelper {
    *
    * @param eventType is the type of the event that PubSubHelper has a Subscription listening to.
    */
-  public synchronized void flushTopic(EventType eventType) throws CTPException {
-    deleteSubscription(eventType);
-    createSubscription(eventType);
+  public synchronized void flushSubscription(EventType eventType) throws CTPException {
+    try {
+      // Creates the subscription only if it doesnt exist
+      createSubscription(eventType);
+
+      SubscriberStub subscriberStub = GrpcSubscriberStub.create(defaultSubscriberStubSettings);
+      SubscriptionAdminClient subscriptionAdminClient =
+          SubscriptionAdminClient.create(subscriberStub);
+
+      String subscriptionId = buildSubscriberId(eventType);
+      String subscriptionName =
+          ProjectSubscriptionName.of(this.projectId, subscriptionId).toString();
+
+      // Googles method to purge Subscriptions
+      // ref: https://cloud.google.com/pubsub/docs/replay-overview
+      // ref:
+      // https://stackoverflow.com/questions/39398173/best-practices-for-draining-or-clearing-a-google-cloud-pubsub-topic/39398346
+      Instant now = Instant.now();
+      Timestamp timestamp =
+          Timestamp.newBuilder().setSeconds(now.getEpochSecond()).setNanos(now.getNano()).build();
+      SeekRequest seekRequest =
+          SeekRequest.newBuilder().setSubscription(subscriptionName).setTime(timestamp).build();
+      subscriptionAdminClient.seek(seekRequest);
+    } catch (IOException e) {
+      String errorMessage = "Failed to flush subscription";
+      log.error(errorMessage, e);
+      throw new CTPException(CTPException.Fault.SYSTEM_ERROR, e, errorMessage);
+    }
   }
 
   /**
@@ -366,10 +394,11 @@ public class PubSubHelper {
       throw new UnsupportedOperationException(errorMessage);
     }
 
-    // Use routing key for subscription name as well as binding. This gives the subscription a 'fake' name, but
+    // Use routing key for subscription name as well as binding. This gives the subscription a
+    // 'fake' name, but
     // it saves the Cucumber tests from having to decide on a subscription name
     String eventTopicName = eventTopic.getTopic();
-    //TODO this needs to be parameterized as contact centre svc will also be consuming messages
+    // TODO this needs to be parameterized as contact centre svc will also be consuming messages
     String subSuffix =
         (eventType.equals(EventType.CASE_UPDATE) || eventType.equals(EventType.UAC_UPDATE))
             ? "_rh"
