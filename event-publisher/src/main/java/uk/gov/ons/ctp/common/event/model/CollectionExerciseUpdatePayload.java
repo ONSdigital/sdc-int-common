@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CollectionExerciseUpdatePayload {
-  CollectionExercise collectionExercise = new CollectionExercise();
+  CollectionExercise collectionExerciseUpdate = new CollectionExercise();
 }

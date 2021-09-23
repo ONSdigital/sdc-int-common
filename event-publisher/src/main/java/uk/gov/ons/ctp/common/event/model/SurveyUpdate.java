@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Survey implements EventPayload {
+public class SurveyUpdate implements EventPayload {
 
-  private String id;
+  private String surveyId;
+
   private String name;
 }

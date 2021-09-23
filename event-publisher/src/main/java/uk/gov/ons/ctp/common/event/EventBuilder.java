@@ -24,9 +24,9 @@ import uk.gov.ons.ctp.common.event.model.Header;
 import uk.gov.ons.ctp.common.event.model.RefusalDetails;
 import uk.gov.ons.ctp.common.event.model.RefusalEvent;
 import uk.gov.ons.ctp.common.event.model.RefusalPayload;
-import uk.gov.ons.ctp.common.event.model.Survey;
 import uk.gov.ons.ctp.common.event.model.SurveyLaunchEvent;
 import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
+import uk.gov.ons.ctp.common.event.model.SurveyUpdate;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdateEvent;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdatePayload;
 import uk.gov.ons.ctp.common.event.model.UAC;
@@ -293,7 +293,7 @@ public abstract class EventBuilder {
       surveyUpdateEvent.setEvent(
           buildHeader(EventType.SURVEY_UPDATE, sendInfo.getSource(), sendInfo.getChannel()));
       SurveyUpdatePayload surveyUpdatePayload =
-          new SurveyUpdatePayload((Survey) sendInfo.getPayload());
+          new SurveyUpdatePayload((SurveyUpdate) sendInfo.getPayload());
       surveyUpdateEvent.setPayload(surveyUpdatePayload);
       return surveyUpdateEvent;
     }
@@ -301,13 +301,13 @@ public abstract class EventBuilder {
     @Override
     SendInfo create(String json) {
       GenericEvent genericEvent = deserialiseEventJson(json, SurveyUpdateEvent.class);
-      EventPayload payload = ((SurveyUpdateEvent) genericEvent).getPayload().getSurvey();
+      EventPayload payload = ((SurveyUpdateEvent) genericEvent).getPayload().getSurveyUpdate();
       return build(genericEvent, payload);
     }
 
     @Override
     EventPayload createPayload(String json) {
-      return deserialisePayloadJson(json, Survey.class);
+      return deserialisePayloadJson(json, SurveyUpdate.class);
     }
   }
 
@@ -329,7 +329,7 @@ public abstract class EventBuilder {
     SendInfo create(String json) {
       GenericEvent genericEvent = deserialiseEventJson(json, CollectionExerciseUpdateEvent.class);
       EventPayload payload =
-          ((CollectionExerciseUpdateEvent) genericEvent).getPayload().getCollectionExercise();
+          ((CollectionExerciseUpdateEvent) genericEvent).getPayload().getCollectionExerciseUpdate();
       return build(genericEvent, payload);
     }
 

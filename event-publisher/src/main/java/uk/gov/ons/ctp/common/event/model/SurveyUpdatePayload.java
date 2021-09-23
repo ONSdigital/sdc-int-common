@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SurveyUpdatePayload {
 
-  private Survey survey = new Survey();
+  private SurveyUpdate surveyUpdate = new SurveyUpdate();
 }
