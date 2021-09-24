@@ -2,7 +2,6 @@ package uk.gov.ons.ctp.common.event.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Date;
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,5 +22,5 @@ public class CollectionExercise implements EventPayload {
   @JsonSerialize(using = CustomDateSerialiser.class)
   private Date endDate;
 
-  private Map<String, String> metadata;
+  private CollectionExerciseMetadata metadata;
 }
