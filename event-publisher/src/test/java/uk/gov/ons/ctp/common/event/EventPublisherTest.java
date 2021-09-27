@@ -258,7 +258,7 @@ public class EventPublisherTest {
   @Test
   public void shouldSendBackupUacUpdatedEvent() throws Exception {
     UacEvent ev = aUacEvent();
-    ev.getEvent().setType(EventType.UAC_UPDATE);
+    ev.getHeader().setTopic(EventType.UAC_UPDATE);
     sendBackupEvent(ev);
 
     EventTopic eventTopic = EventTopic.forType(EventType.UAC_UPDATE);
@@ -279,7 +279,7 @@ public class EventPublisherTest {
   @Test
   public void shouldSendBackupCaseUpdatedEvent() throws Exception {
     CaseEvent ev = aCaseEvent();
-    ev.getEvent().setType(EventType.CASE_UPDATE);
+    ev.getHeader().setTopic(EventType.CASE_UPDATE);
     sendBackupEvent(ev);
 
     EventTopic eventTopic = EventTopic.forType(EventType.CASE_UPDATE);
@@ -328,8 +328,8 @@ public class EventPublisherTest {
   private EventBackupData createEvent(GenericEvent event) {
     long failureTimeMillis = 123L;
     EventBackupData data = new EventBackupData();
-    data.setId(event.getEvent().getTransactionId());
-    data.setEventType(event.getEvent().getType());
+    data.setId(event.getHeader().getMessageId());
+    data.setEventType(event.getHeader().getTopic());
     data.setMessageFailureDateTimeInMillis(failureTimeMillis);
     data.setMessageSentDateTimeInMillis(null);
     data.setEvent(serialise(event));
@@ -365,17 +365,17 @@ public class EventPublisherTest {
   }
 
   private void verifyEventSent(GenericEvent orig, GenericEvent sent) {
-    Header origHeader = orig.getEvent();
-    Header sentHeader = sent.getEvent();
+    Header origHeader = orig.getHeader();
+    Header sentHeader = sent.getHeader();
     Date sentDate = sentHeader.getDateTime();
     assertTrue(
         sentDate.after(this.startOfTestDateTime) || sentDate.equals(this.startOfTestDateTime));
     assertTrue(sentDate.after(origHeader.getDateTime()));
-    assertFalse(sentHeader.getTransactionId().equals(origHeader.getTransactionId()));
+    assertFalse(sentHeader.getMessageId().equals(origHeader.getMessageId()));
 
     // check all other fields are the same
     origHeader.setDateTime(sentDate);
-    origHeader.setTransactionId(sentHeader.getTransactionId());
+    origHeader.setMessageId(sentHeader.getMessageId());
     assertEquals(orig, sent);
   }
 }

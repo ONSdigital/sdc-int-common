@@ -2,8 +2,9 @@ package uk.gov.ons.ctp.common.event;
 
 import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.domain.Channel;
 import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.event.EventBuilder.SendInfo;
@@ -194,7 +195,7 @@ public class EventPublisher {
       }
     }
 
-    return genericEvent.getEvent().getTransactionId();
+    return genericEvent.getHeader().getMessageId().toString();
   }
 
   private void publish(EventTopic eventTopic, GenericEvent genericEvent) {
@@ -218,7 +219,7 @@ public class EventPublisher {
   }
 
   private void publish(EventTopic eventTopic, GenericEvent genericEvent, String loggingMsgSuffix) {
-    EventType eventType = genericEvent.getEvent().getType();
+    EventType eventType = genericEvent.getHeader().getTopic();
 
     log.info(
         "Publishing message " + loggingMsgSuffix,

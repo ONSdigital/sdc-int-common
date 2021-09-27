@@ -21,11 +21,11 @@ public final class EventPublisherTestUtil {
       EventType expectedType,
       Source expectedSource,
       Channel expectedChannel) {
-    assertEquals(transactionId, event.getEvent().getTransactionId());
-    assertThat(UUID.fromString(event.getEvent().getTransactionId()), instanceOf(UUID.class));
-    assertEquals(expectedType, event.getEvent().getType());
-    assertEquals(expectedSource, event.getEvent().getSource());
-    assertEquals(expectedChannel, event.getEvent().getChannel());
-    assertThat(event.getEvent().getDateTime(), instanceOf(Date.class));
+    assertEquals(transactionId, event.getHeader().getMessageId());
+    assertThat(UUID.fromString(event.getHeader().getMessageId()), instanceOf(UUID.class));
+    assertEquals(expectedType, event.getHeader().getTopic());
+    assertEquals(expectedSource, event.getHeader().getSource());
+    assertEquals(expectedChannel, event.getHeader().getChannel());
+    assertThat(event.getHeader().getDateTime(), instanceOf(Date.class));
   }
 }

@@ -7,7 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GenericEvent {
+public class NewCaseSample {
 
-  private Header header;
+  private String schoolId;
+  private String schoolName;
+  private boolean consentGivenTest;
+  private boolean consentGivenSurvey;
 }

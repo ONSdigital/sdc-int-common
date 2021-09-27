@@ -87,11 +87,14 @@ public abstract class EventBuilder {
 
   static Header buildHeader(EventType type, Source source, Channel channel) {
     return Header.builder()
-        .type(type)
+        .version("TODO: PMB")
+        .topic(type)
         .source(source)
         .channel(channel)
         .dateTime(new Date())
-        .transactionId(UUID.randomUUID().toString())
+        .messageId(UUID.randomUUID().toString())
+        .correlationId(UUID.randomUUID().toString()) // TODO: PMB Do we create??
+        .originatingUser("TODO: PMB")
         .build();
   }
 
@@ -108,8 +111,8 @@ public abstract class EventBuilder {
     SendInfo info =
         SendInfo.builder()
             .payload(payload)
-            .source(genericEvent.getEvent().getSource())
-            .channel(genericEvent.getEvent().getChannel())
+            .source(genericEvent.getHeader().getSource())
+            .channel(genericEvent.getHeader().getChannel())
             .build();
     return info;
   }
@@ -135,7 +138,7 @@ public abstract class EventBuilder {
     @Override
     GenericEvent create(SendInfo sendInfo) {
       FulfilmentEvent fulfilmentRequestedEvent = new FulfilmentEvent();
-      fulfilmentRequestedEvent.setEvent(
+      fulfilmentRequestedEvent.setHeader(
           buildHeader(EventType.FULFILMENT, sendInfo.getSource(), sendInfo.getChannel()));
       FulfilmentPayload fulfilmentPayload =
           new FulfilmentPayload((FulfilmentRequest) sendInfo.getPayload());
@@ -160,7 +163,7 @@ public abstract class EventBuilder {
     @Override
     GenericEvent create(SendInfo sendInfo) {
       SurveyLaunchEvent surveyLaunchedEvent = new SurveyLaunchEvent();
-      surveyLaunchedEvent.setEvent(
+      surveyLaunchedEvent.setHeader(
           buildHeader(EventType.SURVEY_LAUNCH, sendInfo.getSource(), sendInfo.getChannel()));
       surveyLaunchedEvent.getPayload().setResponse((SurveyLaunchResponse) sendInfo.getPayload());
       return surveyLaunchedEvent;
@@ -183,7 +186,7 @@ public abstract class EventBuilder {
     @Override
     GenericEvent create(SendInfo sendInfo) {
       UacAuthenticateEvent respondentAuthenticatedEvent = new UacAuthenticateEvent();
-      respondentAuthenticatedEvent.setEvent(
+      respondentAuthenticatedEvent.setHeader(
           buildHeader(EventType.UAC_AUTHENTICATE, sendInfo.getSource(), sendInfo.getChannel()));
       respondentAuthenticatedEvent
           .getPayload()
@@ -208,7 +211,7 @@ public abstract class EventBuilder {
     @Override
     GenericEvent create(SendInfo sendInfo) {
       CaseEvent caseEvent = new CaseEvent();
-      caseEvent.setEvent(
+      caseEvent.setHeader(
           buildHeader(EventType.CASE_UPDATE, sendInfo.getSource(), sendInfo.getChannel()));
       CasePayload casePayload = new CasePayload((CollectionCase) sendInfo.getPayload());
       caseEvent.setPayload(casePayload);
@@ -232,7 +235,7 @@ public abstract class EventBuilder {
     @Override
     GenericEvent create(SendInfo sendInfo) {
       RefusalEvent respondentRefusalEvent = new RefusalEvent();
-      respondentRefusalEvent.setEvent(
+      respondentRefusalEvent.setHeader(
           buildHeader(EventType.REFUSAL, sendInfo.getSource(), sendInfo.getChannel()));
       RefusalPayload respondentRefusalPayload =
           new RefusalPayload((RefusalDetails) sendInfo.getPayload());
@@ -257,7 +260,7 @@ public abstract class EventBuilder {
     @Override
     GenericEvent create(SendInfo sendInfo) {
       UacEvent uacEvent = new UacEvent();
-      uacEvent.setEvent(
+      uacEvent.setHeader(
           buildHeader(EventType.UAC_UPDATE, sendInfo.getSource(), sendInfo.getChannel()));
       UacPayload uacPayload = new UacPayload((UAC) sendInfo.getPayload());
       uacEvent.setPayload(uacPayload);

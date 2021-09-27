@@ -50,7 +50,7 @@ public class FirestoreEventPersistenceTest {
 
     persistence.persistEvent(EventType.UAC_AUTHENTICATE, event);
 
-    String expectedTransactionId = event.getEvent().getTransactionId();
+    String expectedTransactionId = event.getHeader().getMessageId();
     Mockito.verify(cloudDataStore, times(1))
         .storeObject(
             eq("testing-backupcollection"),

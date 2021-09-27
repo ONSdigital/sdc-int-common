@@ -52,7 +52,7 @@ public class FirestoreEventPersistence implements EventPersistence {
 
   @Override
   public void persistEvent(EventType eventType, GenericEvent genericEvent) throws CTPException {
-    String id = genericEvent.getEvent().getTransactionId();
+    String id = genericEvent.getHeader().getMessageId();
 
     log.debug("Storing event data in Firestore", kv("id", id));
 
@@ -64,9 +64,9 @@ public class FirestoreEventPersistence implements EventPersistence {
 
     cloudDataStore.storeObject(
         eventBackupSchema,
-        genericEvent.getEvent().getTransactionId(),
+        genericEvent.getHeader().getMessageId(),
         eventData,
-        genericEvent.getEvent().getTransactionId());
+        genericEvent.getHeader().getMessageId());
 
     log.debug("Stored event data", kv("id", id));
   }

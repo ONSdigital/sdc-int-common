@@ -10,7 +10,7 @@ import uk.gov.ons.ctp.common.event.model.UAC;
 import uk.gov.ons.ctp.common.event.model.UacAuthenticateResponse;
 
 @Getter
-public enum EventType {
+public enum EventType { // TODO: PMB Rename to topicType??
   CASE_UPDATE(CollectionCase.class, EventBuilder.CASE_UPDATE),
   FULFILMENT(FulfilmentRequest.class, EventBuilder.FULFILMENT),
   REFUSAL(RefusalDetails.class, EventBuilder.REFUSAL),
