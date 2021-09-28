@@ -31,6 +31,8 @@ import uk.gov.ons.ctp.common.domain.Channel;
 import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.event.model.CaseEvent;
 import uk.gov.ons.ctp.common.event.model.CollectionCase;
+import uk.gov.ons.ctp.common.event.model.CollectionExercise;
+import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdateEvent;
 import uk.gov.ons.ctp.common.event.model.EventPayload;
 import uk.gov.ons.ctp.common.event.model.FulfilmentEvent;
 import uk.gov.ons.ctp.common.event.model.FulfilmentRequest;
@@ -40,6 +42,8 @@ import uk.gov.ons.ctp.common.event.model.RefusalDetails;
 import uk.gov.ons.ctp.common.event.model.RefusalEvent;
 import uk.gov.ons.ctp.common.event.model.SurveyLaunchEvent;
 import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
+import uk.gov.ons.ctp.common.event.model.SurveyUpdate;
+import uk.gov.ons.ctp.common.event.model.SurveyUpdateEvent;
 import uk.gov.ons.ctp.common.event.model.UAC;
 import uk.gov.ons.ctp.common.event.model.UacAuthenticateEvent;
 import uk.gov.ons.ctp.common.event.model.UacAuthenticateResponse;
@@ -63,6 +67,8 @@ public class EventPublisherTest {
   @Captor private ArgumentCaptor<UacEvent> uacEventCaptor;
   @Captor private ArgumentCaptor<SurveyLaunchEvent> surveyLaunchedEventCaptor;
   @Captor private ArgumentCaptor<CaseEvent> caseEventCaptor;
+  @Captor private ArgumentCaptor<SurveyUpdateEvent> surveyUpdateArgumentCaptor;
+  @Captor private ArgumentCaptor<CollectionExerciseUpdateEvent> collectionExerciseArgumentCaptor;
 
   private Date startOfTestDateTime;
 
@@ -212,6 +218,44 @@ public class EventPublisherTest {
     assertSendUac(EventType.UAC_UPDATE);
   }
 
+  private void assertSendSurveyUpdate(EventType type) {
+    SurveyUpdate payload = loadJson(SurveyUpdate[].class);
+
+    String transactionId =
+        eventPublisher.sendEvent(type, Source.CONTACT_CENTRE_API, Channel.CC, payload);
+
+    EventTopic eventTopic = EventTopic.forType(type);
+    verify(sender).sendEvent(eq(eventTopic), surveyUpdateArgumentCaptor.capture());
+    SurveyUpdateEvent event = surveyUpdateArgumentCaptor.getValue();
+
+    assertHeader(event, transactionId, type, Source.CONTACT_CENTRE_API, Channel.CC);
+    assertEquals(payload, event.getPayload().getSurveyUpdate());
+  }
+
+  @Test
+  public void shouldSendSurveyUpdate() {
+    assertSendSurveyUpdate(EventType.SURVEY_UPDATE);
+  }
+
+  private void assertSendCollectionExercise(EventType type) {
+    CollectionExercise payload = loadJson(CollectionExercise[].class);
+
+    String transactionId =
+        eventPublisher.sendEvent(type, Source.CONTACT_CENTRE_API, Channel.CC, payload);
+
+    EventTopic eventTopic = EventTopic.forType(type);
+    verify(sender).sendEvent(eq(eventTopic), collectionExerciseArgumentCaptor.capture());
+    CollectionExerciseUpdateEvent event = collectionExerciseArgumentCaptor.getValue();
+
+    assertHeader(event, transactionId, type, Source.CONTACT_CENTRE_API, Channel.CC);
+    assertEquals(payload, event.getPayload().getCollectionExerciseUpdate());
+  }
+
+  @Test
+  public void shouldSendCollectionExerciseUpdate() {
+    assertSendCollectionExercise(EventType.COLLECTION_EXERCISE_UPDATE);
+  }
+
   @Test
   public void shouldRejectSendForMismatchingPayload() {
     SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
@@ -288,6 +332,28 @@ public class EventPublisherTest {
   }
 
   @Test
+  public void shouldSendBackupSurveyUpdateEvent() throws Exception {
+    SurveyUpdateEvent ev = aSurveyUpdateEvent();
+    ev.getEvent().setType(EventType.SURVEY_UPDATE);
+    sendBackupEvent(ev);
+
+    EventTopic eventTopic = EventTopic.forType(EventType.SURVEY_UPDATE);
+    verify(sender).sendEvent(eq(eventTopic), surveyUpdateArgumentCaptor.capture());
+    verifyEventSent(ev, surveyUpdateArgumentCaptor.getValue());
+  }
+
+  @Test
+  public void shouldSendBackupCollectionExerciseUpdateEvent() throws Exception {
+    CollectionExerciseUpdateEvent ev = aCollectionExerciseEvent();
+    ev.getEvent().setType(EventType.COLLECTION_EXERCISE_UPDATE);
+    sendBackupEvent(ev);
+
+    EventTopic eventTopic = EventTopic.forType(EventType.COLLECTION_EXERCISE_UPDATE);
+    verify(sender).sendEvent(eq(eventTopic), collectionExerciseArgumentCaptor.capture());
+    verifyEventSent(ev, collectionExerciseArgumentCaptor.getValue());
+  }
+
+  @Test
   public void shouldRejectMalformedEventBackupJson() {
     SurveyLaunchEvent ev = aSurveyLaunchedEvent();
     EventBackupData data = createEvent(ev);
@@ -358,6 +424,14 @@ public class EventPublisherTest {
 
   CaseEvent aCaseEvent() {
     return FixtureHelper.loadPackageFixtures(CaseEvent[].class).get(0);
+  }
+
+  SurveyUpdateEvent aSurveyUpdateEvent() {
+    return FixtureHelper.loadPackageFixtures(SurveyUpdateEvent[].class).get(0);
+  }
+
+  CollectionExerciseUpdateEvent aCollectionExerciseEvent() {
+    return FixtureHelper.loadPackageFixtures(CollectionExerciseUpdateEvent[].class).get(0);
   }
 
   private <T> T loadJson(Class<T[]> clazz) {
