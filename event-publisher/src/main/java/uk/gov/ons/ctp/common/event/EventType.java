@@ -7,6 +7,8 @@ import uk.gov.ons.ctp.common.event.model.EventPayload;
 import uk.gov.ons.ctp.common.event.model.FulfilmentRequest;
 import uk.gov.ons.ctp.common.event.model.RefusalDetails;
 import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
+import uk.gov.ons.ctp.common.event.model.SurveyUpdate;
+import uk.gov.ons.ctp.common.event.model.SurveyUpdateEvent;
 import uk.gov.ons.ctp.common.event.model.UAC;
 import uk.gov.ons.ctp.common.event.model.UacAuthenticateResponse;
 
@@ -17,7 +19,7 @@ public enum EventType {
   REFUSAL(RefusalDetails.class, EventBuilder.REFUSAL),
   UAC_AUTHENTICATE(UacAuthenticateResponse.class, EventBuilder.UAC_AUTHENTICATE),
   SURVEY_LAUNCH(SurveyLaunchResponse.class, EventBuilder.SURVEY_LAUNCH),
-  SURVEY_UPDATE(SurveyLaunchResponse.class, EventBuilder.SURVEY_UPDATE),
+  SURVEY_UPDATE(SurveyUpdate.class, EventBuilder.SURVEY_UPDATE),
   UAC_UPDATE(UAC.class, EventBuilder.UAC_UPDATE),
   COLLECTION_EXERCISE_UPDATE(CollectionExercise.class, EventBuilder.COLLECTION_EXCERSISE_UPDATE);
 

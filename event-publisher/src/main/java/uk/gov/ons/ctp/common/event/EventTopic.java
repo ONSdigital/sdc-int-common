@@ -12,7 +12,7 @@ public enum EventTopic {
   CASE_UPDATE("event_case-update", EventType.CASE_UPDATE),
   SURVEY_UPDATE("event_survey-update", EventType.SURVEY_UPDATE),
   COLLECTION_EXERCISE_UPDATE(
-      "event_collection-exercise-update", EventType.COLLECTION_EXERCISE_UPDATE); // TODO topic name
+      "event_collection-exercise-update", EventType.COLLECTION_EXERCISE_UPDATE);
 
   private String topic;
   private EventType type;
