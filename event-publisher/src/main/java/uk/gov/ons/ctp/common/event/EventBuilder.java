@@ -96,7 +96,7 @@ public abstract class EventBuilder {
         .dateTime(new Date())
         .messageId(UUID.randomUUID().toString())
         .correlationId(UUID.randomUUID().toString()) // TODO: PMB. Do we create??
-        .originatingUser("TBD")  // TODO: PMB. Where do we get the user email address from
+        .originatingUser("TBD") // TODO: PMB. Where do we get the user email address from
         .build();
   }
 

@@ -18,7 +18,7 @@ public class NewCaseSampleSensitive {
   private String childMiddleNames;
   private String childLastName;
   private String childDob; // "2001-12-31", // TODO: PMB
-  
+
   private String additionalInfo;
 
   @LoggingScope(scope = Scope.MASK)
