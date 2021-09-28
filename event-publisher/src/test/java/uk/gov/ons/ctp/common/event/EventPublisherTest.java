@@ -376,6 +376,7 @@ public class EventPublisherTest {
     // check all other fields are the same
     origHeader.setDateTime(sentDate);
     origHeader.setMessageId(sentHeader.getMessageId());
+    origHeader.setCorrelationId(sentHeader.getCorrelationId());
     assertEquals(orig, sent);
   }
 }

@@ -43,6 +43,8 @@ public abstract class EventBuilder {
   public static final EventBuilder REFUSAL = new RefusalBuilder();
   public static final EventBuilder UAC_UPDATE = new UacUpdateBuilder();
 
+  private static final String EVENT_VERSION = "v0.1";
+
   ObjectMapper objectMapper = new CustomObjectMapper();
 
   /**
@@ -87,14 +89,14 @@ public abstract class EventBuilder {
 
   static Header buildHeader(EventType type, Source source, Channel channel) {
     return Header.builder()
-        .version("TODO: PMB")
+        .version(EVENT_VERSION)
         .topic(type)
         .source(source)
         .channel(channel)
         .dateTime(new Date())
         .messageId(UUID.randomUUID().toString())
-        .correlationId(UUID.randomUUID().toString()) // TODO: PMB Do we create??
-        .originatingUser("TODO: PMB")
+        .correlationId(UUID.randomUUID().toString()) // TODO: PMB. Do we create??
+        .originatingUser("TBD")  // TODO: PMB. Where do we get the user email address from
         .build();
   }
 

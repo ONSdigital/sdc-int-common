@@ -1,11 +1,14 @@
 [
   {
-    "event": {
-      "type": "UAC_AUTHENTICATE",
+    "header": {
+      "version": "v0.1",
+      "topic": "UAC_AUTHENTICATE",
       "source": "RESPONDENT_HOME",
       "channel": "RH",
       "dateTime": "2020-06-29T13:25:36.042Z",
-      "transactionId": "ef23ec16-fab5-47bf-9e58-25fa6254b37e"
+      "messageId": "ef23ec16-fab5-47bf-9e58-25fa6254b37e",
+      "correlationId": "3883af91-0052-4497-9805-3238544fcf8a",
+      "originatingUser": "TBD"
     },
     "payload": {
       "response": {
@@ -15,4 +18,3 @@
     }
   }
 ]
-
