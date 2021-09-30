@@ -4,6 +4,7 @@ import lombok.Getter;
 import uk.gov.ons.ctp.common.event.model.CollectionCase;
 import uk.gov.ons.ctp.common.event.model.EventPayload;
 import uk.gov.ons.ctp.common.event.model.FulfilmentRequest;
+import uk.gov.ons.ctp.common.event.model.NewCasePayloadContent;
 import uk.gov.ons.ctp.common.event.model.RefusalDetails;
 import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
 import uk.gov.ons.ctp.common.event.model.UAC;
@@ -16,7 +17,9 @@ public enum EventType { // TODO: PMB Rename to topicType??
   REFUSAL(RefusalDetails.class, EventBuilder.REFUSAL),
   UAC_AUTHENTICATE(UacAuthenticateResponse.class, EventBuilder.UAC_AUTHENTICATE),
   SURVEY_LAUNCH(SurveyLaunchResponse.class, EventBuilder.SURVEY_LAUNCH),
-  UAC_UPDATE(UAC.class, EventBuilder.UAC_UPDATE);
+  UAC_UPDATE(UAC.class, EventBuilder.UAC_UPDATE),
+  NEW_CASE(NewCasePayloadContent.class, EventBuilder.NEW_CASE);
+  
 
   private Class<? extends EventPayload> payloadType;
   private EventBuilder builder;

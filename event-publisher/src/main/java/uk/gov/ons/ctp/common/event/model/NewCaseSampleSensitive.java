@@ -17,7 +17,7 @@ public class NewCaseSampleSensitive {
   private String childFirstName;
   private String childMiddleNames;
   private String childLastName;
-  private String childDob; // "2001-12-31", // TODO: PMB
+  private String childDob;
 
   private String additionalInfo;
 

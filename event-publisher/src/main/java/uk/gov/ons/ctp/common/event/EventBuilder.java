@@ -1,9 +1,11 @@
 package uk.gov.ons.ctp.common.event;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Date;
 import java.util.UUID;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +20,9 @@ import uk.gov.ons.ctp.common.event.model.FulfilmentPayload;
 import uk.gov.ons.ctp.common.event.model.FulfilmentRequest;
 import uk.gov.ons.ctp.common.event.model.GenericEvent;
 import uk.gov.ons.ctp.common.event.model.Header;
+import uk.gov.ons.ctp.common.event.model.NewCaseEvent;
+import uk.gov.ons.ctp.common.event.model.NewCasePayload;
+import uk.gov.ons.ctp.common.event.model.NewCasePayloadContent;
 import uk.gov.ons.ctp.common.event.model.RefusalDetails;
 import uk.gov.ons.ctp.common.event.model.RefusalEvent;
 import uk.gov.ons.ctp.common.event.model.RefusalPayload;
@@ -42,8 +47,9 @@ public abstract class EventBuilder {
   public static final EventBuilder CASE_UPDATE = new CaseUpdateBuilder();
   public static final EventBuilder REFUSAL = new RefusalBuilder();
   public static final EventBuilder UAC_UPDATE = new UacUpdateBuilder();
+  public static final EventBuilder NEW_CASE = new NewCaseBuilder();
 
-  private static final String EVENT_VERSION = "v0.1";
+  private static final String EVENT_VERSION = "v0.2";
 
   ObjectMapper objectMapper = new CustomObjectMapper();
 
@@ -279,6 +285,30 @@ public abstract class EventBuilder {
     @Override
     EventPayload createPayload(String json) {
       return deserialisePayloadJson(json, UAC.class);
+    }
+  }
+  
+  public static class NewCaseBuilder extends EventBuilder {
+    @Override
+    GenericEvent create(SendInfo sendInfo) {
+      NewCaseEvent newCaseEvent = new NewCaseEvent();
+      newCaseEvent.setHeader(
+          buildHeader(EventType.NEW_CASE, sendInfo.getSource(), sendInfo.getChannel()));
+      NewCasePayload newCasePayload = new NewCasePayload((NewCasePayloadContent) sendInfo.getPayload());
+      newCaseEvent.setPayload(newCasePayload);
+      return newCaseEvent;
+    }
+
+    @Override
+    SendInfo create(String json) {
+      GenericEvent genericEvent = deserialiseEventJson(json, NewCaseEvent.class);
+      EventPayload payload = ((NewCaseEvent) genericEvent).getPayload().getNewCase();
+      return build(genericEvent, payload);
+    }
+
+    @Override
+    EventPayload createPayload(String json) {
+      return deserialisePayloadJson(json, NewCasePayloadContent.class);
     }
   }
 }

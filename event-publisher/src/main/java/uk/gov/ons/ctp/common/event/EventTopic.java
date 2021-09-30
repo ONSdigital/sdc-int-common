@@ -9,7 +9,8 @@ public enum EventTopic {
   SURVEY_LAUNCH("event_survey-launch", EventType.SURVEY_LAUNCH),
   REFUSAL("event_refusal", EventType.REFUSAL),
   UAC_UPDATE("event_uac-update", EventType.UAC_UPDATE),
-  CASE_UPDATE("event_case-update", EventType.CASE_UPDATE);
+  CASE_UPDATE("event_case-update", EventType.CASE_UPDATE),
+  NEW_UPDATE("event_case-update", EventType.NEW_CASE); // PMB. Fix destination
 
   private String topic;
   private EventType type;
