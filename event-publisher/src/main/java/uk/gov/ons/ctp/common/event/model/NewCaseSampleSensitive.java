@@ -1,5 +1,7 @@
 package uk.gov.ons.ctp.common.event.model;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +19,7 @@ public class NewCaseSampleSensitive {
   private String childFirstName;
   private String childMiddleNames;
   private String childLastName;
-  private String childDob;
+  private LocalDate childDob; 
 
   private String additionalInfo;
 
