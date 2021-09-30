@@ -52,7 +52,7 @@ public class EventPublisherWithPersistenceTest {
     verify(eventPersistence, times(1))
         .persistEvent(eq(EventType.SURVEY_LAUNCH), eventCapture.capture());
     SurveyLaunchEvent event = eventCapture.getValue();
-    assertHeader(event, transactionId, EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
+    assertHeader(event, transactionId, EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
     assertEquals(surveyLaunchedResponse, event.getPayload().getResponse());
   }
 

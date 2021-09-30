@@ -18,14 +18,15 @@ public final class EventPublisherTestUtil {
   static void assertHeader(
       GenericEvent event,
       String transactionId,
-      EventType expectedType,
+      EventTopic expectedTopic,
       Source expectedSource,
       Channel expectedChannel) {
     assertEquals(transactionId, event.getHeader().getMessageId());
     assertThat(UUID.fromString(event.getHeader().getMessageId()), instanceOf(UUID.class));
-    assertEquals(expectedType, event.getHeader().getTopic());
+    assertEquals(expectedTopic, event.getHeader().getTopic());
     assertEquals(expectedSource, event.getHeader().getSource());
     assertEquals(expectedChannel, event.getHeader().getChannel());
     assertThat(event.getHeader().getDateTime(), instanceOf(Date.class));
+    // PMB: extend checks
   }
 }

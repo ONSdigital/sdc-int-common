@@ -1,8 +1,8 @@
 [
   {
     "header": {
-      "version": "v0.1",
-      "topic": "FULFILMENT",
+      "version": "v0.3_DRAFT",
+      "topic": "event_fulfilment",
       "source": "CONTACT_CENTRE_API",
       "channel": "CC",
       "dateTime": "2020-06-29T13:25:36.042Z",
@@ -26,8 +26,8 @@
   },
   {
     "header": {
-      "version": "v0.1",
-      "topic": "FULFILMENT",
+      "version": "v0.3_DRAFT",
+      "topic": "event_fulfilment",
       "source": "CONTACT_CENTRE_API",
       "channel": "CC",
       "dateTime": "2020-06-29T13:25:36.042Z",
@@ -51,8 +51,8 @@
   },
   {
     "header": {
-      "version": "v0.1",
-      "topic": "FULFILMENT",
+      "version": "v0.3_DRAFT",
+      "topic": "event_fulfilment",
       "source": "CONTACT_CENTRE_API",
       "channel": "CC",
       "dateTime": "2020-06-29T13:25:36.042Z",

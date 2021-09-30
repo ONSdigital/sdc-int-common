@@ -1,8 +1,8 @@
 [
   {
     "header": {
-      "version": "v0.1",
-      "topic": "UAC_UPDATE",
+      "version": "v0.3_DRAFT",
+      "topic": "event_uac-update",
       "source": "RESPONDENT_HOME",
       "channel": "RH",
       "dateTime": "2020-06-29T13:25:36.042Z",

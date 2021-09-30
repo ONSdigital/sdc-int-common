@@ -218,7 +218,7 @@ public class EventPublisher {
   }
 
   private void publish(EventTopic eventTopic, GenericEvent genericEvent, String loggingMsgSuffix) {
-    EventType eventType = genericEvent.getHeader().getTopic();
+    EventType eventType = eventTopic.getType();
 
     log.info(
         "Publishing message " + loggingMsgSuffix,
