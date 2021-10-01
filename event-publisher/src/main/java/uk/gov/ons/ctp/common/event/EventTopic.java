@@ -12,7 +12,10 @@ public enum EventTopic {
   REFUSAL("event_refusal", EventType.REFUSAL),
   UAC_UPDATE("event_uac-update", EventType.UAC_UPDATE),
   CASE_UPDATE("event_case-update", EventType.CASE_UPDATE),
-  NEW_CASE("event_case-update", EventType.NEW_CASE); // PMB. Fix destination
+  SURVEY_UPDATE("event_survey-update", EventType.SURVEY_UPDATE),
+  COLLECTION_EXERCISE_UPDATE(
+      "event_collection-exercise-update", EventType.COLLECTION_EXERCISE_UPDATE),
+  NEW_CASE("event_case-update", EventType.NEW_CASE);
 
   @JsonValue
   private String topic;
