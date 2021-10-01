@@ -1,9 +1,7 @@
 package uk.gov.ons.ctp.common.event.model;
 
-import java.util.Date;
-
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

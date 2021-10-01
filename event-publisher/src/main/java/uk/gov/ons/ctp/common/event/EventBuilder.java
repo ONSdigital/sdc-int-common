@@ -1,11 +1,9 @@
 package uk.gov.ons.ctp.common.event;
 
-import java.util.Date;
-import java.util.UUID;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import java.util.Date;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -356,7 +354,8 @@ public abstract class EventBuilder {
       NewCaseEvent newCaseEvent = new NewCaseEvent();
       newCaseEvent.setHeader(
           buildHeader(EventTopic.NEW_CASE, sendInfo.getSource(), sendInfo.getChannel()));
-      NewCasePayload newCasePayload = new NewCasePayload((NewCasePayloadContent) sendInfo.getPayload());
+      NewCasePayload newCasePayload =
+          new NewCasePayload((NewCasePayloadContent) sendInfo.getPayload());
       newCaseEvent.setPayload(newCasePayload);
       return newCaseEvent;
     }

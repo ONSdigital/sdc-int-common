@@ -102,7 +102,8 @@ public class EventPublisherTest {
     EventTopic eventTopic = EventTopic.forType(EventType.SURVEY_LAUNCH);
     verify(sender, times(1)).sendEvent(eq(eventTopic), surveyLaunchedEventCaptor.capture());
     SurveyLaunchEvent event = surveyLaunchedEventCaptor.getValue();
-    assertHeader(event, transactionId, EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
+    assertHeader(
+        event, transactionId, EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
     assertEquals(surveyLaunchedResponse, event.getPayload().getResponse());
   }
 
@@ -140,7 +141,8 @@ public class EventPublisherTest {
     verify(sender, times(1)).sendEvent(eq(eventTopic), fulfilmentRequestedEventCaptor.capture());
     FulfilmentEvent event = fulfilmentRequestedEventCaptor.getValue();
 
-    assertHeader(event, transactionId, EventTopic.FULFILMENT, Source.CONTACT_CENTRE_API, Channel.CC);
+    assertHeader(
+        event, transactionId, EventTopic.FULFILMENT, Source.CONTACT_CENTRE_API, Channel.CC);
     assertEquals("id-123", event.getPayload().getFulfilmentRequest().getCaseId());
   }
 
@@ -368,7 +370,8 @@ public class EventPublisherTest {
     EventTopic eventTopic = EventTopic.forType(EventType.SURVEY_LAUNCH);
     verify(sender, times(1)).sendEvent(eq(eventTopic), surveyLaunchedEventCaptor.capture());
     SurveyLaunchEvent event = surveyLaunchedEventCaptor.getValue();
-    assertHeader(event, transactionId, EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
+    assertHeader(
+        event, transactionId, EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
   }
 
   // --- helpers

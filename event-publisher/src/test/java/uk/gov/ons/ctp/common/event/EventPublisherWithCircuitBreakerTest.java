@@ -89,7 +89,8 @@ public class EventPublisherWithCircuitBreakerTest {
     EventTopic eventTopic = EventTopic.forType(EventType.SURVEY_LAUNCH);
     verify(sender, times(1)).sendEvent(eq(eventTopic), surveyLaunchedEventCaptor.capture());
     SurveyLaunchEvent event = surveyLaunchedEventCaptor.getValue();
-    assertHeader(event, transactionId, EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
+    assertHeader(
+        event, transactionId, EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
     assertEquals(surveyLaunchedResponse, event.getPayload().getResponse());
 
     // since it succeeded, the event is NOT sent to firestore

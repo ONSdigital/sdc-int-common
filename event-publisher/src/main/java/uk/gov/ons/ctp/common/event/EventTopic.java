@@ -1,7 +1,6 @@
 package uk.gov.ons.ctp.common.event;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-
 import lombok.Getter;
 
 @Getter
@@ -17,8 +16,7 @@ public enum EventTopic {
       "event_collection-exercise-update", EventType.COLLECTION_EXERCISE_UPDATE),
   NEW_CASE("event_case-update", EventType.NEW_CASE);
 
-  @JsonValue
-  private String topic;
+  @JsonValue private String topic;
   private EventType type;
 
   private EventTopic(String topic, EventType type) {
