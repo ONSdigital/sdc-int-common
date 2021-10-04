@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.ons.ctp.common.FixtureHelper;
 import uk.gov.ons.ctp.common.cloud.RetryableCloudDataStore;
-import uk.gov.ons.ctp.common.event.EventType;
+import uk.gov.ons.ctp.common.event.TopicType;
 import uk.gov.ons.ctp.common.event.model.FulfilmentEvent;
 import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
 
@@ -48,9 +48,9 @@ public class FirestoreEventPersistenceTest {
     ArgumentCaptor<EventBackupData> eventBackupCapture =
         ArgumentCaptor.forClass(EventBackupData.class);
 
-    persistence.persistEvent(EventType.UAC_AUTHENTICATE, event);
+    persistence.persistEvent(TopicType.UAC_AUTHENTICATE, event);
 
-    String expectedTransactionId = event.getHeader().getMessageId();
+    String expectedTransactionId = event.getHeader().getMessageId().toString();
     Mockito.verify(cloudDataStore, times(1))
         .storeObject(
             eq("testing-backupcollection"),
@@ -59,7 +59,7 @@ public class FirestoreEventPersistenceTest {
             eq(expectedTransactionId));
 
     EventBackupData storedData = eventBackupCapture.getValue();
-    assertEquals(EventType.UAC_AUTHENTICATE, storedData.getEventType());
+    assertEquals(TopicType.UAC_AUTHENTICATE, storedData.getTopicType());
     assertTrue(storedData.getMessageFailureDateTimeInMillis() >= startTime, storedData.toString());
     assertTrue(
         storedData.getMessageFailureDateTimeInMillis() <= System.currentTimeMillis(),

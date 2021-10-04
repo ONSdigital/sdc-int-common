@@ -46,11 +46,11 @@ public class EventPublisherWithPersistenceTest {
 
     String transactionId =
         eventPublisher.sendEvent(
-            EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
+            TopicType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
 
     // Verify that the event was persistent following simulated Publish failure
     verify(eventPersistence, times(1))
-        .persistEvent(eq(EventType.SURVEY_LAUNCH), eventCapture.capture());
+        .persistEvent(eq(TopicType.SURVEY_LAUNCH), eventCapture.capture());
     SurveyLaunchEvent event = eventCapture.getValue();
     assertHeader(
         event, transactionId, EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
@@ -71,7 +71,7 @@ public class EventPublisherWithPersistenceTest {
             Exception.class,
             () ->
                 eventPublisher.sendEvent(
-                    EventType.SURVEY_LAUNCH,
+                    TopicType.SURVEY_LAUNCH,
                     Source.RESPONDENT_HOME,
                     Channel.RH,
                     surveyLaunchedResponse));

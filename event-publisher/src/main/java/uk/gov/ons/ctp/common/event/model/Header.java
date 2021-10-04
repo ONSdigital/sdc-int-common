@@ -28,7 +28,9 @@ public class Header {
   @JsonSerialize(using = CustomDateSerialiser.class)
   private Date dateTime;
 
-  private String messageId; // TODO: PMB Make a UUID?
+  private String
+      messageId; // TODO: PMB Make a UUID? - code unrealted to this will need to be updated to UUID
+  // in RH SVC
   private String correlationId; // TODO: PMB Make a UUID?
 
   private String originatingUser;

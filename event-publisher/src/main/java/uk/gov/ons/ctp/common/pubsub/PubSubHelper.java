@@ -35,8 +35,8 @@ import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.event.EventPublisher;
 import uk.gov.ons.ctp.common.event.EventTopic;
-import uk.gov.ons.ctp.common.event.EventType;
 import uk.gov.ons.ctp.common.event.NativePubSubEventSender;
+import uk.gov.ons.ctp.common.event.TopicType;
 import uk.gov.ons.ctp.common.event.model.EventPayload;
 
 @Slf4j
@@ -112,11 +112,11 @@ public class PubSubHelper {
   /**
    * Creates the Subscription that PubSubHelper is using to listen to the given eventType.
    *
-   * @param eventType is the type of the event that PubSubHelper has a Subscription listening to.
+   * @param topicType is the type of the event that PubSubHelper has a Subscription listening to.
    */
-  public synchronized String createSubscription(EventType eventType) throws CTPException {
-    EventTopic eventTopic = EventTopic.forType(eventType);
-    String subscriptionId = buildSubscriberId(eventType);
+  public synchronized String createSubscription(TopicType topicType) throws CTPException {
+    EventTopic eventTopic = EventTopic.forType(topicType);
+    String subscriptionId = buildSubscriberId(topicType);
     try {
       SubscriberStub subscriberStub = GrpcSubscriberStub.create(defaultSubscriberStubSettings);
       SubscriptionAdminClient subscriptionAdminClient =
@@ -135,18 +135,18 @@ public class PubSubHelper {
   /**
    * Flushes the Subscription that PubSubHelper is using to listen to the given eventType.
    *
-   * @param eventType is the type of the event that PubSubHelper has a Subscription listening to.
+   * @param topicType is the type of the event that PubSubHelper has a Subscription listening to.
    */
-  public synchronized void flushSubscription(EventType eventType) throws CTPException {
+  public synchronized void flushSubscription(TopicType topicType) throws CTPException {
     try {
       // Creates the subscription only if it doesnt exist
-      createSubscription(eventType);
+      createSubscription(topicType);
 
       SubscriberStub subscriberStub = GrpcSubscriberStub.create(defaultSubscriberStubSettings);
       SubscriptionAdminClient subscriptionAdminClient =
           SubscriptionAdminClient.create(subscriberStub);
 
-      String subscriptionId = buildSubscriberId(eventType);
+      String subscriptionId = buildSubscriberId(topicType);
       String subscriptionName =
           ProjectSubscriptionName.of(this.projectId, subscriptionId).toString();
 
@@ -170,10 +170,10 @@ public class PubSubHelper {
   /**
    * Deletes Subscription that PubSubHelper is using to listen to the given eventType.
    *
-   * @param eventType is the type of the event that PubSubHelper has a Subscription listening to.
+   * @param topicType is the type of the event that PubSubHelper has a Subscription listening to.
    */
-  public synchronized String deleteSubscription(EventType eventType) throws CTPException {
-    String subscriptionId = buildSubscriberId(eventType);
+  public synchronized String deleteSubscription(TopicType topicType) throws CTPException {
+    String subscriptionId = buildSubscriberId(topicType);
     deleteSubscription(subscriptionId);
     return subscriptionId;
   }
@@ -199,7 +199,7 @@ public class PubSubHelper {
   /**
    * Publish a message to a pubsub topic.
    *
-   * @param eventType is the type of the event that is being sent.
+   * @param topicType is the type of the event that is being sent.
    * @param source states who is sending, or pretending, to set the message.
    * @param channel holds a channel identifier.
    * @param payload is the object to be sent.
@@ -207,17 +207,17 @@ public class PubSubHelper {
    * @throws CTPException if anything went wrong.
    */
   public synchronized String sendEvent(
-      EventType eventType, Source source, Channel channel, EventPayload payload)
+      TopicType topicType, Source source, Channel channel, EventPayload payload)
       throws CTPException {
     try {
-      String transactionId = eventPublisher.sendEvent(eventType, source, channel, payload);
+      String transactionId = eventPublisher.sendEvent(topicType, source, channel, payload);
       return transactionId;
 
     } catch (Exception e) {
       String errorMessage = "Failed to send message. Cause: " + e.getMessage();
       log.error(
           errorMessage,
-          kv("eventType", eventType),
+          kv("eventType", topicType),
           kv("source", source),
           kv("channel", channel),
           e);
@@ -231,7 +231,7 @@ public class PubSubHelper {
    * subscription.
    *
    * @param <T> is the class of object we are expected to recieve.
-   * @param eventType is the name of the topic to read from.
+   * @param topicType is the name of the topic to read from.
    * @param clazz is the class that the message should be converted to.
    * @param maxWaitTimeMillis is the maximum amount of time the caller is prepared to wait for the
    *     message to appear.
@@ -239,9 +239,9 @@ public class PubSubHelper {
    *     expired.
    * @throws CTPException if PubSub threw an exception when we attempted to read a message.
    */
-  public <T> T getMessage(EventType eventType, Class<T> clazz, long maxWaitTimeMillis)
+  public <T> T getMessage(TopicType topicType, Class<T> clazz, long maxWaitTimeMillis)
       throws CTPException {
-    String subscriberName = buildSubscriberId(eventType);
+    String subscriberName = buildSubscriberId(topicType);
 
     String message = getMessage(subscriberName, maxWaitTimeMillis);
 
@@ -386,11 +386,11 @@ public class PubSubHelper {
     return exists;
   }
 
-  private static String buildSubscriberId(EventType eventType) {
-    EventTopic eventTopic = EventTopic.forType(eventType);
+  private static String buildSubscriberId(TopicType topicType) {
+    EventTopic eventTopic = EventTopic.forType(topicType);
     if (eventTopic == null) {
-      String errorMessage = "Topic for eventType '" + eventType + "' not configured";
-      log.error(errorMessage, kv("eventType", eventType));
+      String errorMessage = "Topic for eventType '" + topicType + "' not configured";
+      log.error(errorMessage, kv("eventType", topicType));
       throw new UnsupportedOperationException(errorMessage);
     }
 
@@ -400,7 +400,7 @@ public class PubSubHelper {
     String eventTopicName = eventTopic.getTopic();
     // TODO this needs to be parameterized as contact centre svc will also be consuming messages
     String subSuffix =
-        (eventType.equals(EventType.CASE_UPDATE) || eventType.equals(EventType.UAC_UPDATE))
+        (topicType.equals(TopicType.CASE_UPDATE) || topicType.equals(TopicType.UAC_UPDATE))
             ? "_rh"
             : "_cuc";
     return eventTopicName + subSuffix;

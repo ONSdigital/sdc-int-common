@@ -101,6 +101,12 @@ public abstract class EventBuilder {
   }
 
   static Header buildHeader(EventTopic topic, Source source, Channel channel) {
+    String originatingUser;
+    if (source == Source.RESPONDENT_HOME) {
+      originatingUser = Source.RESPONDENT_HOME.toString();
+    } else {
+      originatingUser = "TBD";
+    }
     return Header.builder()
         .version(EVENT_VERSION)
         .topic(topic)
@@ -108,8 +114,12 @@ public abstract class EventBuilder {
         .channel(channel)
         .dateTime(new Date())
         .messageId(UUID.randomUUID().toString())
-        .correlationId(UUID.randomUUID().toString()) // TODO: PMB. Do we create??
-        .originatingUser("TBD") // TODO: PMB. Where do we get the user email address from
+        // TODO: correlationID could eventually come from the user in the future but for now
+        // generate UUID
+        .correlationId(UUID.randomUUID().toString())
+        // TODO: originatingUser is going to default to RH as there is no originatingUser for RH.
+        // But CC could be populated later
+        .originatingUser(originatingUser)
         .build();
   }
 

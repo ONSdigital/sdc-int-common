@@ -34,7 +34,7 @@ public class EventPublisherWithoutPersistanceTest {
             Exception.class,
             () -> {
               eventPublisher.sendEvent(
-                  EventType.SURVEY_LAUNCH,
+                  TopicType.SURVEY_LAUNCH,
                   Source.RESPONDENT_HOME,
                   Channel.RH,
                   surveyLaunchedResponse);
