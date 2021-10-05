@@ -76,7 +76,7 @@ public class EventPublisher {
       TopicType topicType, Source source, Channel channel, EventPayload payload) {
     log.debug(
         "Enter sendEvent",
-        kv("eventType", topicType),
+        kv("topicType", topicType),
         kv("source", source),
         kv("channel", channel),
         kv("payload", payload));
@@ -86,7 +86,7 @@ public class EventPublisher {
 
     log.debug(
         "Exit sendEvent",
-        kv("eventType", topicType),
+        kv("topicType", topicType),
         kv("source", source),
         kv("channel", channel),
         kv("payload", payload));
@@ -141,7 +141,7 @@ public class EventPublisher {
       log.error(
           "Payload incompatible for event type",
           kv("payloadType", payload.getClass()),
-          kv("eventType", topicType));
+          kv("topicType", topicType));
       String errorMessage =
           "Payload type '"
               + payload.getClass()
@@ -153,16 +153,16 @@ public class EventPublisher {
 
     EventTopic eventTopic = EventTopic.forType(topicType);
     if (eventTopic == null) {
-      log.error("Routing key for eventType not configured", kv("eventType", topicType));
-      String errorMessage = "Routing key for eventType '" + topicType + "' not configured";
+      log.error("Routing key for topicType not configured", kv("topicType", topicType));
+      String errorMessage = "Routing key for topicType '" + topicType + "' not configured";
       throw new UnsupportedOperationException(errorMessage);
     }
 
     GenericEvent genericEvent = topicType.getBuilder().create(sendInfo);
     if (genericEvent == null) {
-      log.error("Payload for eventType not configured", kv("eventType", topicType));
+      log.error("Payload for topicType not configured", kv("topicType", topicType));
       String errorMessage =
-          payload.getClass().getName() + " for EventType '" + topicType + "' not supported yet";
+          payload.getClass().getName() + " for topicType '" + topicType + "' not supported yet";
       throw new UnsupportedOperationException(errorMessage);
     }
 
@@ -172,7 +172,7 @@ public class EventPublisher {
       boolean backup = eventPersistence != null;
       log.error(
           "Failed to send event but will now backup to firestore",
-          kv("eventType", topicType),
+          kv("topicType", topicType),
           kv("eventTopic", eventTopic),
           kv("backup", backup),
           e);
@@ -185,13 +185,13 @@ public class EventPublisher {
         eventPersistence.persistEvent(topicType, genericEvent);
         log.info(
             "Event data saved to persistent store",
-            kv("eventType", topicType),
+            kv("topicType", topicType),
             kv("eventTopic", eventTopic));
       } catch (Exception epe) {
         // There is no hope. Neither pub/sub or Persistence are working
         log.error(
             "Backup event persistence failed following publish failure",
-            kv("eventType", topicType),
+            kv("topicType", topicType),
             kv("eventTopic", eventTopic),
             epe);
         throw new EventPublishException(
@@ -227,12 +227,12 @@ public class EventPublisher {
 
     log.info(
         "Publishing message " + loggingMsgSuffix,
-        kv("eventType", topicType),
+        kv("topicType", topicType),
         kv("eventTopic", eventTopic));
 
     sender.sendEvent(eventTopic, genericEvent);
 
     log.info(
-        "Message successfully published", kv("eventType", topicType), kv("eventTopic", eventTopic));
+        "Message successfully published", kv("topicType", topicType), kv("eventTopic", eventTopic));
   }
 }

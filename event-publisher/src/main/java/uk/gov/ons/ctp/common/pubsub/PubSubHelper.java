@@ -110,7 +110,7 @@ public class PubSubHelper {
   }
 
   /**
-   * Creates the Subscription that PubSubHelper is using to listen to the given eventType.
+   * Creates the Subscription that PubSubHelper is using to listen to the given topicType.
    *
    * @param topicType is the type of the event that PubSubHelper has a Subscription listening to.
    */
@@ -133,7 +133,7 @@ public class PubSubHelper {
   }
 
   /**
-   * Flushes the Subscription that PubSubHelper is using to listen to the given eventType.
+   * Flushes the Subscription that PubSubHelper is using to listen to the given topicType.
    *
    * @param topicType is the type of the event that PubSubHelper has a Subscription listening to.
    */
@@ -168,7 +168,7 @@ public class PubSubHelper {
   }
 
   /**
-   * Deletes Subscription that PubSubHelper is using to listen to the given eventType.
+   * Deletes Subscription that PubSubHelper is using to listen to the given topicType.
    *
    * @param topicType is the type of the event that PubSubHelper has a Subscription listening to.
    */
@@ -217,7 +217,7 @@ public class PubSubHelper {
       String errorMessage = "Failed to send message. Cause: " + e.getMessage();
       log.error(
           errorMessage,
-          kv("eventType", topicType),
+          kv("topicType", topicType),
           kv("source", source),
           kv("channel", channel),
           e);
@@ -389,8 +389,8 @@ public class PubSubHelper {
   private static String buildSubscriberId(TopicType topicType) {
     EventTopic eventTopic = EventTopic.forType(topicType);
     if (eventTopic == null) {
-      String errorMessage = "Topic for eventType '" + topicType + "' not configured";
-      log.error(errorMessage, kv("eventType", topicType));
+      String errorMessage = "Topic for topicType '" + topicType + "' not configured";
+      log.error(errorMessage, kv("topicType", topicType));
       throw new UnsupportedOperationException(errorMessage);
     }
 
