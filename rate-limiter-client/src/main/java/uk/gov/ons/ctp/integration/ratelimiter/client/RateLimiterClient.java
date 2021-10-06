@@ -16,7 +16,6 @@ import org.apache.commons.validator.routines.InetAddressValidator;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-import uk.gov.ons.ctp.common.domain.CaseType;
 import uk.gov.ons.ctp.common.domain.UniquePropertyReferenceNumber;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
@@ -111,7 +110,6 @@ public class RateLimiterClient {
    *
    * @param domain is the domain to query against. This value is mandatory.
    * @param product is the product used by the caller. This value is mandatory.
-   * @param caseType is the case type for the current request. This value is mandatory.
    * @param ipAddress is the end users IP address. If this is not a valid IPv4 address we do not add
    *     it to the rate limit descriptors.
    * @param uprn is the uprn to limit requests against. This value is mandatory.
@@ -125,7 +123,6 @@ public class RateLimiterClient {
   public void checkFulfilmentRateLimit(
       Domain domain,
       Product product,
-      CaseType caseType,
       String ipAddress,
       UniquePropertyReferenceNumber uprn,
       String telNo)
@@ -134,7 +131,6 @@ public class RateLimiterClient {
     // Fail if caller doesn't meet interface requirements
     verifyArgumentSupplied("domain", domain);
     verifyArgumentSupplied("product", product);
-    verifyArgumentSupplied("caseType", caseType);
     verifyArgumentSupplied("uprn", uprn);
     verifyArgumentNotEmpty("telNo", telNo);
 
@@ -148,7 +144,6 @@ public class RateLimiterClient {
         kv("productGroup", product.getProductGroup().name()),
         kv("individual", product.getIndividual().toString()),
         kv("deliveryChannel", product.getDeliveryChannel().name()),
-        kv("caseType", caseType.name()),
         kv("ipAddress", ipAddress),
         kv("uprn", uprn.getValue()),
         kv("encrypted-telNo", encrypt(telNo)));
@@ -158,7 +153,6 @@ public class RateLimiterClient {
     params.put(DESC_PRODUCT_GROUP, product.getProductGroup().name());
     params.put(DESC_INDIVIDUAL, product.getIndividual().toString());
     params.put(DESC_DELIVERY_CHANNEL, product.getDeliveryChannel().name());
-    params.put(DESC_CASE_TYPE, caseType.name());
     params.put(DESC_IP_ADDRESS, ipAddress);
     params.put(DESC_UPRN, Long.toString(uprn.getValue()));
     params.put(DESC_TEL_NO, telNo);

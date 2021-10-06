@@ -11,7 +11,7 @@ import uk.gov.ons.ctp.common.domain.Channel;
 import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.event.model.CaseEvent;
 import uk.gov.ons.ctp.common.event.model.CasePayload;
-import uk.gov.ons.ctp.common.event.model.CollectionCase;
+import uk.gov.ons.ctp.common.event.model.CaseUpdate;
 import uk.gov.ons.ctp.common.event.model.CollectionExercise;
 import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdateEvent;
 import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdatePayload;
@@ -219,7 +219,7 @@ public abstract class EventBuilder {
       CaseEvent caseEvent = new CaseEvent();
       caseEvent.setEvent(
           buildHeader(EventType.CASE_UPDATE, sendInfo.getSource(), sendInfo.getChannel()));
-      CasePayload casePayload = new CasePayload((CollectionCase) sendInfo.getPayload());
+      CasePayload casePayload = new CasePayload((CaseUpdate) sendInfo.getPayload());
       caseEvent.setPayload(casePayload);
       return caseEvent;
     }
@@ -227,13 +227,13 @@ public abstract class EventBuilder {
     @Override
     SendInfo create(String json) {
       GenericEvent genericEvent = deserialiseEventJson(json, CaseEvent.class);
-      EventPayload payload = ((CaseEvent) genericEvent).getPayload().getCollectionCase();
+      EventPayload payload = ((CaseEvent) genericEvent).getPayload().getCaseUpdate();
       return build(genericEvent, payload);
     }
 
     @Override
     EventPayload createPayload(String json) {
-      return deserialisePayloadJson(json, CollectionCase.class);
+      return deserialisePayloadJson(json, CaseUpdate.class);
     }
   }
 

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CasePayload {
+public class SampleSensitive {
 
-  private CaseUpdate caseUpdate = new CaseUpdate();
+  private String phoneNumber;
 }

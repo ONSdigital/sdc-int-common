@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ResponseStatusException;
-import uk.gov.ons.ctp.common.domain.CaseType;
 import uk.gov.ons.ctp.common.domain.UniquePropertyReferenceNumber;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.rest.RestClient;
@@ -182,7 +181,6 @@ public class RateLimiterClient_IT {
       client.checkFulfilmentRateLimit(
           RateLimiterClient.Domain.RH,
           product,
-          CaseType.HH,
           ipAddress,
           new UniquePropertyReferenceNumber("24234234"),
           telNo);

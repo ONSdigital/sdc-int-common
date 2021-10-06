@@ -30,7 +30,7 @@ import uk.gov.ons.ctp.common.FixtureHelper;
 import uk.gov.ons.ctp.common.domain.Channel;
 import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.event.model.CaseEvent;
-import uk.gov.ons.ctp.common.event.model.CollectionCase;
+import uk.gov.ons.ctp.common.event.model.CaseUpdate;
 import uk.gov.ons.ctp.common.event.model.CollectionExercise;
 import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdateEvent;
 import uk.gov.ons.ctp.common.event.model.EventPayload;
@@ -181,7 +181,7 @@ public class EventPublisherTest {
   }
 
   private void assertSendCase(EventType type) {
-    CollectionCase payload = loadJson(CollectionCase[].class);
+    CaseUpdate payload = loadJson(CaseUpdate[].class);
 
     String transactionId =
         eventPublisher.sendEvent(type, Source.CONTACT_CENTRE_API, Channel.CC, payload);
@@ -191,7 +191,7 @@ public class EventPublisherTest {
     CaseEvent event = caseEventCaptor.getValue();
 
     assertHeader(event, transactionId, type, Source.CONTACT_CENTRE_API, Channel.CC);
-    assertEquals(payload, event.getPayload().getCollectionCase());
+    assertEquals(payload, event.getPayload().getCaseUpdate());
   }
 
   @Test
