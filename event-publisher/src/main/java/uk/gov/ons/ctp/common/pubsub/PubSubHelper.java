@@ -204,7 +204,7 @@ public class PubSubHelper {
    * @param source states who is sending, or pretending, to set the message.
    * @param channel holds a channel identifier.
    * @param payload is the object to be sent.
-   * @return the transaction id generated for the published message.
+   * @return the message id generated for the published message.
    * @throws CTPException if anything went wrong.
    */
   public synchronized UUID sendEvent(

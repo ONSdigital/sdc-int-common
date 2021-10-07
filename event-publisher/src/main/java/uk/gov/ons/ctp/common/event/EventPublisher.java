@@ -71,7 +71,7 @@ public class EventPublisher {
    * @param source the source
    * @param channel the channel
    * @param payload message payload for event
-   * @return String UUID transaction Id for event
+   * @return String UUID message Id for event
    */
   public UUID sendEvent(TopicType topicType, Source source, Channel channel, EventPayload payload) {
     log.debug(
@@ -104,7 +104,7 @@ public class EventPublisher {
    * @param source the source
    * @param channel the channel
    * @param jsonEventPayload message payload for event as JSON String.
-   * @return String UUID transaction Id for event
+   * @return String UUID message Id for event
    */
   public UUID sendEvent(
       TopicType topicType, Source source, Channel channel, String jsonEventPayload) {
@@ -116,7 +116,7 @@ public class EventPublisher {
    * Send a backup event that would have previously been stored in cloud data storage.
    *
    * @param event backup event , typically recovered from firestore.
-   * @return String UUID transaction Id for event
+   * @return String UUID message Id for event
    */
   public String sendEvent(EventBackupData event) {
     TopicType type = event.getTopicType();
