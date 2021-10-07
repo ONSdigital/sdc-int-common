@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.ons.ctp.common.event.EventPublisherTestUtil.assertHeader;
 
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
@@ -82,7 +83,7 @@ public class EventPublisherWithCircuitBreakerTest {
     mockCircuitBreakerRun();
     SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
 
-    String transactionId =
+    UUID messageId =
         eventPublisher.sendEvent(
             TopicType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
 
@@ -90,7 +91,7 @@ public class EventPublisherWithCircuitBreakerTest {
     verify(sender, times(1)).sendEvent(eq(eventTopic), surveyLaunchedEventCaptor.capture());
     SurveyLaunchEvent event = surveyLaunchedEventCaptor.getValue();
     assertHeader(
-        event, transactionId, EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
+        event, messageId.toString(), EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
     assertEquals(surveyLaunchedResponse, event.getPayload().getResponse());
 
     // since it succeeded, the event is NOT sent to firestore

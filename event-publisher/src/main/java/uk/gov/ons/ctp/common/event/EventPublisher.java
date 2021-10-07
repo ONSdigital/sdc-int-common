@@ -2,6 +2,7 @@ package uk.gov.ons.ctp.common.event;
 
 import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
 
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import uk.gov.ons.ctp.common.domain.Channel;
@@ -72,8 +73,7 @@ public class EventPublisher {
    * @param payload message payload for event
    * @return String UUID transaction Id for event
    */
-  public String sendEvent(
-      TopicType topicType, Source source, Channel channel, EventPayload payload) {
+  public UUID sendEvent(TopicType topicType, Source source, Channel channel, EventPayload payload) {
     log.debug(
         "Enter sendEvent",
         kv("topicType", topicType),
@@ -82,7 +82,7 @@ public class EventPublisher {
         kv("payload", payload));
 
     GenericEvent genericEvent = doSendEvent(topicType, new SendInfo(payload, source, channel));
-    String messageId = genericEvent.getHeader().getMessageId();
+    UUID messageId = genericEvent.getHeader().getMessageId();
 
     log.debug(
         "Exit sendEvent",
@@ -106,7 +106,7 @@ public class EventPublisher {
    * @param jsonEventPayload message payload for event as JSON String.
    * @return String UUID transaction Id for event
    */
-  public String sendEvent(
+  public UUID sendEvent(
       TopicType topicType, Source source, Channel channel, String jsonEventPayload) {
     EventPayload payload = topicType.getBuilder().createPayload(jsonEventPayload);
     return sendEvent(topicType, source, channel, payload);
@@ -126,8 +126,8 @@ public class EventPublisher {
       throw new UnsupportedOperationException("Unknown event: " + type);
     }
     GenericEvent genericEvent = doSendEvent(type, sendInfo);
-    String messageId = genericEvent.getHeader().getMessageId();
-    String correlationId = genericEvent.getHeader().getCorrelationId();
+    String messageId = genericEvent.getHeader().getMessageId().toString();
+    String correlationId = genericEvent.getHeader().getCorrelationId().toString();
 
     log.debug("Sent {} with messageId {}", event.getTopicType(), messageId);
     log.debug("Sent {} with correlationId {}", event.getTopicType(), correlationId);

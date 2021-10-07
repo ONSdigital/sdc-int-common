@@ -28,6 +28,7 @@ import io.grpc.ManagedChannelBuilder;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.threeten.bp.Duration;
 import uk.gov.ons.ctp.common.domain.Channel;
@@ -206,12 +207,12 @@ public class PubSubHelper {
    * @return the transaction id generated for the published message.
    * @throws CTPException if anything went wrong.
    */
-  public synchronized String sendEvent(
+  public synchronized UUID sendEvent(
       TopicType topicType, Source source, Channel channel, EventPayload payload)
       throws CTPException {
     try {
-      String transactionId = eventPublisher.sendEvent(topicType, source, channel, payload);
-      return transactionId;
+      UUID messageId = eventPublisher.sendEvent(topicType, source, channel, payload);
+      return messageId;
 
     } catch (Exception e) {
       String errorMessage = "Failed to send message. Cause: " + e.getMessage();

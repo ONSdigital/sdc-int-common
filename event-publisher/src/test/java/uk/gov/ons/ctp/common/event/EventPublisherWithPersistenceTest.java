@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.ons.ctp.common.event.EventPublisherTestUtil.assertHeader;
 
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -44,7 +45,7 @@ public class EventPublisherWithPersistenceTest {
 
     Mockito.doThrow(new RuntimeException("Failed to send")).when(sender).sendEvent(any(), any());
 
-    String transactionId =
+    UUID messageId =
         eventPublisher.sendEvent(
             TopicType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
 
@@ -53,7 +54,7 @@ public class EventPublisherWithPersistenceTest {
         .persistEvent(eq(TopicType.SURVEY_LAUNCH), eventCapture.capture());
     SurveyLaunchEvent event = eventCapture.getValue();
     assertHeader(
-        event, transactionId, EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
+        event, messageId.toString(), EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
     assertEquals(surveyLaunchedResponse, event.getPayload().getResponse());
   }
 

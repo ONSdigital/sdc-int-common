@@ -50,13 +50,13 @@ public class FirestoreEventPersistenceTest {
 
     persistence.persistEvent(TopicType.UAC_AUTHENTICATE, event);
 
-    String expectedTransactionId = event.getHeader().getMessageId().toString();
+    String expectedMessageId = event.getHeader().getMessageId().toString();
     Mockito.verify(cloudDataStore, times(1))
         .storeObject(
             eq("testing-backupcollection"),
-            eq(expectedTransactionId),
+            eq(expectedMessageId),
             eventBackupCapture.capture(),
-            eq(expectedTransactionId));
+            eq(expectedMessageId));
 
     EventBackupData storedData = eventBackupCapture.getValue();
     assertEquals(TopicType.UAC_AUTHENTICATE, storedData.getTopicType());
@@ -65,7 +65,7 @@ public class FirestoreEventPersistenceTest {
         storedData.getMessageFailureDateTimeInMillis() <= System.currentTimeMillis(),
         storedData.toString());
     assertNull(storedData.getMessageSentDateTimeInMillis(), storedData.toString());
-    assertEquals(expectedTransactionId, storedData.getId());
+    assertEquals(expectedMessageId, storedData.getId());
 
     String eventJson = storedData.getEvent();
 

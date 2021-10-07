@@ -113,12 +113,11 @@ public abstract class EventBuilder {
         .source(source)
         .channel(channel)
         .dateTime(new Date())
-        .messageId(UUID.randomUUID().toString())
-        // TODO: correlationID could eventually come from the user in the future but for now
-        // generate UUID
-        .correlationId(UUID.randomUUID().toString())
-        // TODO: originatingUser is going to default to RH as there is no originatingUser for RH.
-        // But CC could be populated later
+        .messageId(UUID.randomUUID())
+        // correlationID could eventually come from the user in the future but for now generate UUID
+        .correlationId(UUID.randomUUID())
+        // originatingUser is going to default to RH as there is no originatingUser for RH. But CC
+        // could be populated later
         .originatingUser(originatingUser)
         .build();
   }

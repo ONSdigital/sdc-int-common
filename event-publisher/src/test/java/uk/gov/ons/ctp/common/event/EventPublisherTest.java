@@ -16,6 +16,7 @@ import static uk.gov.ons.ctp.common.event.EventPublisherTestUtil.assertHeader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Date;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +39,8 @@ import uk.gov.ons.ctp.common.event.model.FulfilmentEvent;
 import uk.gov.ons.ctp.common.event.model.FulfilmentRequest;
 import uk.gov.ons.ctp.common.event.model.GenericEvent;
 import uk.gov.ons.ctp.common.event.model.Header;
+import uk.gov.ons.ctp.common.event.model.NewCaseEvent;
+import uk.gov.ons.ctp.common.event.model.NewCasePayloadContent;
 import uk.gov.ons.ctp.common.event.model.RefusalDetails;
 import uk.gov.ons.ctp.common.event.model.RefusalEvent;
 import uk.gov.ons.ctp.common.event.model.SurveyLaunchEvent;
@@ -67,6 +70,7 @@ public class EventPublisherTest {
   @Captor private ArgumentCaptor<UacEvent> uacEventCaptor;
   @Captor private ArgumentCaptor<SurveyLaunchEvent> surveyLaunchedEventCaptor;
   @Captor private ArgumentCaptor<CaseEvent> caseEventCaptor;
+  @Captor private ArgumentCaptor<NewCaseEvent> newCaseEventCaptor;
   @Captor private ArgumentCaptor<SurveyUpdateEvent> surveyUpdateArgumentCaptor;
   @Captor private ArgumentCaptor<CollectionExerciseUpdateEvent> collectionExerciseArgumentCaptor;
 
@@ -92,10 +96,26 @@ public class EventPublisherTest {
   }
 
   @Test
+  public void sendEventNewCasePayload() {
+    NewCasePayloadContent newCaseEvent = loadJson(NewCasePayloadContent[].class);
+
+    UUID messageId =
+        eventPublisher.sendEvent(
+            TopicType.NEW_CASE, Source.RESPONDENT_HOME, Channel.RH, newCaseEvent);
+
+    EventTopic eventTopic = EventTopic.forType(TopicType.NEW_CASE);
+    verify(sender, times(1)).sendEvent(eq(eventTopic), newCaseEventCaptor.capture());
+    NewCaseEvent event = newCaseEventCaptor.getValue();
+    assertHeader(
+        event, messageId.toString(), EventTopic.NEW_CASE, Source.RESPONDENT_HOME, Channel.RH);
+    assertEquals(newCaseEvent, event.getPayload().getNewCase());
+  }
+
+  @Test
   public void sendEventSurveyLaunchedPayload() {
     SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
 
-    String transactionId =
+    UUID messageId =
         eventPublisher.sendEvent(
             TopicType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
 
@@ -103,7 +123,7 @@ public class EventPublisherTest {
     verify(sender, times(1)).sendEvent(eq(eventTopic), surveyLaunchedEventCaptor.capture());
     SurveyLaunchEvent event = surveyLaunchedEventCaptor.getValue();
     assertHeader(
-        event, transactionId, EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
+        event, messageId.toString(), EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
     assertEquals(surveyLaunchedResponse, event.getPayload().getResponse());
   }
 
@@ -112,7 +132,7 @@ public class EventPublisherTest {
     UacAuthenticateResponse respondentAuthenticatedResponse =
         loadJson(UacAuthenticateResponse[].class);
 
-    String transactionId =
+    UUID messageId =
         eventPublisher.sendEvent(
             TopicType.UAC_AUTHENTICATE,
             Source.RESPONDENT_HOME,
@@ -125,7 +145,11 @@ public class EventPublisherTest {
     UacAuthenticateEvent event = respondentAuthenticatedEventCaptor.getValue();
 
     assertHeader(
-        event, transactionId, EventTopic.UAC_AUTHENTICATE, Source.RESPONDENT_HOME, Channel.RH);
+        event,
+        messageId.toString(),
+        EventTopic.UAC_AUTHENTICATE,
+        Source.RESPONDENT_HOME,
+        Channel.RH);
     assertEquals(respondentAuthenticatedResponse, event.getPayload().getResponse());
   }
 
@@ -133,7 +157,7 @@ public class EventPublisherTest {
   public void sendEventFulfilmentRequestPayload() {
     FulfilmentRequest fulfilmentRequest = loadJson(FulfilmentRequest[].class);
 
-    String transactionId =
+    UUID messageId =
         eventPublisher.sendEvent(
             TopicType.FULFILMENT, Source.CONTACT_CENTRE_API, Channel.CC, fulfilmentRequest);
 
@@ -142,7 +166,7 @@ public class EventPublisherTest {
     FulfilmentEvent event = fulfilmentRequestedEventCaptor.getValue();
 
     assertHeader(
-        event, transactionId, EventTopic.FULFILMENT, Source.CONTACT_CENTRE_API, Channel.CC);
+        event, messageId.toString(), EventTopic.FULFILMENT, Source.CONTACT_CENTRE_API, Channel.CC);
     assertEquals("id-123", event.getPayload().getFulfilmentRequest().getCaseId());
   }
 
@@ -150,7 +174,7 @@ public class EventPublisherTest {
   public void sendEventRespondentRefusalDetailsPayload() {
     RefusalDetails respondentRefusalDetails = loadJson(RefusalDetails[].class);
 
-    String transactionId =
+    UUID messageId =
         eventPublisher.sendEvent(
             TopicType.REFUSAL, Source.CONTACT_CENTRE_API, Channel.CC, respondentRefusalDetails);
 
@@ -158,7 +182,8 @@ public class EventPublisherTest {
     verify(sender, times(1)).sendEvent(eq(eventTopic), respondentRefusalEventCaptor.capture());
     RefusalEvent event = respondentRefusalEventCaptor.getValue();
 
-    assertHeader(event, transactionId, EventTopic.REFUSAL, Source.CONTACT_CENTRE_API, Channel.CC);
+    assertHeader(
+        event, messageId.toString(), EventTopic.REFUSAL, Source.CONTACT_CENTRE_API, Channel.CC);
     assertEquals(respondentRefusalDetails, event.getPayload().getRefusal());
   }
 
@@ -185,13 +210,13 @@ public class EventPublisherTest {
   private void assertSendCase(EventTopic topic) {
     CollectionCase payload = loadJson(CollectionCase[].class);
 
-    String transactionId =
+    UUID messageId =
         eventPublisher.sendEvent(topic.getType(), Source.CONTACT_CENTRE_API, Channel.CC, payload);
 
     verify(sender).sendEvent(eq(topic), caseEventCaptor.capture());
     CaseEvent event = caseEventCaptor.getValue();
 
-    assertHeader(event, transactionId, topic, Source.CONTACT_CENTRE_API, Channel.CC);
+    assertHeader(event, messageId.toString(), topic, Source.CONTACT_CENTRE_API, Channel.CC);
     assertEquals(payload, event.getPayload().getCollectionCase());
   }
 
@@ -203,13 +228,13 @@ public class EventPublisherTest {
   private void assertSendUac(EventTopic topic) {
     UAC payload = loadJson(UAC[].class);
 
-    String transactionId =
+    UUID messageId =
         eventPublisher.sendEvent(topic.getType(), Source.CONTACT_CENTRE_API, Channel.CC, payload);
 
     verify(sender).sendEvent(eq(topic), uacEventCaptor.capture());
     UacEvent event = uacEventCaptor.getValue();
 
-    assertHeader(event, transactionId, topic, Source.CONTACT_CENTRE_API, Channel.CC);
+    assertHeader(event, messageId.toString(), topic, Source.CONTACT_CENTRE_API, Channel.CC);
     assertEquals(payload, event.getPayload().getUac());
   }
 
@@ -221,13 +246,13 @@ public class EventPublisherTest {
   private void assertSendSurveyUpdate(EventTopic topic) {
     SurveyUpdate payload = loadJson(SurveyUpdate[].class);
 
-    String transactionId =
+    UUID messageId =
         eventPublisher.sendEvent(topic.getType(), Source.CONTACT_CENTRE_API, Channel.CC, payload);
 
     verify(sender).sendEvent(eq(topic), surveyUpdateArgumentCaptor.capture());
     SurveyUpdateEvent event = surveyUpdateArgumentCaptor.getValue();
 
-    assertHeader(event, transactionId, topic, Source.CONTACT_CENTRE_API, Channel.CC);
+    assertHeader(event, messageId.toString(), topic, Source.CONTACT_CENTRE_API, Channel.CC);
     assertEquals(payload, event.getPayload().getSurveyUpdate());
   }
 
@@ -239,13 +264,13 @@ public class EventPublisherTest {
   private void assertSendCollectionExercise(EventTopic topic) {
     CollectionExercise payload = loadJson(CollectionExercise[].class);
 
-    String transactionId =
+    UUID messageId =
         eventPublisher.sendEvent(topic.getType(), Source.CONTACT_CENTRE_API, Channel.CC, payload);
 
     verify(sender).sendEvent(eq(topic), collectionExerciseArgumentCaptor.capture());
     CollectionExerciseUpdateEvent event = collectionExerciseArgumentCaptor.getValue();
 
-    assertHeader(event, transactionId, topic, Source.CONTACT_CENTRE_API, Channel.CC);
+    assertHeader(event, messageId.toString(), topic, Source.CONTACT_CENTRE_API, Channel.CC);
     assertEquals(payload, event.getPayload().getCollectionExerciseUpdate());
   }
 
@@ -363,7 +388,7 @@ public class EventPublisherTest {
   public void shouldSendEventWithJsonPayload() {
     String payload = FixtureHelper.loadPackageObjectNode("SurveyLaunchResponse").toString();
 
-    String transactionId =
+    UUID messageId =
         eventPublisher.sendEvent(
             TopicType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, payload);
 
@@ -371,7 +396,7 @@ public class EventPublisherTest {
     verify(sender, times(1)).sendEvent(eq(eventTopic), surveyLaunchedEventCaptor.capture());
     SurveyLaunchEvent event = surveyLaunchedEventCaptor.getValue();
     assertHeader(
-        event, transactionId, EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
+        event, messageId.toString(), EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
   }
 
   // --- helpers
