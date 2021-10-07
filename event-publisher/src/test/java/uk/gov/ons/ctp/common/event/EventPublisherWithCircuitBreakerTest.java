@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.ons.ctp.common.event.EventPublisherTestUtil.assertHeader;
 
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
@@ -82,18 +83,19 @@ public class EventPublisherWithCircuitBreakerTest {
     mockCircuitBreakerRun();
     SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
 
-    String transactionId =
+    UUID messageId =
         eventPublisher.sendEvent(
-            EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
+            TopicType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
 
-    EventTopic eventTopic = EventTopic.forType(EventType.SURVEY_LAUNCH);
+    EventTopic eventTopic = EventTopic.forType(TopicType.SURVEY_LAUNCH);
     verify(sender, times(1)).sendEvent(eq(eventTopic), surveyLaunchedEventCaptor.capture());
     SurveyLaunchEvent event = surveyLaunchedEventCaptor.getValue();
-    assertHeader(event, transactionId, EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
+    assertHeader(
+        event, messageId.toString(), EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
     assertEquals(surveyLaunchedResponse, event.getPayload().getResponse());
 
     // since it succeeded, the event is NOT sent to firestore
-    verify(eventPersistence, never()).persistEvent(eq(EventType.SURVEY_LAUNCH), any());
+    verify(eventPersistence, never()).persistEvent(eq(TopicType.SURVEY_LAUNCH), any());
   }
 
   @Test
@@ -104,13 +106,13 @@ public class EventPublisherWithCircuitBreakerTest {
     SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
 
     eventPublisher.sendEvent(
-        EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
+        TopicType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
 
-    EventTopic eventTopic = EventTopic.forType(EventType.SURVEY_LAUNCH);
+    EventTopic eventTopic = EventTopic.forType(TopicType.SURVEY_LAUNCH);
     verify(sender).sendEvent(eq(eventTopic), surveyLaunchedEventCaptor.capture());
 
     // since it failed, the event is sent to firestore
-    verify(eventPersistence).persistEvent(eq(EventType.SURVEY_LAUNCH), any());
+    verify(eventPersistence).persistEvent(eq(TopicType.SURVEY_LAUNCH), any());
   }
 
   private <T> T loadJson(Class<T[]> clazz) {

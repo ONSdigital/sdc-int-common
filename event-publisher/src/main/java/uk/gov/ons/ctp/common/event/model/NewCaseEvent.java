@@ -2,12 +2,14 @@ package uk.gov.ons.ctp.common.event.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class GenericEvent {
+public class NewCaseEvent extends GenericEvent {
 
-  private Header header;
+  private NewCasePayload payload = new NewCasePayload();
 }

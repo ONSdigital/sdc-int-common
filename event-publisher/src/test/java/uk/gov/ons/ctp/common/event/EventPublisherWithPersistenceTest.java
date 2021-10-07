@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.ons.ctp.common.event.EventPublisherTestUtil.assertHeader;
 
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -44,15 +45,16 @@ public class EventPublisherWithPersistenceTest {
 
     Mockito.doThrow(new RuntimeException("Failed to send")).when(sender).sendEvent(any(), any());
 
-    String transactionId =
+    UUID messageId =
         eventPublisher.sendEvent(
-            EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
+            TopicType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
 
     // Verify that the event was persistent following simulated Publish failure
     verify(eventPersistence, times(1))
-        .persistEvent(eq(EventType.SURVEY_LAUNCH), eventCapture.capture());
+        .persistEvent(eq(TopicType.SURVEY_LAUNCH), eventCapture.capture());
     SurveyLaunchEvent event = eventCapture.getValue();
-    assertHeader(event, transactionId, EventType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
+    assertHeader(
+        event, messageId.toString(), EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
     assertEquals(surveyLaunchedResponse, event.getPayload().getResponse());
   }
 
@@ -70,7 +72,7 @@ public class EventPublisherWithPersistenceTest {
             Exception.class,
             () ->
                 eventPublisher.sendEvent(
-                    EventType.SURVEY_LAUNCH,
+                    TopicType.SURVEY_LAUNCH,
                     Source.RESPONDENT_HOME,
                     Channel.RH,
                     surveyLaunchedResponse));

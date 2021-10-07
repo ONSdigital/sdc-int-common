@@ -21,6 +21,9 @@ import uk.gov.ons.ctp.common.event.model.FulfilmentPayload;
 import uk.gov.ons.ctp.common.event.model.FulfilmentRequest;
 import uk.gov.ons.ctp.common.event.model.GenericEvent;
 import uk.gov.ons.ctp.common.event.model.Header;
+import uk.gov.ons.ctp.common.event.model.NewCaseEvent;
+import uk.gov.ons.ctp.common.event.model.NewCasePayload;
+import uk.gov.ons.ctp.common.event.model.NewCasePayloadContent;
 import uk.gov.ons.ctp.common.event.model.RefusalDetails;
 import uk.gov.ons.ctp.common.event.model.RefusalEvent;
 import uk.gov.ons.ctp.common.event.model.RefusalPayload;
@@ -51,6 +54,9 @@ public abstract class EventBuilder {
   public static final EventBuilder UAC_UPDATE = new UacUpdateBuilder();
   public static final EventBuilder COLLECTION_EXCERSISE_UPDATE =
       new CollectionExerciseUpdateBuilder();
+  public static final EventBuilder NEW_CASE = new NewCaseBuilder();
+
+  private static final String EVENT_VERSION = "v0.3_RELEASE";
 
   ObjectMapper objectMapper = new CustomObjectMapper();
 
@@ -94,13 +100,27 @@ public abstract class EventBuilder {
     }
   }
 
-  static Header buildHeader(EventType type, Source source, Channel channel) {
+  static Header buildHeader(EventTopic topic, Source source, Channel channel) {
+    String originatingUser;
+    UUID messageId = UUID.randomUUID();
+    if (source == Source.RESPONDENT_HOME) {
+      originatingUser = Source.RESPONDENT_HOME.toString();
+    } else {
+      originatingUser = "TBD";
+    }
     return Header.builder()
-        .type(type)
+        .version(EVENT_VERSION)
+        .topic(topic)
         .source(source)
         .channel(channel)
         .dateTime(new Date())
-        .transactionId(UUID.randomUUID().toString())
+        .messageId(messageId)
+        // correlationID could eventually come from the user in the future but for now generate
+        // UUID. For now it will use the messageId
+        .correlationId(messageId)
+        // originatingUser is going to default to RH as there is no originatingUser for RH. But CC
+        // could be populated later
+        .originatingUser(originatingUser)
         .build();
   }
 
@@ -117,8 +137,8 @@ public abstract class EventBuilder {
     SendInfo info =
         SendInfo.builder()
             .payload(payload)
-            .source(genericEvent.getEvent().getSource())
-            .channel(genericEvent.getEvent().getChannel())
+            .source(genericEvent.getHeader().getSource())
+            .channel(genericEvent.getHeader().getChannel())
             .build();
     return info;
   }
@@ -144,8 +164,8 @@ public abstract class EventBuilder {
     @Override
     GenericEvent create(SendInfo sendInfo) {
       FulfilmentEvent fulfilmentRequestedEvent = new FulfilmentEvent();
-      fulfilmentRequestedEvent.setEvent(
-          buildHeader(EventType.FULFILMENT, sendInfo.getSource(), sendInfo.getChannel()));
+      fulfilmentRequestedEvent.setHeader(
+          buildHeader(EventTopic.FULFILMENT, sendInfo.getSource(), sendInfo.getChannel()));
       FulfilmentPayload fulfilmentPayload =
           new FulfilmentPayload((FulfilmentRequest) sendInfo.getPayload());
       fulfilmentRequestedEvent.setPayload(fulfilmentPayload);
@@ -169,8 +189,8 @@ public abstract class EventBuilder {
     @Override
     GenericEvent create(SendInfo sendInfo) {
       SurveyLaunchEvent surveyLaunchedEvent = new SurveyLaunchEvent();
-      surveyLaunchedEvent.setEvent(
-          buildHeader(EventType.SURVEY_LAUNCH, sendInfo.getSource(), sendInfo.getChannel()));
+      surveyLaunchedEvent.setHeader(
+          buildHeader(EventTopic.SURVEY_LAUNCH, sendInfo.getSource(), sendInfo.getChannel()));
       surveyLaunchedEvent.getPayload().setResponse((SurveyLaunchResponse) sendInfo.getPayload());
       return surveyLaunchedEvent;
     }
@@ -192,8 +212,8 @@ public abstract class EventBuilder {
     @Override
     GenericEvent create(SendInfo sendInfo) {
       UacAuthenticateEvent respondentAuthenticatedEvent = new UacAuthenticateEvent();
-      respondentAuthenticatedEvent.setEvent(
-          buildHeader(EventType.UAC_AUTHENTICATE, sendInfo.getSource(), sendInfo.getChannel()));
+      respondentAuthenticatedEvent.setHeader(
+          buildHeader(EventTopic.UAC_AUTHENTICATE, sendInfo.getSource(), sendInfo.getChannel()));
       respondentAuthenticatedEvent
           .getPayload()
           .setResponse((UacAuthenticateResponse) sendInfo.getPayload());
@@ -217,8 +237,8 @@ public abstract class EventBuilder {
     @Override
     GenericEvent create(SendInfo sendInfo) {
       CaseEvent caseEvent = new CaseEvent();
-      caseEvent.setEvent(
-          buildHeader(EventType.CASE_UPDATE, sendInfo.getSource(), sendInfo.getChannel()));
+      caseEvent.setHeader(
+          buildHeader(EventTopic.CASE_UPDATE, sendInfo.getSource(), sendInfo.getChannel()));
       CasePayload casePayload = new CasePayload((CaseUpdate) sendInfo.getPayload());
       caseEvent.setPayload(casePayload);
       return caseEvent;
@@ -241,8 +261,8 @@ public abstract class EventBuilder {
     @Override
     GenericEvent create(SendInfo sendInfo) {
       RefusalEvent respondentRefusalEvent = new RefusalEvent();
-      respondentRefusalEvent.setEvent(
-          buildHeader(EventType.REFUSAL, sendInfo.getSource(), sendInfo.getChannel()));
+      respondentRefusalEvent.setHeader(
+          buildHeader(EventTopic.REFUSAL, sendInfo.getSource(), sendInfo.getChannel()));
       RefusalPayload respondentRefusalPayload =
           new RefusalPayload((RefusalDetails) sendInfo.getPayload());
       respondentRefusalEvent.setPayload(respondentRefusalPayload);
@@ -266,8 +286,8 @@ public abstract class EventBuilder {
     @Override
     GenericEvent create(SendInfo sendInfo) {
       UacEvent uacEvent = new UacEvent();
-      uacEvent.setEvent(
-          buildHeader(EventType.UAC_UPDATE, sendInfo.getSource(), sendInfo.getChannel()));
+      uacEvent.setHeader(
+          buildHeader(EventTopic.UAC_UPDATE, sendInfo.getSource(), sendInfo.getChannel()));
       UacPayload uacPayload = new UacPayload((UAC) sendInfo.getPayload());
       uacEvent.setPayload(uacPayload);
       return uacEvent;
@@ -290,8 +310,8 @@ public abstract class EventBuilder {
     @Override
     GenericEvent create(SendInfo sendInfo) {
       SurveyUpdateEvent surveyUpdateEvent = new SurveyUpdateEvent();
-      surveyUpdateEvent.setEvent(
-          buildHeader(EventType.SURVEY_UPDATE, sendInfo.getSource(), sendInfo.getChannel()));
+      surveyUpdateEvent.setHeader(
+          buildHeader(EventTopic.SURVEY_UPDATE, sendInfo.getSource(), sendInfo.getChannel()));
       SurveyUpdatePayload surveyUpdatePayload =
           new SurveyUpdatePayload((SurveyUpdate) sendInfo.getPayload());
       surveyUpdateEvent.setPayload(surveyUpdatePayload);
@@ -316,9 +336,9 @@ public abstract class EventBuilder {
     GenericEvent create(SendInfo sendInfo) {
       CollectionExerciseUpdateEvent collectionExerciseUpdateEvent =
           new CollectionExerciseUpdateEvent();
-      collectionExerciseUpdateEvent.setEvent(
+      collectionExerciseUpdateEvent.setHeader(
           buildHeader(
-              EventType.COLLECTION_EXERCISE_UPDATE, sendInfo.getSource(), sendInfo.getChannel()));
+              EventTopic.COLLECTION_EXERCISE_UPDATE, sendInfo.getSource(), sendInfo.getChannel()));
       CollectionExerciseUpdatePayload collectionExerciseUpdateEventPayload =
           new CollectionExerciseUpdatePayload((CollectionExercise) sendInfo.getPayload());
       collectionExerciseUpdateEvent.setPayload(collectionExerciseUpdateEventPayload);
@@ -336,6 +356,31 @@ public abstract class EventBuilder {
     @Override
     EventPayload createPayload(String json) {
       return deserialisePayloadJson(json, CollectionExercise.class);
+    }
+  }
+
+  public static class NewCaseBuilder extends EventBuilder {
+    @Override
+    GenericEvent create(SendInfo sendInfo) {
+      NewCaseEvent newCaseEvent = new NewCaseEvent();
+      newCaseEvent.setHeader(
+          buildHeader(EventTopic.NEW_CASE, sendInfo.getSource(), sendInfo.getChannel()));
+      NewCasePayload newCasePayload =
+          new NewCasePayload((NewCasePayloadContent) sendInfo.getPayload());
+      newCaseEvent.setPayload(newCasePayload);
+      return newCaseEvent;
+    }
+
+    @Override
+    SendInfo create(String json) {
+      GenericEvent genericEvent = deserialiseEventJson(json, NewCaseEvent.class);
+      EventPayload payload = ((NewCaseEvent) genericEvent).getPayload().getNewCase();
+      return build(genericEvent, payload);
+    }
+
+    @Override
+    EventPayload createPayload(String json) {
+      return deserialisePayloadJson(json, NewCasePayloadContent.class);
     }
   }
 }
