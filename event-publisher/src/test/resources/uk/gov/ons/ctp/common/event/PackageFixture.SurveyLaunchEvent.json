@@ -1,11 +1,14 @@
 [
   {
-    "event": {
-      "type": "SURVEY_LAUNCH",
+    "header": {
+      "version": "v0.3_RELEASE",
+      "topic": "event_survey-launch",
       "source": "RESPONDENT_HOME",
       "channel": "RH",
       "dateTime": "2020-06-29T13:25:36.042Z",
-      "transactionId": "14490f12-cb0b-459d-921e-cd4c59613268"
+      "messageId": "14490f12-cb0b-459d-921e-cd4c59613268",
+      "correlationId": "3883af91-0052-4497-9805-3238544fcf8a",
+      "originatingUser": "TBD"
     },
     "payload": {
       "response": {
@@ -16,4 +19,3 @@
     }
   }
 ]
-

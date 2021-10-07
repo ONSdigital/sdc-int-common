@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.common.cloud.RetryableCloudDataStore;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.event.EventPublishException;
-import uk.gov.ons.ctp.common.event.EventType;
+import uk.gov.ons.ctp.common.event.TopicType;
 import uk.gov.ons.ctp.common.event.model.GenericEvent;
 import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
 
@@ -51,22 +51,22 @@ public class FirestoreEventPersistence implements EventPersistence {
   }
 
   @Override
-  public void persistEvent(EventType eventType, GenericEvent genericEvent) throws CTPException {
-    String id = genericEvent.getEvent().getTransactionId();
+  public void persistEvent(TopicType topicType, GenericEvent genericEvent) throws CTPException {
+    String id = genericEvent.getHeader().getMessageId().toString();
 
     log.debug("Storing event data in Firestore", kv("id", id));
 
     EventBackupData eventData = new EventBackupData();
-    eventData.setEventType(eventType);
+    eventData.setTopicType(topicType);
     eventData.setMessageFailureDateTimeInMillis(System.currentTimeMillis());
     eventData.setId(id);
     eventData.setEvent(serialise(genericEvent));
 
     cloudDataStore.storeObject(
         eventBackupSchema,
-        genericEvent.getEvent().getTransactionId(),
+        genericEvent.getHeader().getMessageId().toString(),
         eventData,
-        genericEvent.getEvent().getTransactionId());
+        genericEvent.getHeader().getMessageId().toString());
 
     log.debug("Stored event data", kv("id", id));
   }

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import uk.gov.ons.ctp.common.event.EventType;
+import uk.gov.ons.ctp.common.event.TopicType;
 
 /**
  * This class holds data about an event which failed to send.
@@ -17,7 +17,7 @@ import uk.gov.ons.ctp.common.event.EventType;
 @AllArgsConstructor
 @ToString
 public class EventBackupData {
-  private EventType eventType;
+  private TopicType topicType;
   private Long messageFailureDateTimeInMillis;
   private Long messageSentDateTimeInMillis;
   private String id;
