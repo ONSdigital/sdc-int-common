@@ -71,7 +71,7 @@ public class EventPublisher {
    * @param source the source
    * @param channel the channel
    * @param payload message payload for event
-   * @return String UUID message Id for event
+   * @return UUID message Id for event
    */
   public UUID sendEvent(TopicType topicType, Source source, Channel channel, EventPayload payload) {
     log.debug(
@@ -104,7 +104,7 @@ public class EventPublisher {
    * @param source the source
    * @param channel the channel
    * @param jsonEventPayload message payload for event as JSON String.
-   * @return String UUID message Id for event
+   * @return UUID message Id for event
    */
   public UUID sendEvent(
       TopicType topicType, Source source, Channel channel, String jsonEventPayload) {
@@ -116,9 +116,9 @@ public class EventPublisher {
    * Send a backup event that would have previously been stored in cloud data storage.
    *
    * @param event backup event , typically recovered from firestore.
-   * @return String UUID message Id for event
+   * @return UUID message Id for event
    */
-  public String sendEvent(EventBackupData event) {
+  public UUID sendEvent(EventBackupData event) {
     TopicType type = event.getTopicType();
     SendInfo sendInfo = type.getBuilder().create(event.getEvent());
     if (sendInfo == null) {
@@ -126,8 +126,8 @@ public class EventPublisher {
       throw new UnsupportedOperationException("Unknown event: " + type);
     }
     GenericEvent genericEvent = doSendEvent(type, sendInfo);
-    String messageId = genericEvent.getHeader().getMessageId().toString();
-    String correlationId = genericEvent.getHeader().getCorrelationId().toString();
+    UUID messageId = genericEvent.getHeader().getMessageId();
+    UUID correlationId = genericEvent.getHeader().getCorrelationId();
 
     log.debug("Sent {} with messageId {}", event.getTopicType(), messageId);
     log.debug("Sent {} with correlationId {}", event.getTopicType(), correlationId);

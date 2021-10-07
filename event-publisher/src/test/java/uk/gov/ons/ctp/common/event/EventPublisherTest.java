@@ -403,8 +403,8 @@ public class EventPublisherTest {
 
   private void sendBackupEvent(GenericEvent ev) throws Exception {
     EventBackupData data = createEvent(ev);
-    String txId = eventPublisher.sendEvent(data);
-    assertNotNull(txId);
+    UUID msgId = eventPublisher.sendEvent(data);
+    assertNotNull(msgId);
   }
 
   private String serialise(Object obj) {
