@@ -102,6 +102,7 @@ public abstract class EventBuilder {
 
   static Header buildHeader(EventTopic topic, Source source, Channel channel) {
     String originatingUser;
+    UUID messageId = UUID.randomUUID();
     if (source == Source.RESPONDENT_HOME) {
       originatingUser = Source.RESPONDENT_HOME.toString();
     } else {
@@ -113,9 +114,10 @@ public abstract class EventBuilder {
         .source(source)
         .channel(channel)
         .dateTime(new Date())
-        .messageId(UUID.randomUUID())
-        // correlationID could eventually come from the user in the future but for now generate UUID
-        .correlationId(UUID.randomUUID())
+        .messageId(messageId)
+        // correlationID could eventually come from the user in the future but for now generate
+        // UUID. For now it will use the messageId
+        .correlationId(messageId)
         // originatingUser is going to default to RH as there is no originatingUser for RH. But CC
         // could be populated later
         .originatingUser(originatingUser)
