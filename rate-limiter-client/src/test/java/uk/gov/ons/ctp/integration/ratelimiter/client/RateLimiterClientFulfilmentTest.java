@@ -62,7 +62,7 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
             CTPException.class,
             () ->
                 rateLimiterClient.checkFulfilmentRateLimit(
-                    null, product, caseType, AN_IPv4_ADDRESS, uprn, "0171 3434"));
+                    null, product, AN_IPv4_ADDRESS, uprn, "0171 3434"));
     assertTrue(exception.getMessage().contains("'domain' cannot be null"), exception.getMessage());
     verifyEnvoyLimiterNotCalled();
   }
@@ -124,7 +124,7 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
     // Confirm that limiter request fails with a 429 exception
     try {
       rateLimiterClient.checkFulfilmentRateLimit(
-          domain, product, caseType, AN_IPv4_ADDRESS, uprn, "0171 3434");
+          domain, product, AN_IPv4_ADDRESS, uprn, "0171 3434");
       fail();
     } catch (ResponseStatusException e) {
       assertEquals(failureException, e);
@@ -142,7 +142,7 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
 
     // Circuit breaker spots that this isn't a TOO_MANY_REQUESTS HttpStatus failure, so
     // we log an error and allow the limit check to pass. ie, no exception thrown
-    rateLimiterClient.checkFulfilmentRateLimit(domain, product, caseType, null, uprn, null);
+    rateLimiterClient.checkFulfilmentRateLimit(domain, product, null, uprn, null);
     verifiedRequestSentToLimiter();
   }
 
@@ -154,7 +154,7 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
 
     // Although the rest client call fails the circuit breaker allows the limit check to pass. ie,
     // no exception thrown
-    rateLimiterClient.checkFulfilmentRateLimit(domain, product, caseType, null, uprn, null);
+    rateLimiterClient.checkFulfilmentRateLimit(domain, product, null, uprn, null);
     verifiedRequestSentToLimiter();
   }
 
@@ -164,7 +164,7 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
     mockRateLimitException(circuitBreakerOpenException);
 
     // Limit check works without an exception
-    rateLimiterClient.checkFulfilmentRateLimit(domain, product, caseType, null, uprn, null);
+    rateLimiterClient.checkFulfilmentRateLimit(domain, product, null, uprn, null);
   }
 
   @Test
@@ -173,21 +173,7 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
         assertThrows(
             CTPException.class,
             () -> {
-              rateLimiterClient.checkFulfilmentRateLimit(
-                  domain, null, caseType, null, uprn, "0171 3434");
-            });
-    assertTrue(exception.getMessage().contains("cannot be null"), exception.getMessage());
-    verifyEnvoyLimiterNotCalled();
-  }
-
-  @Test
-  public void checkFulfilmentRateLimit_nullCaseType() {
-    CTPException exception =
-        assertThrows(
-            CTPException.class,
-            () -> {
-              rateLimiterClient.checkFulfilmentRateLimit(
-                  domain, product, null, null, uprn, "0171 3434");
+              rateLimiterClient.checkFulfilmentRateLimit(domain, null, null, uprn, "0171 3434");
             });
     assertTrue(exception.getMessage().contains("cannot be null"), exception.getMessage());
     verifyEnvoyLimiterNotCalled();
@@ -199,8 +185,7 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
         assertThrows(
             CTPException.class,
             () -> {
-              rateLimiterClient.checkFulfilmentRateLimit(
-                  domain, product, caseType, null, null, "0171 3434");
+              rateLimiterClient.checkFulfilmentRateLimit(domain, product, null, null, "0171 3434");
             });
     assertTrue(exception.getMessage().contains("cannot be null"), exception.getMessage());
     verifyEnvoyLimiterNotCalled();
@@ -212,7 +197,7 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
         assertThrows(
             CTPException.class,
             () -> {
-              rateLimiterClient.checkFulfilmentRateLimit(domain, product, caseType, null, uprn, "");
+              rateLimiterClient.checkFulfilmentRateLimit(domain, product, null, uprn, "");
             });
     assertTrue(exception.getMessage().contains("cannot be blank"), exception.getMessage());
   }
@@ -225,7 +210,7 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
 
     String telNo = useTelNo ? "0123 3434333" : null;
     String ipAddress = useIpAddress ? AN_IPv4_ADDRESS : null;
-    rateLimiterClient.checkFulfilmentRateLimit(domain, product, caseType, ipAddress, uprn, telNo);
+    rateLimiterClient.checkFulfilmentRateLimit(domain, product, ipAddress, uprn, telNo);
 
     // Grab the request sent to the limiter
     RateLimitRequest request = verifiedRequestSentToLimiter();
@@ -253,8 +238,7 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
   }
 
   private void doCheckIpAddressUsed(String ipAddress, boolean expectIpUsed) throws Exception {
-    rateLimiterClient.checkFulfilmentRateLimit(
-        domain, product, caseType, ipAddress, uprn, "0123 3434333");
+    rateLimiterClient.checkFulfilmentRateLimit(domain, product, ipAddress, uprn, "0123 3434333");
 
     RateLimitRequest request = verifiedRequestSentToLimiter();
 
@@ -278,7 +262,6 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
     verifyEntry(descriptor, 0, "deliveryChannel", product.getDeliveryChannel().name());
     verifyEntry(descriptor, 1, "productGroup", product.getProductGroup().name());
     verifyEntry(descriptor, 2, "individual", Boolean.toString(product.getIndividual()));
-    verifyEntry(descriptor, 3, "caseType", caseType.name());
     verifyEntry(descriptor, 4, finalKeyName, finalKeyValue);
   }
 
