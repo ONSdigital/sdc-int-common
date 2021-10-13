@@ -10,17 +10,17 @@ import uk.gov.ons.ctp.common.log.Scope;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UacUpdate implements EventPayload {
-  
+
   private String caseId;
 
   private String active;
-  
+
   @LoggingScope(scope = Scope.MASK)
   private String uacHash;
 
   private String qid;
-  
+
   private boolean receiptReceived;
-  
+
   private boolean eqLaunched;
 }
