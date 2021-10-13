@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CasePayload {
 
-  private CollectionCase collectionCase = new CollectionCase();
+  private CaseUpdate caseUpdate = new CaseUpdate();
 }

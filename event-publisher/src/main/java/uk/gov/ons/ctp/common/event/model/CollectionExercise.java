@@ -11,6 +11,8 @@ import uk.gov.ons.ctp.common.jackson.CustomDateSerialiser;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CollectionExercise implements EventPayload {
+  // collectionExerciseId and surveyId are UUIDs but are represented as Strings so they can be
+  // correctly saved in Firestore
   private String collectionExerciseId;
   private String surveyId;
   private String name;
