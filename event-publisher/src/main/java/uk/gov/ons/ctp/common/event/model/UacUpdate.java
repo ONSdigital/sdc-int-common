@@ -9,12 +9,18 @@ import uk.gov.ons.ctp.common.log.Scope;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UAC implements EventPayload {
+public class UacUpdate implements EventPayload {
+  
+  private String caseId;
+
+  private String active;
+  
   @LoggingScope(scope = Scope.MASK)
   private String uacHash;
 
-  private String active;
-  private String questionnaireId;
-  private String caseId;
-  private String formType;
+  private String qid;
+  
+  private boolean receiptReceived;
+  
+  private boolean eqLaunched;
 }

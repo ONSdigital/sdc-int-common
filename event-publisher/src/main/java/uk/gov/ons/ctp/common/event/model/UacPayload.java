@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UacPayload {
 
-  private UAC uac = new UAC();
+  private UacUpdate uacUpdate = new UacUpdate();
 }

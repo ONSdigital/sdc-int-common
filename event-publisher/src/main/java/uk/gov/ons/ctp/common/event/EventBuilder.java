@@ -32,11 +32,11 @@ import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdate;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdateEvent;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdatePayload;
-import uk.gov.ons.ctp.common.event.model.UAC;
 import uk.gov.ons.ctp.common.event.model.UacAuthenticateEvent;
 import uk.gov.ons.ctp.common.event.model.UacAuthenticateResponse;
 import uk.gov.ons.ctp.common.event.model.UacEvent;
 import uk.gov.ons.ctp.common.event.model.UacPayload;
+import uk.gov.ons.ctp.common.event.model.UacUpdate;
 import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
 
 /**
@@ -288,7 +288,7 @@ public abstract class EventBuilder {
       UacEvent uacEvent = new UacEvent();
       uacEvent.setHeader(
           buildHeader(EventTopic.UAC_UPDATE, sendInfo.getSource(), sendInfo.getChannel()));
-      UacPayload uacPayload = new UacPayload((UAC) sendInfo.getPayload());
+      UacPayload uacPayload = new UacPayload((UacUpdate) sendInfo.getPayload());
       uacEvent.setPayload(uacPayload);
       return uacEvent;
     }
@@ -296,13 +296,13 @@ public abstract class EventBuilder {
     @Override
     SendInfo create(String json) {
       GenericEvent genericEvent = deserialiseEventJson(json, UacEvent.class);
-      EventPayload payload = ((UacEvent) genericEvent).getPayload().getUac();
+      EventPayload payload = ((UacEvent) genericEvent).getPayload().getUacUpdate();
       return build(genericEvent, payload);
     }
 
     @Override
     EventPayload createPayload(String json) {
-      return deserialisePayloadJson(json, UAC.class);
+      return deserialisePayloadJson(json, UacUpdate.class);
     }
   }
 
