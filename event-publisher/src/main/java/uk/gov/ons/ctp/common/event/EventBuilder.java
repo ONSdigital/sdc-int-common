@@ -3,6 +3,7 @@ package uk.gov.ons.ctp.common.event;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -100,10 +101,10 @@ public abstract class EventBuilder {
     }
   }
 
-  static Header buildHeader(EventTopic topic, Source source, Channel channel) {
+  static Header buildHeader(EventTopic topic, String source, Channel channel) {
     String originatingUser;
     UUID messageId = UUID.randomUUID();
-    if (source == Source.RESPONDENT_HOME) {
+    if (Objects.equals(source, Source.RESPONDENT_HOME.name())) {
       originatingUser = Source.RESPONDENT_HOME.toString();
     } else {
       originatingUser = "TBD";
@@ -129,7 +130,7 @@ public abstract class EventBuilder {
   @Builder
   public static class SendInfo {
     private EventPayload payload;
-    private Source source;
+    private String source;
     private Channel channel;
   }
 

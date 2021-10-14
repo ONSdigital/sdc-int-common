@@ -24,7 +24,7 @@ public final class EventPublisherTestUtil {
     assertEquals(messageId, event.getHeader().getMessageId().toString());
     assertThat(event.getHeader().getMessageId(), instanceOf(UUID.class));
     assertEquals(expectedTopic, event.getHeader().getTopic());
-    assertEquals(expectedSource, event.getHeader().getSource());
+    assertEquals(expectedSource.name(), event.getHeader().getSource());
     assertEquals(expectedChannel, event.getHeader().getChannel());
     assertThat(event.getHeader().getDateTime(), instanceOf(Date.class));
     // PMB: extend checks

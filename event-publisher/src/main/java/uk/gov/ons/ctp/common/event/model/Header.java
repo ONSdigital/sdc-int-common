@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.ons.ctp.common.domain.Channel;
-import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.event.EventTopic;
 import uk.gov.ons.ctp.common.jackson.CustomDateSerialiser;
 
@@ -22,7 +21,7 @@ public class Header {
 
   private EventTopic topic;
 
-  private Source source;
+  private String source;
 
   private Channel channel;
 
