@@ -21,6 +21,8 @@ public class UacUpdate implements EventPayload {
   private String qid;
 
   private boolean receiptReceived;
+  
+  private WaveMetadata metadata;  
 
   private boolean eqLaunched;
 }
