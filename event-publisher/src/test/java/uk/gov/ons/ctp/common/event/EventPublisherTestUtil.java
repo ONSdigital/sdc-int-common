@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
 import java.util.UUID;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import uk.gov.ons.ctp.common.domain.Channel;
@@ -23,9 +22,9 @@ public final class EventPublisherTestUtil {
       EventTopic expectedTopic,
       Source expectedSource,
       Channel expectedChannel) {
-    
+
     Header header = event.getHeader();
-    
+
     assertEquals("v0.3_RELEASE", header.getVersion());
     assertEquals(expectedTopic, header.getTopic());
     assertEquals(expectedSource, header.getSource());
@@ -35,6 +34,6 @@ public final class EventPublisherTestUtil {
     assertEquals(messageId, header.getMessageId().toString());
     assertThat(header.getCorrelationId(), instanceOf(UUID.class));
     assertEquals(messageId, header.getCorrelationId().toString());
-    assertEquals("TBD", header.getOriginatingUser());  
+    assertEquals("TBD", header.getOriginatingUser());
   }
 }
