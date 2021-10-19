@@ -22,15 +22,15 @@ public class NewCaseSampleSensitive {
 
   private String additionalInfo;
 
-  @LoggingScope(scope = Scope.MASK)
+  @LoggingScope(scope = Scope.SENSITIVE)
   private String childMobileNumber;
 
-  @LoggingScope(scope = Scope.MASK)
+  @LoggingScope(scope = Scope.SENSITIVE)
   private String childEmailAddress;
 
-  @LoggingScope(scope = Scope.MASK)
+  @LoggingScope(scope = Scope.SENSITIVE)
   private String parentMobileNumber;
 
-  @LoggingScope(scope = Scope.MASK)
+  @LoggingScope(scope = Scope.SENSITIVE)
   private String parentEmailAddress;
 }

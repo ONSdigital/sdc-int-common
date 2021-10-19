@@ -13,12 +13,10 @@ public enum Scope {
   /**
    * Nuanced obfuscation based on sensitive data from RM.
    *
-   * <p>
-   *
    * <ul>
    *   <li>If the value is null or the empty string , emit the empty string
    *   <li>If the value is "REDACTED", emit "REDACTED"
-   *   <li>Otherwise, behave as {@link Scope.HASH}
+   *   <li>Otherwise, behave as {@link HASH}
    * </ul>
    */
   SENSITIVE;
