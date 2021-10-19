@@ -13,6 +13,7 @@ import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 import net.logstash.logback.argument.StructuredArguments;
 import net.logstash.logback.marker.ObjectAppendingMarker;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 /**
@@ -28,6 +29,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
  */
 @SuppressWarnings("serial")
 public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
+  private static final String SENSITIVE_MASK = "REDACTED";
   private static final MapperFacade mapper = new ConfigurableMapper();
   private Object scopedObject;
   private boolean scopesProcessed;
@@ -102,7 +104,6 @@ public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
 
       try {
         String scopedValue = null;
-
         switch (scope) {
           case MASK:
             scopedValue = "****";
@@ -110,6 +111,9 @@ public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
           case HASH:
             Object value = FieldUtils.readField(f, obj, true);
             scopedValue = hash(value);
+            break;
+          case SENSITIVE:
+            scopedValue = sensitiveValue(f, obj);
             break;
           default:
             break;
@@ -134,6 +138,20 @@ public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
         e.printStackTrace();
       }
     }
+  }
+
+  private String sensitiveValue(Field f, Object obj) throws IllegalAccessException {
+    String scopedValue = null;
+    Object value = FieldUtils.readField(f, obj, true);
+    String strValue = value == null ? "" : value.toString();
+    if (StringUtils.isBlank(strValue)) {
+      scopedValue = "";
+    } else if (SENSITIVE_MASK.equals(strValue)) {
+      scopedValue = SENSITIVE_MASK;
+    } else {
+      scopedValue = hash(value);
+    }
+    return scopedValue;
   }
 
   private void copyObject() {

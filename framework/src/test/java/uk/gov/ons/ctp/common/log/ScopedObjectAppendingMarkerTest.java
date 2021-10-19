@@ -2,6 +2,8 @@ package uk.gov.ons.ctp.common.log;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -30,7 +32,7 @@ public class ScopedObjectAppendingMarkerTest {
   @Data
   @AllArgsConstructor
   @NoArgsConstructor
-  static class SensitiveName {
+  static class MaskedName {
     private String forename;
 
     @LoggingScope(scope = Scope.MASK)
@@ -52,8 +54,8 @@ public class ScopedObjectAppendingMarkerTest {
   @NoArgsConstructor
   static class Couple {
     private String familyName;
-    private SensitiveName wife;
-    private SensitiveName husband;
+    private MaskedName wife;
+    private MaskedName husband;
   }
 
   @Data
@@ -74,6 +76,16 @@ public class ScopedObjectAppendingMarkerTest {
     static final SelfRefClass FRED = new SelfRefClass("fred", null);
     private String name;
     private SelfRefClass next;
+  }
+
+  @Data
+  @AllArgsConstructor
+  @NoArgsConstructor
+  static class SensitiveName {
+    private String forename;
+
+    @LoggingScope(scope = Scope.SENSITIVE)
+    private String surname;
   }
 
   private ScopedObjectAppendingMarker append(String fieldName, Object object) {
@@ -149,12 +161,48 @@ public class ScopedObjectAppendingMarkerTest {
   }
 
   @Test
-  public void sensitiveWrite() throws Exception {
-    SensitiveName myObject = new SensitiveName("fred", "bloggs");
+  public void maskedWrite() throws Exception {
+    MaskedName myObject = new MaskedName("fred", "bloggs");
     StringWriter writer = generateLogging(myObject);
     assertThat(writer.toString())
         .isEqualTo("{\"myObject\":{\"forename\":\"fred\",\"surname\":\"****\"}}");
     assertEquals("bloggs", myObject.getSurname());
+  }
+
+  @Test
+  public void sensitivedWrite() throws Exception {
+    SensitiveName myObject = new SensitiveName("fred", "bloggs");
+    StringWriter writer = generateLogging(myObject);
+    assertThat(writer.toString())
+        .isEqualTo("{\"myObject\":{\"forename\":\"fred\",\"surname\":\"51c2d884\"}}");
+    assertEquals("bloggs", myObject.getSurname());
+  }
+
+  @Test
+  public void sensitivedWriteRedacted() throws Exception {
+    SensitiveName myObject = new SensitiveName("fred", "REDACTED");
+    StringWriter writer = generateLogging(myObject);
+    assertThat(writer.toString())
+        .isEqualTo("{\"myObject\":{\"forename\":\"fred\",\"surname\":\"REDACTED\"}}");
+    assertEquals("REDACTED", myObject.getSurname());
+  }
+
+  @Test
+  public void sensitivedWriteNull() throws Exception {
+    SensitiveName myObject = new SensitiveName("fred", null);
+    StringWriter writer = generateLogging(myObject);
+    assertThat(writer.toString())
+        .isEqualTo("{\"myObject\":{\"forename\":\"fred\",\"surname\":\"\"}}");
+    assertNull(myObject.getSurname());
+  }
+
+  @Test
+  public void sensitivedWriteEmpty() throws Exception {
+    SensitiveName myObject = new SensitiveName("fred", "");
+    StringWriter writer = generateLogging(myObject);
+    assertThat(writer.toString())
+        .isEqualTo("{\"myObject\":{\"forename\":\"fred\",\"surname\":\"\"}}");
+    assertTrue(myObject.getSurname().isEmpty());
   }
 
   @Test
@@ -168,8 +216,8 @@ public class ScopedObjectAppendingMarkerTest {
 
   @Test
   public void nestedWrite() throws Exception {
-    SensitiveName husband = new SensitiveName("fred", "bloggs");
-    SensitiveName wife = new SensitiveName("jane", "smith");
+    MaskedName husband = new MaskedName("fred", "bloggs");
+    MaskedName wife = new MaskedName("jane", "smith");
 
     Couple myObject = new Couple("smith-bloggs", wife, husband);
     StringWriter writer = generateLogging(myObject);
@@ -182,8 +230,8 @@ public class ScopedObjectAppendingMarkerTest {
 
   @Test
   public void nestedWriteWithNull() throws Exception {
-    SensitiveName husband = new SensitiveName("fred", "bloggs");
-    SensitiveName wife = null;
+    MaskedName husband = new MaskedName("fred", "bloggs");
+    MaskedName wife = null;
 
     Couple myObject = new Couple("smith-bloggs", wife, husband);
     StringWriter writer = generateLogging(myObject);
@@ -196,12 +244,12 @@ public class ScopedObjectAppendingMarkerTest {
 
   @Test
   public void multiNestedWrite() throws Exception {
-    SensitiveName husband = new SensitiveName("fred", "bloggs");
-    SensitiveName wife = new SensitiveName("jane", "smith");
+    MaskedName husband = new MaskedName("fred", "bloggs");
+    MaskedName wife = new MaskedName("jane", "smith");
     Couple couple1 = new Couple("smith-bloggs", wife, husband);
 
-    SensitiveName husband2 = new SensitiveName("jim", "jones");
-    SensitiveName wife2 = new SensitiveName("susie", "cook");
+    MaskedName husband2 = new MaskedName("jim", "jones");
+    MaskedName wife2 = new MaskedName("susie", "cook");
     Couple couple2 = new Couple("cook-jones", wife2, husband2);
 
     DinnerParty party = new DinnerParty("anniversary", couple1, couple2);
