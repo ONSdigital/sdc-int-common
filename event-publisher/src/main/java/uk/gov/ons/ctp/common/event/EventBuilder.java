@@ -57,7 +57,7 @@ public abstract class EventBuilder {
       new CollectionExerciseUpdateBuilder();
   public static final EventBuilder NEW_CASE = new NewCaseBuilder();
 
-  private static final String EVENT_VERSION = "v0.3_RELEASE";
+  private static final String EVENT_VERSION = "0.4.0";
 
   ObjectMapper objectMapper = new CustomObjectMapper();
 
