@@ -17,6 +17,7 @@
         "collectionExerciseId": "3883af91-0052-4497-9805-3238544fcf8a",
         "invalid": true,
         "refusalReceived": "HARD_REFUSAL",
+        "caseRef": "occaecat quis qui",
         "sample": {
           "addressLine1": "Flat 987, Magical Apartments",
           "addressLine2": "123 Fake Street",
@@ -28,7 +29,9 @@
         },
         "sampleSensitive": {
           "phoneNumber": "REDACTED"
-        }
+        },
+        "createdAt": "1970-01-01T00:00:00.000Z",
+        "lastUpdatedAt": "1970-01-01T00:00:00.000Z"
       }
     }
   }
