@@ -13,6 +13,7 @@ import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 import net.logstash.logback.argument.StructuredArguments;
 import net.logstash.logback.marker.ObjectAppendingMarker;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 /**
@@ -28,6 +29,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
  */
 @SuppressWarnings("serial")
 public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
+  private static final String SENSITIVE_MASK = "REDACTED";
   private static final MapperFacade mapper = new ConfigurableMapper();
   private Object scopedObject;
   private boolean scopesProcessed;
@@ -101,19 +103,7 @@ public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
       Scope scope = loggingScope == null ? Scope.LOG : loggingScope.scope();
 
       try {
-        String scopedValue = null;
-
-        switch (scope) {
-          case MASK:
-            scopedValue = "****";
-            break;
-          case HASH:
-            Object value = FieldUtils.readField(f, obj, true);
-            scopedValue = hash(value);
-            break;
-          default:
-            break;
-        }
+        String scopedValue = scopeValue(f, obj, scope);
 
         if (scopedValue == null) {
           if (shouldRecurse(f, clazz)) {
@@ -134,6 +124,34 @@ public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
         e.printStackTrace();
       }
     }
+  }
+
+  private String scopeValue(Field f, Object obj, Scope scope) throws IllegalAccessException {
+    String scopedValue = null;
+    Object value = FieldUtils.readField(f, obj, true);
+    if (value == null) {
+      return null;
+    }
+    String strValue = value.toString();
+    if (StringUtils.isBlank(strValue)) {
+      scopedValue = "";
+    } else {
+      switch (scope) {
+        case MASK:
+          scopedValue = "****";
+          break;
+        case HASH:
+          value = FieldUtils.readField(f, obj, true);
+          scopedValue = hash(value);
+          break;
+        case SENSITIVE:
+          scopedValue = SENSITIVE_MASK.equals(strValue) ? SENSITIVE_MASK : hash(value);
+          break;
+        default:
+          break;
+      }
+    }
+    return scopedValue;
   }
 
   private void copyObject() {

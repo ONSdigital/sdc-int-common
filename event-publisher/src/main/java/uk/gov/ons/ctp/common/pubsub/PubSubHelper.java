@@ -87,7 +87,16 @@ public class PubSubHelper {
     }
   }
 
-  /** Create instance of PubSubHelper. */
+  /**
+   * Create instance of PubSubHelper.
+   *
+   * @param projectId produc id
+   * @param addRmProperties true to add RM properties
+   * @param useEmulatorPubSub true if using emulator
+   * @param emulatorPubSubHost emulator host
+   * @return instance
+   * @throws CTPException on error
+   */
   public static synchronized PubSubHelper instance(
       String projectId,
       boolean addRmProperties,
@@ -113,7 +122,9 @@ public class PubSubHelper {
   /**
    * Creates the Subscription that PubSubHelper is using to listen to the given topicType.
    *
-   * @param topicType is the type of the event that PubSubHelper has a Subscription listening to.
+   * @param topicType the type of the event that PubSubHelper has a Subscription listening to.
+   * @return subscription ID
+   * @throws CTPException on error
    */
   public synchronized String createSubscription(TopicType topicType) throws CTPException {
     EventTopic eventTopic = EventTopic.forType(topicType);
@@ -137,6 +148,7 @@ public class PubSubHelper {
    * Flushes the Subscription that PubSubHelper is using to listen to the given topicType.
    *
    * @param topicType is the type of the event that PubSubHelper has a Subscription listening to.
+   * @throws CTPException on error
    */
   public synchronized void flushSubscription(TopicType topicType) throws CTPException {
     try {
@@ -172,6 +184,8 @@ public class PubSubHelper {
    * Deletes Subscription that PubSubHelper is using to listen to the given topicType.
    *
    * @param topicType is the type of the event that PubSubHelper has a Subscription listening to.
+   * @return subscripton ID
+   * @throws CTPException on error
    */
   public synchronized String deleteSubscription(TopicType topicType) throws CTPException {
     String subscriptionId = buildSubscriberId(topicType);

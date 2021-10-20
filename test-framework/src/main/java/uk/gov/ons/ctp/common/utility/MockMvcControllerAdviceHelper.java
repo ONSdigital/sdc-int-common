@@ -31,6 +31,7 @@ public class MockMvcControllerAdviceHelper<T> extends ExceptionHandlerExceptionR
   /**
    * Default MockMvcControllerAdviceHelper Constructor
    *
+   * @param <T> type of exception handler class
    * @param exceptionHandlerClass Exception Handler Class
    * @return MockMvcControllerAdviceHelper object
    */
