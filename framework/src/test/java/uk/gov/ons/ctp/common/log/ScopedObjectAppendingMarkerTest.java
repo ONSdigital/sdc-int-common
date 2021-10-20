@@ -170,6 +170,24 @@ public class ScopedObjectAppendingMarkerTest {
   }
 
   @Test
+  public void maskedWriteEmpty() throws Exception {
+    MaskedName myObject = new MaskedName("fred", "");
+    StringWriter writer = generateLogging(myObject);
+    assertThat(writer.toString())
+        .isEqualTo("{\"myObject\":{\"forename\":\"fred\",\"surname\":\"\"}}");
+    assertEquals("", myObject.getSurname());
+  }
+
+  @Test
+  public void maskedWriteNull() throws Exception {
+    MaskedName myObject = new MaskedName("fred", null);
+    StringWriter writer = generateLogging(myObject);
+    assertThat(writer.toString())
+        .isEqualTo("{\"myObject\":{\"forename\":\"fred\",\"surname\":null}}");
+    assertNull(myObject.getSurname());
+  }
+
+  @Test
   public void sensitivedWrite() throws Exception {
     SensitiveName myObject = new SensitiveName("fred", "bloggs");
     StringWriter writer = generateLogging(myObject);
@@ -192,7 +210,7 @@ public class ScopedObjectAppendingMarkerTest {
     SensitiveName myObject = new SensitiveName("fred", null);
     StringWriter writer = generateLogging(myObject);
     assertThat(writer.toString())
-        .isEqualTo("{\"myObject\":{\"forename\":\"fred\",\"surname\":\"\"}}");
+        .isEqualTo("{\"myObject\":{\"forename\":\"fred\",\"surname\":null}}");
     assertNull(myObject.getSurname());
   }
 
@@ -212,6 +230,24 @@ public class ScopedObjectAppendingMarkerTest {
     assertThat(writer.toString())
         .isEqualTo("{\"myObject\":{\"forename\":\"fred\",\"surname\":\"51c2d884\"}}");
     assertEquals("bloggs", myObject.getSurname());
+  }
+
+  @Test
+  public void hashedWriteEmpty() throws Exception {
+    HashedName myObject = new HashedName("fred", "");
+    StringWriter writer = generateLogging(myObject);
+    assertThat(writer.toString())
+        .isEqualTo("{\"myObject\":{\"forename\":\"fred\",\"surname\":\"\"}}");
+    assertEquals("", myObject.getSurname());
+  }
+
+  @Test
+  public void hashedWriteNull() throws Exception {
+    HashedName myObject = new HashedName("fred", null);
+    StringWriter writer = generateLogging(myObject);
+    assertThat(writer.toString())
+        .isEqualTo("{\"myObject\":{\"forename\":\"fred\",\"surname\":null}}");
+    assertNull(myObject.getSurname());
   }
 
   @Test

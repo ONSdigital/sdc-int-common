@@ -103,21 +103,7 @@ public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
       Scope scope = loggingScope == null ? Scope.LOG : loggingScope.scope();
 
       try {
-        String scopedValue = null;
-        switch (scope) {
-          case MASK:
-            scopedValue = "****";
-            break;
-          case HASH:
-            Object value = FieldUtils.readField(f, obj, true);
-            scopedValue = hash(value);
-            break;
-          case SENSITIVE:
-            scopedValue = sensitiveValue(f, obj);
-            break;
-          default:
-            break;
-        }
+        String scopedValue = scopeValue(f, obj, scope);
 
         if (scopedValue == null) {
           if (shouldRecurse(f, clazz)) {
@@ -140,16 +126,30 @@ public class ScopedObjectAppendingMarker extends ObjectAppendingMarker {
     }
   }
 
-  private String sensitiveValue(Field f, Object obj) throws IllegalAccessException {
+  private String scopeValue(Field f, Object obj, Scope scope) throws IllegalAccessException {
     String scopedValue = null;
     Object value = FieldUtils.readField(f, obj, true);
-    String strValue = value == null ? "" : value.toString();
+    if (value == null) {
+      return null;
+    }
+    String strValue = value.toString();
     if (StringUtils.isBlank(strValue)) {
       scopedValue = "";
-    } else if (SENSITIVE_MASK.equals(strValue)) {
-      scopedValue = SENSITIVE_MASK;
     } else {
-      scopedValue = hash(value);
+      switch (scope) {
+        case MASK:
+          scopedValue = "****";
+          break;
+        case HASH:
+          value = FieldUtils.readField(f, obj, true);
+          scopedValue = hash(value);
+          break;
+        case SENSITIVE:
+          scopedValue = SENSITIVE_MASK.equals(strValue) ? SENSITIVE_MASK : hash(value);
+          break;
+        default:
+          break;
+      }
     }
     return scopedValue;
   }
