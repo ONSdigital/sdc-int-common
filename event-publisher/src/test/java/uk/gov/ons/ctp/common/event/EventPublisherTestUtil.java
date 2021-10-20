@@ -22,18 +22,26 @@ public final class EventPublisherTestUtil {
       EventTopic expectedTopic,
       Source expectedSource,
       Channel expectedChannel) {
+    // PMB      String expectedOriginatingUser) {
 
     Header header = event.getHeader();
 
-    assertEquals("v0.3_RELEASE", header.getVersion());
+    assertEquals("0.4.0", header.getVersion());
     assertEquals(expectedTopic, header.getTopic());
-    assertEquals(expectedSource, header.getSource());
+    assertEquals(expectedSource.name(), header.getSource());
     assertEquals(expectedChannel, header.getChannel());
     assertThat(header.getDateTime(), instanceOf(Date.class));
     assertThat(header.getMessageId(), instanceOf(UUID.class));
     assertEquals(messageId, header.getMessageId().toString());
     assertThat(header.getCorrelationId(), instanceOf(UUID.class));
     assertEquals(messageId, header.getCorrelationId().toString());
-    assertEquals("TBD", header.getOriginatingUser());
+
+    String expectedOriginatingUser;
+    if (expectedSource == Source.CONTACT_CENTRE_API) {
+      expectedOriginatingUser = "TBD";
+    } else {
+      expectedOriginatingUser = "RESPONDENT_HOME";
+    }
+    assertEquals(expectedOriginatingUser, header.getOriginatingUser());
   }
 }

@@ -81,7 +81,8 @@ public class EventPublisher {
         kv("channel", channel),
         kv("payload", payload));
 
-    GenericEvent genericEvent = doSendEvent(topicType, new SendInfo(payload, source, channel));
+    GenericEvent genericEvent =
+        doSendEvent(topicType, new SendInfo(payload, source.name(), channel));
     UUID messageId = genericEvent.getHeader().getMessageId();
 
     log.debug(
