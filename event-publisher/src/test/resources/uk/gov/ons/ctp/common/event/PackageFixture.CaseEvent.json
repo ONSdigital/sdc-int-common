@@ -30,8 +30,8 @@
         "sampleSensitive": {
           "phoneNumber": "REDACTED"
         },
-        "createdAt": "1970-01-01T00:00:00.000Z",
-        "lastUpdatedAt": "1970-01-01T00:00:00.000Z"
+        "createdAt": "2021-01-01T01:02:03.456Z",
+        "lastUpdatedAt": "2021-10-10T00:00:00.000Z"
       }
     }
   }
