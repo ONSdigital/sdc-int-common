@@ -22,7 +22,6 @@ public final class EventPublisherTestUtil {
       EventTopic expectedTopic,
       Source expectedSource,
       Channel expectedChannel) {
-    // PMB      String expectedOriginatingUser) {
 
     Header header = event.getHeader();
 
