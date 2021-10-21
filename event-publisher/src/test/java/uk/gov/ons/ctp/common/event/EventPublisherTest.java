@@ -47,10 +47,10 @@ import uk.gov.ons.ctp.common.event.model.SurveyLaunchEvent;
 import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdate;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdateEvent;
-import uk.gov.ons.ctp.common.event.model.UAC;
 import uk.gov.ons.ctp.common.event.model.UacAuthenticateEvent;
 import uk.gov.ons.ctp.common.event.model.UacAuthenticateResponse;
 import uk.gov.ons.ctp.common.event.model.UacEvent;
+import uk.gov.ons.ctp.common.event.model.UacUpdate;
 import uk.gov.ons.ctp.common.event.persistence.EventBackupData;
 import uk.gov.ons.ctp.common.event.persistence.FirestoreEventPersistence;
 import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
@@ -226,7 +226,7 @@ public class EventPublisherTest {
   }
 
   private void assertSendUac(EventTopic topic) {
-    UAC payload = loadJson(UAC[].class);
+    UacUpdate payload = loadJson(UacUpdate[].class);
 
     UUID messageId =
         eventPublisher.sendEvent(topic.getType(), Source.CONTACT_CENTRE_API, Channel.CC, payload);
@@ -235,7 +235,7 @@ public class EventPublisherTest {
     UacEvent event = uacEventCaptor.getValue();
 
     assertHeader(event, messageId.toString(), topic, Source.CONTACT_CENTRE_API, Channel.CC);
-    assertEquals(payload, event.getPayload().getUac());
+    assertEquals(payload, event.getPayload().getUacUpdate());
   }
 
   @Test
