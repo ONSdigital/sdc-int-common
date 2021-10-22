@@ -64,7 +64,7 @@ public class RestClient {
   /**
    * Construct with no details of the server - will use the default RestClientConfig provides
    *
-   * @throws CTPException
+   * @throws CTPException on error
    */
   public RestClient() throws CTPException {
     this(new RestClientConfig());
@@ -74,7 +74,7 @@ public class RestClient {
    * Constructor which uses no error code mappings.
    *
    * @param clientConfig contains data on how to connect to another service.
-   * @throws CTPException
+   * @throws CTPException on error
    */
   public RestClient(RestClientConfig clientConfig) throws CTPException {
     this(clientConfig, defaultBareBonesErrorMapping, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -90,7 +90,7 @@ public class RestClient {
    *     translation.
    * @param httpDefaultStatus if the called service returns a http code which is not in the mapping
    *     table then this value will be used.
-   * @throws CTPException
+   * @throws CTPException on error
    */
   public RestClient(
       RestClientConfig clientConfig,

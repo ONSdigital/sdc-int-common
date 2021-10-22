@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.ons.ctp.common.domain.Channel;
 import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.event.model.GenericEvent;
+import uk.gov.ons.ctp.common.event.model.Header;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EventPublisherTestUtil {
@@ -21,12 +22,25 @@ public final class EventPublisherTestUtil {
       EventTopic expectedTopic,
       Source expectedSource,
       Channel expectedChannel) {
-    assertEquals(messageId, event.getHeader().getMessageId().toString());
-    assertThat(event.getHeader().getMessageId(), instanceOf(UUID.class));
-    assertEquals(expectedTopic, event.getHeader().getTopic());
-    assertEquals(expectedSource.name(), event.getHeader().getSource());
-    assertEquals(expectedChannel, event.getHeader().getChannel());
-    assertThat(event.getHeader().getDateTime(), instanceOf(Date.class));
-    // PMB: extend checks
+
+    Header header = event.getHeader();
+
+    assertEquals("0.4.0", header.getVersion());
+    assertEquals(expectedTopic, header.getTopic());
+    assertEquals(expectedSource.name(), header.getSource());
+    assertEquals(expectedChannel, header.getChannel());
+    assertThat(header.getDateTime(), instanceOf(Date.class));
+    assertThat(header.getMessageId(), instanceOf(UUID.class));
+    assertEquals(messageId, header.getMessageId().toString());
+    assertThat(header.getCorrelationId(), instanceOf(UUID.class));
+    assertEquals(messageId, header.getCorrelationId().toString());
+
+    String expectedOriginatingUser;
+    if (expectedSource == Source.CONTACT_CENTRE_API) {
+      expectedOriginatingUser = "TBD";
+    } else {
+      expectedOriginatingUser = "RESPONDENT_HOME";
+    }
+    assertEquals(expectedOriginatingUser, header.getOriginatingUser());
   }
 }

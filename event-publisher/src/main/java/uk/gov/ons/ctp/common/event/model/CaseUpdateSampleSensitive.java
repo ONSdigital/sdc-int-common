@@ -11,6 +11,6 @@ import uk.gov.ons.ctp.common.log.Scope;
 @AllArgsConstructor
 public class CaseUpdateSampleSensitive {
 
-  @LoggingScope(scope = Scope.MASK)
+  @LoggingScope(scope = Scope.SENSITIVE)
   private String phoneNumber;
 }
