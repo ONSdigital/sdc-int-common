@@ -17,6 +17,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Date;
 import java.util.UUID;
+
+import com.google.protobuf.ByteString;
+import com.google.pubsub.v1.PubsubMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +29,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cloud.gcp.pubsub.support.converter.JacksonPubSubMessageConverter;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.ons.ctp.common.FixtureHelper;
 import uk.gov.ons.ctp.common.domain.Channel;
@@ -223,6 +227,16 @@ public class EventPublisherTest {
   @Test
   public void shouldSendCaseUpdated() {
     assertSendCase(EventTopic.CASE_UPDATE);
+  }
+
+  @Test
+  public void correctDateFormat() throws JsonProcessingException {
+    CaseEvent caseEvent = loadJson(CaseEvent[].class);
+    String body = objectMapper.writeValueAsString(caseEvent);
+
+    PubsubMessage pubsubMessage =
+        PubsubMessage.newBuilder().setData(ByteString.copyFromUtf8(body)).build();
+    assertThat(pubsubMessage.toString(), containsString("2021-10-10T00:00:00.000Z"));
   }
 
   private void assertSendUac(EventTopic topic) {

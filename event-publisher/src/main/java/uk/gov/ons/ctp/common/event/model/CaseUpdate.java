@@ -1,5 +1,6 @@
 package uk.gov.ons.ctp.common.event.model;
 
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,4 +21,7 @@ public class CaseUpdate implements EventPayload {
   private String refusalReceived;
   private CaseUpdateSample sample;
   private CaseUpdateSampleSensitive sampleSensitive;
+  private String caseRef;
+  private Date createdAt;
+  private Date lastUpdatedAt;
 }
