@@ -20,17 +20,9 @@ public class NewCaseSampleSensitive {
   private String childLastName;
   private LocalDate childDob;
 
-  private String additionalInfo;
+  @LoggingScope(scope = Scope.SENSITIVE)
+  private String mobileNumber;
 
   @LoggingScope(scope = Scope.SENSITIVE)
-  private String childMobileNumber;
-
-  @LoggingScope(scope = Scope.SENSITIVE)
-  private String childEmailAddress;
-
-  @LoggingScope(scope = Scope.SENSITIVE)
-  private String parentMobileNumber;
-
-  @LoggingScope(scope = Scope.SENSITIVE)
-  private String parentEmailAddress;
+  private String emailAddress;
 }
