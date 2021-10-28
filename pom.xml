@@ -46,7 +46,7 @@
     <orika.version>1.5.2</orika.version>
     <surefire.version>3.0.0-M5</surefire.version>
     <googlecloud.version>8.1.0</googlecloud.version>
-    <spring-cloud-gcp.version>1.2.8.RELEASE</spring-cloud-gcp.version>
+    <spring-cloud-gcp.version>2.0.3</spring-cloud-gcp.version>
     <guava.version>29.0-jre</guava.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -73,7 +73,7 @@
       </dependency>
 
       <dependency>
-        <groupId>org.springframework.cloud</groupId>
+        <groupId>com.google.cloud</groupId>
         <artifactId>spring-cloud-gcp-dependencies</artifactId>
         <version>${spring-cloud-gcp.version}</version>
         <type>pom</type>
