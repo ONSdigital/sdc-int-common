@@ -5,14 +5,14 @@
   <artifactId>util-framework</artifactId>
   <packaging>jar</packaging>
 
-  <name>SDC : Integrations Utility Frameworkr</name>
-  <description>SDC : Integrations Utility Frameworkr</description>
+  <name>SDC : Integrations Utility Framework</name>
+  <description>SDC : Integrations Utility Framework</description>
 
   <parent>
     <groupId>ons.sdc.int.common</groupId>
     <artifactId>common</artifactId>
     <!-- version auto updated by Travis mvn release -->
-    <version>1.0.43-SNAPSHOT</version>
+    <version>1.0.44-SNAPSHOT</version>
   </parent>
 
   <dependencies>
