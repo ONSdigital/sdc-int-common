@@ -29,6 +29,7 @@
     <module>event-publisher</module>
     <module>case-api-client</module>
     <module>rate-limiter-client</module>
+    <module>util-framework</module>
   </modules>
 
   <scm>
