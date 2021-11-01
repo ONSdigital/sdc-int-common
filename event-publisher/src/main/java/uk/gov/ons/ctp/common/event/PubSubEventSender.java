@@ -2,12 +2,12 @@ package uk.gov.ons.ctp.common.event;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.springframework.cloud.gcp.pubsub.core.PubSubTemplate;
 import org.springframework.util.concurrent.ListenableFuture;
 import uk.gov.ons.ctp.common.event.model.GenericEvent;
 import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
