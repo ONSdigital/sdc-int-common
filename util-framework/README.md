@@ -1,5 +1,5 @@
 # ONS SDC Integrations Event Publisher
-This project contains a utility class for creating and publishing SDC events of any type
+This project contains utility classes for publishing and retrieving events used by cucumber tests
 using GCP pub/sub.
 
 
