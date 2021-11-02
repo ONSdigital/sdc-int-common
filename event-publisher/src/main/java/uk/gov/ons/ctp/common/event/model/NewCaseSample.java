@@ -11,6 +11,6 @@ public class NewCaseSample {
 
   private String schoolId;
   private String schoolName;
-  private boolean consentGivenTest;
-  private boolean consentGivenSurvey;
+  private String consentGivenTest;
+  private String consentGivenSurvey;
 }

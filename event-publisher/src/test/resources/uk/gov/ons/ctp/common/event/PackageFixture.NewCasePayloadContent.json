@@ -1,14 +1,20 @@
 {
-  "schoolId": "abc1234",
-  "schoolName": "Chesterthorps High School",
-  "consentGivenTest": "true",
-  "consentGivenSurvey": "true",
-  "firstName": "Fred",
-  "lastName": "Bloggs",
-  "childFirstName": "Jo",
-  "childMiddleName": "Rose",
-  "childLastName": "Bloggs",
-  "childDob": "2001-12-31",
-  "mobileNumber": "07123456999",
-  "emailAddress": "fred.bloggs@domain.com"
+  "caseId": "3883af91-0052-4497-9805-3238544fcf8a",
+  "collectionExerciseId": "22684ede-7d5f-4f53-9069-2398055c61b2",
+  "sample": {
+    "schoolId": "abc1234",
+    "schoolName": "Chesterthorps High School",
+    "consentGivenTest": "true",
+    "consentGivenSurvey": "true"
+  },
+  "sampleSensitive": {
+    "firstName": "Fred",
+    "lastName": "Bloggs",
+    "childFirstName": "Jo",
+    "childMiddleNames": "Rose",
+    "childLastName": "Bloggs",
+    "childDob": "2001-12-31",
+    "mobileNumber": "07123456999",
+    "emailAddress": "fred.bloggs@domain.com"
+  }
 }
