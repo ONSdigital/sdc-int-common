@@ -15,4 +15,12 @@ public class CaseUpdateSample {
   private String postcode;
   private String region;
   private String uprn;
+
+  private String questionnaire;
+  private String sampleUnitRef;
+  private int cohort;
+  private String gor9d;
+  private String laCode;
+  private String uprnLatitude;
+  private String uprnLongitude;
 }
