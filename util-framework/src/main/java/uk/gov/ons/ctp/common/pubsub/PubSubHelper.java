@@ -126,9 +126,10 @@ public class PubSubHelper {
    * @return subscription ID
    * @throws CTPException on error
    */
-  public synchronized String createSubscription(TopicType topicType) throws CTPException {
+  public synchronized String createSubscription(
+      TopicType topicType, SubscriptionSuffix subscriptionSuffix) throws CTPException {
     EventTopic eventTopic = EventTopic.forType(topicType);
-    String subscriptionId = buildSubscriberId(topicType);
+    String subscriptionId = buildSubscriberId(topicType, subscriptionSuffix);
     try {
       SubscriberStub subscriberStub = GrpcSubscriberStub.create(defaultSubscriberStubSettings);
       SubscriptionAdminClient subscriptionAdminClient =
@@ -150,16 +151,17 @@ public class PubSubHelper {
    * @param topicType is the type of the event that PubSubHelper has a Subscription listening to.
    * @throws CTPException on error
    */
-  public synchronized void flushSubscription(TopicType topicType) throws CTPException {
+  public synchronized void flushSubscription(
+      TopicType topicType, SubscriptionSuffix subscriptionSuffix) throws CTPException {
     try {
       // Creates the subscription only if it doesnt exist
-      createSubscription(topicType);
+      createSubscription(topicType, subscriptionSuffix);
 
       SubscriberStub subscriberStub = GrpcSubscriberStub.create(defaultSubscriberStubSettings);
       SubscriptionAdminClient subscriptionAdminClient =
           SubscriptionAdminClient.create(subscriberStub);
 
-      String subscriptionId = buildSubscriberId(topicType);
+      String subscriptionId = buildSubscriberId(topicType, subscriptionSuffix);
       String subscriptionName =
           ProjectSubscriptionName.of(this.projectId, subscriptionId).toString();
 
@@ -187,8 +189,9 @@ public class PubSubHelper {
    * @return subscripton ID
    * @throws CTPException on error
    */
-  public synchronized String deleteSubscription(TopicType topicType) throws CTPException {
-    String subscriptionId = buildSubscriberId(topicType);
+  public synchronized String deleteSubscription(
+      TopicType topicType, SubscriptionSuffix subscriptionSuffix) throws CTPException {
+    String subscriptionId = buildSubscriberId(topicType, subscriptionSuffix);
     deleteSubscription(subscriptionId);
     return subscriptionId;
   }
@@ -254,9 +257,13 @@ public class PubSubHelper {
    *     expired.
    * @throws CTPException if PubSub threw an exception when we attempted to read a message.
    */
-  public <T> T getMessage(TopicType topicType, Class<T> clazz, long maxWaitTimeMillis)
+  public <T> T getMessage(
+      TopicType topicType,
+      Class<T> clazz,
+      long maxWaitTimeMillis,
+      SubscriptionSuffix subscriptionSubstring)
       throws CTPException {
-    String subscriberName = buildSubscriberId(topicType);
+    String subscriberName = buildSubscriberId(topicType, subscriptionSubstring);
 
     String message = getMessage(subscriberName, maxWaitTimeMillis);
 
@@ -401,7 +408,8 @@ public class PubSubHelper {
     return exists;
   }
 
-  private static String buildSubscriberId(TopicType topicType) {
+  private static String buildSubscriberId(
+      TopicType topicType, SubscriptionSuffix subscriptionSuffix) {
     EventTopic eventTopic = EventTopic.forType(topicType);
     if (eventTopic == null) {
       String errorMessage = "Topic for topicType '" + topicType + "' not configured";
@@ -409,16 +417,7 @@ public class PubSubHelper {
       throw new UnsupportedOperationException(errorMessage);
     }
 
-    // Use routing key for subscription name as well as binding. This gives the subscription a
-    // 'fake' name, but
-    // it saves the Cucumber tests from having to decide on a subscription name
-    String eventTopicName = eventTopic.getTopic();
-    // TODO this needs to be parameterized as contact centre svc will also be consuming messages
-    String subSuffix =
-        (topicType.equals(TopicType.CASE_UPDATE) || topicType.equals(TopicType.UAC_UPDATE))
-            ? "_rh"
-            : "_cuc";
-    return eventTopicName + subSuffix;
+    return eventTopic.getTopic() + subscriptionSuffix.getSuffix();
   }
 
   private SubscriberStubSettings buildSubscriberStubSettings(long wait) throws IOException {
