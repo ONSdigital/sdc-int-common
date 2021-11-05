@@ -65,7 +65,7 @@ public class NativePubSubEventSender implements EventSender {
       String messageId = messageIdFuture.get();
       log.info("Published message ID: " + messageId);
     } catch (IOException | ExecutionException | InterruptedException e) {
-      log.info(String.format("An exception of %s has occured whilst trying to send an event.", e));
+      log.error("Failed to publish event", e);
       throw e;
     } finally {
       if (publisher != null) {
