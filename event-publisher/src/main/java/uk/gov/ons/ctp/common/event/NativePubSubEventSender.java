@@ -12,10 +12,12 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.event.model.GenericEvent;
 import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
 
+@Slf4j
 public class NativePubSubEventSender implements EventSender {
 
   private ObjectMapper objectMapper;
@@ -61,9 +63,10 @@ public class NativePubSubEventSender implements EventSender {
       // Once published, returns a server-assigned message id (unique within the topic)
       ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
       String messageId = messageIdFuture.get();
-      System.out.println("Published message ID: " + messageId);
+      log.info("Published message ID: " + messageId);
     } catch (IOException | ExecutionException | InterruptedException e) {
-      e.printStackTrace();
+      log.error("Failed to publish event", e);
+      throw e;
     } finally {
       if (publisher != null) {
         // When finished with the publisher, shutdown to free up resources.
