@@ -1,23 +1,4 @@
 {
-  "type" : "EXTRAORDINARY_REFUSAL",
-  "agentId" : "x1",
-  "callId": "898-NOW",
-  "isHouseholder": "true",
-  "collectionCase" : {
-    "id" : "18353ceb-28cf-4a64-bee2-c4dc556d1268"
-  },
-  "contact" : {
-    "title" : "Ms",
-    "forename" : "jo",
-    "surname" : "smith"
-  },
-  "address" : {
-    "addressLine1" : "1 main street",
-    "addressLine2" : "upper upperingham",
-    "addressLine3" : "Lower Upton",
-    "townName" : "Upton",
-    "postcode" : "UP103UP",
-    "region" : "E",
-    "uprn" : "10013041069"
-  }
+  "caseId" : "18353ceb-28cf-4a64-bee2-c4dc556d1268",
+  "type" : "EXTRAORDINARY_REFUSAL"
 }
