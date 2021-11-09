@@ -41,17 +41,21 @@ public class EventPublisher {
   }
 
   /**
-   * Create method for creating an EventPublisher that will persist events following a publishing
-   * failure. If publishing fails and the event is successfully persisted then all will appear well
-   * to the caller, with the only indication of the failure being that an error is logged.
+   * Create method for creating an EventPublisher with optional persistence and optional
+   * circuit-breaker behaviour.
+   *
+   * <p>When a persistence bean is provided then a publishing failure will back up to firestore.
+   *
+   * <p>When a circuit breaker bean is provided, "fast fail" behaviour will happen if pubsub goes
+   * down in order to reduce the cost associated with calling a service that is not available.
    *
    * @param eventSender the impl of EventSender that will be used to ... send the event.
    * @param eventPersistence is an EventPersistence implementation which does the actual event
-   *     persistence.
+   *     persistence, or null if not required
    * @param circuitBreaker circuit breaker object, or null if not required.
    * @return an EventPubisher object.
    */
-  public static EventPublisher createWithEventPersistence(
+  public static EventPublisher create(
       EventSender eventSender, EventPersistence eventPersistence, CircuitBreaker circuitBreaker) {
     return new EventPublisher(eventSender, eventPersistence, circuitBreaker);
   }
@@ -172,7 +176,7 @@ public class EventPublisher {
     } catch (Exception e) {
       boolean backup = eventPersistence != null;
       log.error(
-          "Failed to send event but will now backup to firestore",
+          "Failed to send event",
           kv("topicType", topicType),
           kv("eventTopic", eventTopic),
           kv("backup", backup),
@@ -180,6 +184,10 @@ public class EventPublisher {
       if (!backup) {
         throw new EventPublishException("Failed to publish event", e);
       }
+      log.info(
+          "Will now backup event to firestore, since it failed to publish",
+          kv("topicType", topicType),
+          kv("eventTopic", eventTopic));
 
       // Save event to persistent store
       try {
