@@ -16,6 +16,12 @@ public class FixtureHelperTest {
     private String name;
   }
 
+  @Data
+  static class AnotherFixture {
+    private int num;
+    private String name;
+  }
+
   @Test
   public void shouldLoadSimpleFixture() {
     var array = FixtureHelper.loadClassFixtures(SimpleFixture[].class);
@@ -73,6 +79,14 @@ public class FixtureHelperTest {
   }
 
   @Test
+  public void shouldLoadFixtureWithInteger() {
+    var array = FixtureHelper.loadClassFixtures(AnotherFixture[].class);
+    assertEquals(1, array.size());
+    assertEquals("Pete", array.get(0).getName());
+    assertEquals(3, array.get(0).getNum());
+  }
+
+  @Test
   public void shouldRejectSimpleFixtureWithBadAttribute() {
     assertThrows(
         Exception.class, () -> FixtureHelper.loadClassFixtures(SimpleFixture[].class, "badattr"));
@@ -88,5 +102,17 @@ public class FixtureHelperTest {
   public void shouldRejectSimpleFixtureWithExtraAttributes() {
     assertThrows(
         Exception.class, () -> FixtureHelper.loadClassFixtures(SimpleFixture[].class, "extra"));
+  }
+
+  @Test
+  public void shouldRejectFixtureWithFloatThatShouldBeInteger() {
+    assertThrows(
+        Exception.class, () -> FixtureHelper.loadClassFixtures(AnotherFixture[].class, "badfloat"));
+  }
+
+  @Test
+  public void shouldRejectFixtureWithNullThatShouldBeInteger() {
+    assertThrows(
+        Exception.class, () -> FixtureHelper.loadClassFixtures(AnotherFixture[].class, "badnull"));
   }
 }
