@@ -30,6 +30,15 @@ public class FixtureHelperTest {
   }
 
   @Test
+  public void shouldLoadMultipleFixturesFromOneFileIfArray() {
+    var array = FixtureHelper.loadClassFixtures(SimpleFixture[].class, "multi");
+    assertEquals(3, array.size());
+    assertEquals("Barry", array.get(0).getName());
+    assertEquals("Beatrice", array.get(1).getName());
+    assertEquals("Bob", array.get(2).getName());
+  }
+
+  @Test
   public void shouldLoadSimpleFixtureAtPackageLevel() {
     var array = FixtureHelper.loadPackageFixtures(SimpleFixture[].class);
     assertEquals(1, array.size());
