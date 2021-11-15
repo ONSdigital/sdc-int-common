@@ -18,10 +18,10 @@
       "startDate": "2021-09-17T23:59:59.999Z",
       "endDate": "2021-09-27T23:59:59.999Z",
       "metadata": {
-        "numberOfWaves": "3",
-        "waveLength": "2",
-        "cohorts": "3",
-        "cohortSchedule": "7"
+        "numberOfWaves": 3,
+        "waveLength": 2,
+        "cohorts": 3,
+        "cohortSchedule": 7
       }
     }
   }

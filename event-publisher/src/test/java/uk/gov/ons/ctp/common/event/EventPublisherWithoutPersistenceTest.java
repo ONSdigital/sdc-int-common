@@ -18,7 +18,7 @@ import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
 
 /** EventPublisher tests specific to the scenario in which event persistence is turned off. */
 @ExtendWith(MockitoExtension.class)
-public class EventPublisherWithoutPersistanceTest {
+public class EventPublisherWithoutPersistenceTest {
 
   @InjectMocks private EventPublisher eventPublisher;
   @Mock private EventSender sender;

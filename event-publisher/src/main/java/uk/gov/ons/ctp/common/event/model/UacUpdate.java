@@ -13,7 +13,7 @@ public class UacUpdate implements EventPayload {
 
   private String caseId;
 
-  private String active;
+  private boolean active;
 
   @LoggingScope(scope = Scope.MASK)
   private String uacHash;

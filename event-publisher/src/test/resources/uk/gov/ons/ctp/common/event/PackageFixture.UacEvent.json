@@ -1,27 +1,25 @@
-[
-  {
-    "header": {
-      "version": "0.4.0",
-      "topic": "event_uac-update",
-      "source": "RESPONDENT_HOME",
-      "channel": "RH",
-      "dateTime": "2020-06-29T13:25:36.042Z",
-      "messageId": "2985d223-e967-4c98-a3d5-07e4c9deeef4",
-      "correlationId": "3883af91-0052-4497-9805-3238544fcf8a",
-      "originatingUser": "RESPONDENT_HOME"
-    },
-    "payload": {
-      "uacUpdate": {
-        "caseId": "2d9beda1-b6d5-4abd-bff1-c4bd9eecac86",
-        "active": true,
-        "uacHash": "8a9d5db4bbee34fd16e40aa2aaae52cfbdf1842559023614c30edb480ec252b4",
-        "qid": "1110000009",
-        "receiptReceived": false,
-        "metadata": {
-          "wave": 94
-        },
-        "eqLaunched": true
-      }
+{
+  "header": {
+    "version": "0.4.0",
+    "topic": "event_uac-update",
+    "source": "RESPONDENT_HOME",
+    "channel": "RH",
+    "dateTime": "2020-06-29T13:25:36.042Z",
+    "messageId": "2985d223-e967-4c98-a3d5-07e4c9deeef4",
+    "correlationId": "3883af91-0052-4497-9805-3238544fcf8a",
+    "originatingUser": "RESPONDENT_HOME"
+  },
+  "payload": {
+    "uacUpdate": {
+      "caseId": "2d9beda1-b6d5-4abd-bff1-c4bd9eecac86",
+      "active": true,
+      "uacHash": "8a9d5db4bbee34fd16e40aa2aaae52cfbdf1842559023614c30edb480ec252b4",
+      "qid": "1110000009",
+      "receiptReceived": false,
+      "metadata": {
+        "wave": 94
+      },
+      "eqLaunched": true
     }
   }
-]
+}
