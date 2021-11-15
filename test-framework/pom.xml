@@ -11,7 +11,7 @@
     <groupId>ons.sdc.int.common</groupId>
     <artifactId>common</artifactId>
     <!-- version auto updated by Travis mvn release -->
-    <version>1.0.51-SNAPSHOT</version>
+    <version>1.0.51</version>
   </parent>
 
   <dependencies>
