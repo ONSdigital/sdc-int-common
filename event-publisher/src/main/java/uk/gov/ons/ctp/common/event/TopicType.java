@@ -9,7 +9,7 @@ import uk.gov.ons.ctp.common.event.model.NewCasePayloadContent;
 import uk.gov.ons.ctp.common.event.model.RefusalDetails;
 import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdate;
-import uk.gov.ons.ctp.common.event.model.UacAuthenticateResponse;
+import uk.gov.ons.ctp.common.event.model.UacAuthenticationResponse;
 import uk.gov.ons.ctp.common.event.model.UacUpdate;
 
 @Getter
@@ -17,7 +17,7 @@ public enum TopicType {
   CASE_UPDATE(CaseUpdate.class, EventBuilder.CASE_UPDATE),
   FULFILMENT(FulfilmentRequest.class, EventBuilder.FULFILMENT),
   REFUSAL(RefusalDetails.class, EventBuilder.REFUSAL),
-  UAC_AUTHENTICATE(UacAuthenticateResponse.class, EventBuilder.UAC_AUTHENTICATE),
+  UAC_AUTHENTICATION(UacAuthenticationResponse.class, EventBuilder.UAC_AUTHENTICATION),
   SURVEY_LAUNCH(SurveyLaunchResponse.class, EventBuilder.SURVEY_LAUNCH),
   UAC_UPDATE(UacUpdate.class, EventBuilder.UAC_UPDATE),
   SURVEY_UPDATE(SurveyUpdate.class, EventBuilder.SURVEY_UPDATE),

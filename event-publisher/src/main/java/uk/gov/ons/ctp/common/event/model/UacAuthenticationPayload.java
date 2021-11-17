@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UacAuthenticatePayload {
+public class UacAuthenticationPayload {
 
-  private UacAuthenticateResponse response = new UacAuthenticateResponse();
+  private UacAuthenticationResponse response = new UacAuthenticationResponse();
 }

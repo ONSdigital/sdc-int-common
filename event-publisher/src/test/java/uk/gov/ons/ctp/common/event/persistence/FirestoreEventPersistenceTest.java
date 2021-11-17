@@ -48,7 +48,7 @@ public class FirestoreEventPersistenceTest {
     ArgumentCaptor<EventBackupData> eventBackupCapture =
         ArgumentCaptor.forClass(EventBackupData.class);
 
-    persistence.persistEvent(TopicType.UAC_AUTHENTICATE, event);
+    persistence.persistEvent(TopicType.UAC_AUTHENTICATION, event);
 
     String expectedMessageId = event.getHeader().getMessageId().toString();
     Mockito.verify(cloudDataStore, times(1))
@@ -59,7 +59,7 @@ public class FirestoreEventPersistenceTest {
             eq(expectedMessageId));
 
     EventBackupData storedData = eventBackupCapture.getValue();
-    assertEquals(TopicType.UAC_AUTHENTICATE, storedData.getTopicType());
+    assertEquals(TopicType.UAC_AUTHENTICATION, storedData.getTopicType());
     assertTrue(storedData.getMessageFailureDateTimeInMillis() >= startTime, storedData.toString());
     assertTrue(
         storedData.getMessageFailureDateTimeInMillis() <= System.currentTimeMillis(),
