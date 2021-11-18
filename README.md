@@ -1,5 +1,4 @@
 [![codecov](https://codecov.io/gh/ONSdigital/sdc-int-common/branch/main/graph/badge.svg?token=xYzugQUBNg)](https://codecov.io/gh/ONSdigital/sdc-int-common)
-
 # sdc-int-common
 Shared Java components for ONS SDC Integration Projects
 
