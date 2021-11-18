@@ -47,7 +47,7 @@ steps:
 
 availableSecrets:
   secretManager:
-    - versionName: projects/415467542055/secrets/SDC_INT_COMMON_CODECOV/versions/2
+    - versionName: projects/415467542055/secrets/SDC_INT_COMMON_CODECOV/versions/1
       env: SDC_INT_COMMON_CODECOV
 
 
