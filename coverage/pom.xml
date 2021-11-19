@@ -13,7 +13,7 @@
     <groupId>ons.sdc.int.common</groupId>
     <artifactId>common</artifactId>
     <!-- version auto updated by CloudBuild mvn release -->
-    <version>1.0.52-SNAPSHOT</version>
+    <version>1.0.53-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -26,14 +26,37 @@
       <artifactId>case-api-client</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!--
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>module2</artifactId>
+      <artifactId>eq-launcher</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>event-publisher</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>framework</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>product-reference</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>rate-limiter-client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>test-framework</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-    -->
   </dependencies>
 
   <build>
