@@ -4,19 +4,17 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
     http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <artifactId>coverage</artifactId>
 
+  <name>SDC : Integrations Common Code Coverage</name>
+  <description>SDC : Integrations Common Code Coverage</description>
 
   <parent>
     <groupId>ons.sdc.int.common</groupId>
-    <artifactId>coverage</artifactId>
+    <artifactId>common</artifactId>
     <!-- version auto updated by CloudBuild mvn release -->
     <version>1.0.52-SNAPSHOT</version>
   </parent>
-
-
-  <artifactId>coverage</artifactId>
-  <name>coverage</name>
-  <description>Compute aggregated test code coverage</description>
 
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
