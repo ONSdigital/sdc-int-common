@@ -22,9 +22,6 @@
   </licenses>
 
   <modules>
-    <!-- if adding or removing a module keep coverage pom up to date! -->
-    <module>coverage</module>
-
     <module>framework</module>
     <module>test-framework</module>
     <module>product-reference</module>
@@ -33,6 +30,9 @@
     <module>case-api-client</module>
     <module>rate-limiter-client</module>
     <module>util-framework</module>
+
+    <!-- if adding or removing a module keep coverage pom up to date! -->
+    <module>coverage</module>
   </modules>
 
   <scm>
