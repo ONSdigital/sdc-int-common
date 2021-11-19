@@ -22,9 +22,6 @@
   </licenses>
 
   <modules>
-    <!-- if adding or removing a module keep coverage pom up to date! -->
-    <module>coverage</module>
-
     <module>framework</module>
     <module>test-framework</module>
     <module>product-reference</module>
@@ -33,6 +30,9 @@
     <module>case-api-client</module>
     <module>rate-limiter-client</module>
     <module>util-framework</module>
+
+    <!-- if adding or removing a module keep coverage pom up to date! -->
+    <module>coverage</module>
   </modules>
 
   <scm>
@@ -46,7 +46,7 @@
     <springboot.version>2.5.3</springboot.version>
     <java.version>11</java.version>
     <junit.version>5.7.2</junit.version>
-    <jacoco.version>0.8.5</jacoco.version>
+    <jacoco.version>0.8.7</jacoco.version>
     <orika.version>1.5.2</orika.version>
     <surefire.version>3.0.0-M5</surefire.version>
     <googlecloud.version>8.1.0</googlecloud.version>
