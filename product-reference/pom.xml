@@ -98,7 +98,9 @@
             </goals>
           </execution>
         </executions>
-      </plugin><plugin>
+      </plugin>
+
+      <plugin>
         <groupId>com.coveo</groupId>
         <artifactId>fmt-maven-plugin</artifactId>
         <executions>
