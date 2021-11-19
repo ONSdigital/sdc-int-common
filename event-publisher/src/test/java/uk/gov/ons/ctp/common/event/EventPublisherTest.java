@@ -49,8 +49,8 @@ import uk.gov.ons.ctp.common.event.model.SurveyLaunchEvent;
 import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdate;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdateEvent;
-import uk.gov.ons.ctp.common.event.model.UacAuthenticateEvent;
-import uk.gov.ons.ctp.common.event.model.UacAuthenticateResponse;
+import uk.gov.ons.ctp.common.event.model.UacAuthenticationEvent;
+import uk.gov.ons.ctp.common.event.model.UacAuthenticationResponse;
 import uk.gov.ons.ctp.common.event.model.UacEvent;
 import uk.gov.ons.ctp.common.event.model.UacUpdate;
 import uk.gov.ons.ctp.common.event.persistence.EventBackupData;
@@ -67,7 +67,7 @@ public class EventPublisherTest {
   ObjectMapper objectMapper = new CustomObjectMapper();
 
   @Captor private ArgumentCaptor<FulfilmentEvent> fulfilmentRequestedEventCaptor;
-  @Captor private ArgumentCaptor<UacAuthenticateEvent> respondentAuthenticatedEventCaptor;
+  @Captor private ArgumentCaptor<UacAuthenticationEvent> respondentAuthenticationEventCaptor;
   @Captor private ArgumentCaptor<RefusalEvent> respondentRefusalEventCaptor;
   @Captor private ArgumentCaptor<UacEvent> uacEventCaptor;
   @Captor private ArgumentCaptor<SurveyLaunchEvent> surveyLaunchedEventCaptor;
@@ -130,29 +130,29 @@ public class EventPublisherTest {
   }
 
   @Test
-  public void sendEventRespondentAuthenticatedPayload() {
-    UacAuthenticateResponse respondentAuthenticatedResponse =
-        loadJson(UacAuthenticateResponse[].class);
+  public void sendEventRespondentAuthenticationPayload() {
+    UacAuthenticationResponse respondentAuthenticationResponse =
+        loadJson(UacAuthenticationResponse[].class);
 
     UUID messageId =
         eventPublisher.sendEvent(
-            TopicType.UAC_AUTHENTICATE,
+            TopicType.UAC_AUTHENTICATION,
             Source.RESPONDENT_HOME,
             Channel.RH,
-            respondentAuthenticatedResponse);
+            respondentAuthenticationResponse);
 
-    EventTopic eventTopic = EventTopic.forType(TopicType.UAC_AUTHENTICATE);
+    EventTopic eventTopic = EventTopic.forType(TopicType.UAC_AUTHENTICATION);
     verify(sender, times(1))
-        .sendEvent(eq(eventTopic), respondentAuthenticatedEventCaptor.capture());
-    UacAuthenticateEvent event = respondentAuthenticatedEventCaptor.getValue();
+        .sendEvent(eq(eventTopic), respondentAuthenticationEventCaptor.capture());
+    UacAuthenticationEvent event = respondentAuthenticationEventCaptor.getValue();
 
     assertHeader(
         event,
         messageId.toString(),
-        EventTopic.UAC_AUTHENTICATE,
+        EventTopic.UAC_AUTHENTICATION,
         Source.RESPONDENT_HOME,
         Channel.RH);
-    assertEquals(respondentAuthenticatedResponse, event.getPayload().getResponse());
+    assertEquals(respondentAuthenticationResponse, event.getPayload().getResponse());
   }
 
   @Test
@@ -189,15 +189,15 @@ public class EventPublisherTest {
     assertEquals(respondentRefusalDetails, event.getPayload().getRefusal());
   }
 
-  /** Test build of Respondent Authenticated event message with wrong pay load */
+  /** Test build of Respondent Authentication event message with wrong pay load */
   @Test
-  public void sendEventRespondentAuthenticatedWrongPayload() {
+  public void sendEventRespondentAuthenticationWrongPayload() {
 
     boolean exceptionThrown = false;
 
     try {
       eventPublisher.sendEvent(
-          TopicType.UAC_AUTHENTICATE,
+          TopicType.UAC_AUTHENTICATION,
           Source.RECEIPT_SERVICE,
           Channel.CC,
           Mockito.mock(EventPayload.class));
@@ -316,13 +316,13 @@ public class EventPublisherTest {
   }
 
   @Test
-  public void shouldSendBackupRepondentAuthenticatedEvent() throws Exception {
-    UacAuthenticateEvent ev = aRespondentAuthenticatedEvent();
+  public void shouldSendBackupRepondentAuthenticationEvent() throws Exception {
+    UacAuthenticationEvent ev = aRespondentAuthenticationEvent();
     sendBackupEvent(ev);
 
-    EventTopic eventTopic = EventTopic.forType(TopicType.UAC_AUTHENTICATE);
-    verify(sender).sendEvent(eq(eventTopic), respondentAuthenticatedEventCaptor.capture());
-    verifyEventSent(ev, respondentAuthenticatedEventCaptor.getValue());
+    EventTopic eventTopic = EventTopic.forType(TopicType.UAC_AUTHENTICATION);
+    verify(sender).sendEvent(eq(eventTopic), respondentAuthenticationEventCaptor.capture());
+    verifyEventSent(ev, respondentAuthenticationEventCaptor.getValue());
   }
 
   @Test
@@ -447,8 +447,8 @@ public class EventPublisherTest {
     return FixtureHelper.loadPackageFixtures(RefusalEvent[].class).get(0);
   }
 
-  UacAuthenticateEvent aRespondentAuthenticatedEvent() {
-    return FixtureHelper.loadPackageFixtures(UacAuthenticateEvent[].class).get(0);
+  UacAuthenticationEvent aRespondentAuthenticationEvent() {
+    return FixtureHelper.loadPackageFixtures(UacAuthenticationEvent[].class).get(0);
   }
 
   UacEvent aUacEvent() {

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UacAuthenticateResponse implements EventPayload {
+public class UacAuthenticationResponse implements EventPayload {
   private String questionnaireId;
   private UUID caseId;
 }
