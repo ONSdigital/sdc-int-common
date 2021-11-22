@@ -1,6 +1,6 @@
 package uk.gov.ons.ctp.common.event.model;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,5 +15,5 @@ public class SurveyFulfilment {
 
   private String description;
 
-  private HashMap<String, Object> metadata;
+  private Map<String, Object> metadata;
 }
