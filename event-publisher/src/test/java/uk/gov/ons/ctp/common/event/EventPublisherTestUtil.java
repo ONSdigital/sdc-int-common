@@ -25,7 +25,7 @@ public final class EventPublisherTestUtil {
 
     Header header = event.getHeader();
 
-    assertEquals("0.4.0", header.getVersion());
+    assertEquals("0.5.0", header.getVersion());
     assertEquals(expectedTopic, header.getTopic());
     assertEquals(expectedSource.name(), header.getSource());
     assertEquals(expectedChannel, header.getChannel());
