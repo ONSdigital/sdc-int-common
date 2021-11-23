@@ -44,7 +44,7 @@ steps:
       sha256sum -c codecov.SHA256SUM
       chmod +x ./codecov
       git status
-      ./codecov -t $$SDC_INT_COMMON_CODECOV -B $BRANCH_NAME-C $COMMIT_SHA -r "ONSdigital/sdc-int-common" -s coverage
+      ./codecov -t $$SDC_INT_COMMON_CODECOV -B $BRANCH_NAME -C $COMMIT_SHA -r "ONSdigital/sdc-int-common" -s coverage
 
 availableSecrets:
   secretManager:
