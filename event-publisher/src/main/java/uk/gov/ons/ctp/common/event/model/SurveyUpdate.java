@@ -23,6 +23,12 @@ public class SurveyUpdate implements EventPayload {
   @JsonRawValue private String sampleDefinition;
 
   @JsonRawValue private String metadata;
+  
+  private List<SurveyFulfilment> allowedPrintFulfilments;
+  
+  private List<SurveyFulfilment> allowedSmsFulfilments;
+  
+  private List<SurveyFulfilment> allowedEmailFulfilments;
 
   @JsonSetter("sampleDefinition")
   void setSampleDefinitionFromJson(JsonNode data) {
@@ -33,10 +39,4 @@ public class SurveyUpdate implements EventPayload {
   void setMetadataFromJson(JsonNode data) {
     this.metadata = data.toString();
   }
-
-  private List<SurveyFulfilment> allowedPrintFulfilments;
-
-  private List<SurveyFulfilment> allowedSmsFulfilments;
-
-  private List<SurveyFulfilment> allowedEmailFulfilments;
 }
