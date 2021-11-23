@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class UacAuthenticateEvent extends GenericEvent {
+public class UacAuthenticationEvent extends GenericEvent {
 
-  private UacAuthenticatePayload payload = new UacAuthenticatePayload();
+  private UacAuthenticationPayload payload = new UacAuthenticationPayload();
 }
