@@ -43,6 +43,7 @@ steps:
       gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
       sha256sum -c codecov.SHA256SUM
       chmod +x ./codecov
+      git status
       ./codecov -t $$SDC_INT_COMMON_CODECOV -C $COMMIT_SHA -r "ONSdigital/sdc-int-common" -s coverage
 
 availableSecrets:
