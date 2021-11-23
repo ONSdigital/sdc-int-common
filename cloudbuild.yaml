@@ -43,7 +43,8 @@ steps:
       gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
       sha256sum -c codecov.SHA256SUM
       chmod +x ./codecov
-      ./codecov -t $$SDC_INT_COMMON_CODECOV -C $COMMIT_SHA -r "ONSdigital/sdc-int-common" -s coverage
+      git branch -m $BRANCH_NAME
+      ./codecov -t $$SDC_INT_COMMON_CODECOV -B $BRANCH_NAME -C $COMMIT_SHA -r "ONSdigital/sdc-int-common" -s coverage/target/site/jacoco-aggregate/
 
 availableSecrets:
   secretManager:
