@@ -211,7 +211,6 @@ public class EventPublisherTest {
 
   private void assertSendCase(EventTopic topic) {
     CaseUpdate payload = loadJson(CaseUpdate[].class);
-    assertEquals(7, payload.getSample().getCohort(), "integer should be mapped from string");
 
     UUID messageId =
         eventPublisher.sendEvent(topic.getType(), Source.CONTACT_CENTRE_API, Channel.CC, payload);

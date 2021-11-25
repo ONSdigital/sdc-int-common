@@ -23,11 +23,11 @@ public class SurveyUpdate implements EventPayload {
   @JsonRawValue private String sampleDefinition;
 
   @JsonRawValue private String metadata;
-  
+
   private List<SurveyFulfilment> allowedPrintFulfilments;
-  
+
   private List<SurveyFulfilment> allowedSmsFulfilments;
-  
+
   private List<SurveyFulfilment> allowedEmailFulfilments;
 
   @JsonSetter("sampleDefinition")
