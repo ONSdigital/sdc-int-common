@@ -18,7 +18,7 @@ public class CaseUpdateSample {
 
   private String questionnaire;
   private String sampleUnitRef;
-  private int cohort;
+  private String cohort;
   private String gor9d;
   private String laCode;
   private String uprnLatitude;
