@@ -1,6 +1,9 @@
 package uk.gov.ons.ctp.common.event.model;
 
-import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,5 +17,10 @@ public class SurveyFulfilment {
 
   private String description;
 
-  private Map<String, Object> metadata;
+  @JsonRawValue private String metadata;
+  
+  @JsonSetter("metadata")
+  void setMetadataFromJson(JsonNode data) {
+    this.metadata = data.toString();
+  }
 }
