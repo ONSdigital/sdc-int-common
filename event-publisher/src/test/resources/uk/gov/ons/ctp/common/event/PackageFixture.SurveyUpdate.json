@@ -80,6 +80,49 @@
       ]
     }
   ],
+  "allowedPrintFulfilments": [
+    {
+      "packCode": "replace-uac-en",
+      "description": "Replacement UAC - English",
+      "metadata": {
+        "suitableRegions": [
+          "E",
+          "N"
+        ]
+      }
+    },
+    {
+      "packCode": "replace-uac-cy",
+      "description": "Replacement UAC - English & Welsh",
+      "metadata": {
+        "suitableRegions": [
+          "W"
+        ]
+      }
+    }
+  ],
+  "allowedSmsFulfilments": [
+    {
+      "packCode": "replace-uac-en",
+      "description": "Replacement UAC - English",
+      "metadata": {
+        "suitableRegions": [
+          "E",
+          "N"
+        ]
+      }
+    },
+    {
+      "packCode": "replace-uac-cy",
+      "description": "Replacement UAC - English & Welsh",
+      "metadata": {
+        "suitableRegions": [
+          "W"
+        ]
+      }
+    }
+  ],
+  "allowedEmailFulfilments": [],
   "metadata": {
     "ex_e4": true
   },

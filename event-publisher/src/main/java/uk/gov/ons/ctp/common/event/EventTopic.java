@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public enum EventTopic {
   FULFILMENT("event_fulfilment", TopicType.FULFILMENT),
-  UAC_AUTHENTICATE("event_uac-authenticate", TopicType.UAC_AUTHENTICATE),
+  UAC_AUTHENTICATION("event_uac-authentication", TopicType.UAC_AUTHENTICATION),
   SURVEY_LAUNCH("event_survey-launch", TopicType.SURVEY_LAUNCH),
   REFUSAL("event_refusal", TopicType.REFUSAL),
   UAC_UPDATE("event_uac-update", TopicType.UAC_UPDATE),
