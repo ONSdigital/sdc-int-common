@@ -26,8 +26,8 @@ import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import uk.gov.ons.ctp.common.FixtureHelper;
 import uk.gov.ons.ctp.common.domain.Channel;
 import uk.gov.ons.ctp.common.domain.Source;
-import uk.gov.ons.ctp.common.event.model.SurveyLaunchEvent;
-import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
+import uk.gov.ons.ctp.common.event.model.EqLaunchEvent;
+import uk.gov.ons.ctp.common.event.model.EqLaunchResponse;
 import uk.gov.ons.ctp.common.event.persistence.FirestoreEventPersistence;
 
 /** EventPublisher tests with circuit breaker */
@@ -39,7 +39,7 @@ public class EventPublisherWithCircuitBreakerTest {
   @Mock private FirestoreEventPersistence eventPersistence;
   @Mock private CircuitBreaker circuitBreaker;
 
-  @Captor private ArgumentCaptor<SurveyLaunchEvent> surveyLaunchedEventCaptor;
+  @Captor private ArgumentCaptor<EqLaunchEvent> eqLaunchedEventCaptor;
 
   private void mockCircuitBreakerRun() {
     doAnswer(
@@ -81,21 +81,21 @@ public class EventPublisherWithCircuitBreakerTest {
   @Test
   public void shouldSendEventThroughCircuitBreaker() throws Exception {
     mockCircuitBreakerRun();
-    SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
+    EqLaunchResponse eqLaunchedResponse = loadJson(EqLaunchResponse[].class);
 
     UUID messageId =
         eventPublisher.sendEvent(
-            TopicType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
+            TopicType.EQ_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, eqLaunchedResponse);
 
-    EventTopic eventTopic = EventTopic.forType(TopicType.SURVEY_LAUNCH);
-    verify(sender, times(1)).sendEvent(eq(eventTopic), surveyLaunchedEventCaptor.capture());
-    SurveyLaunchEvent event = surveyLaunchedEventCaptor.getValue();
+    EventTopic eventTopic = EventTopic.forType(TopicType.EQ_LAUNCH);
+    verify(sender, times(1)).sendEvent(eq(eventTopic), eqLaunchedEventCaptor.capture());
+    EqLaunchEvent event = eqLaunchedEventCaptor.getValue();
     assertHeader(
-        event, messageId.toString(), EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
-    assertEquals(surveyLaunchedResponse, event.getPayload().getResponse());
+        event, messageId.toString(), EventTopic.EQ_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
+    assertEquals(eqLaunchedResponse, event.getPayload().getResponse());
 
     // since it succeeded, the event is NOT sent to firestore
-    verify(eventPersistence, never()).persistEvent(eq(TopicType.SURVEY_LAUNCH), any());
+    verify(eventPersistence, never()).persistEvent(eq(TopicType.EQ_LAUNCH), any());
   }
 
   @Test
@@ -103,16 +103,16 @@ public class EventPublisherWithCircuitBreakerTest {
     mockCircuitBreakerFail();
     Mockito.doThrow(new RuntimeException("Publish fail")).when(sender).sendEvent(any(), any());
 
-    SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
+    EqLaunchResponse eqLaunchedResponse = loadJson(EqLaunchResponse[].class);
 
     eventPublisher.sendEvent(
-        TopicType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
+        TopicType.EQ_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, eqLaunchedResponse);
 
-    EventTopic eventTopic = EventTopic.forType(TopicType.SURVEY_LAUNCH);
-    verify(sender).sendEvent(eq(eventTopic), surveyLaunchedEventCaptor.capture());
+    EventTopic eventTopic = EventTopic.forType(TopicType.EQ_LAUNCH);
+    verify(sender).sendEvent(eq(eventTopic), eqLaunchedEventCaptor.capture());
 
     // since it failed, the event is sent to firestore
-    verify(eventPersistence).persistEvent(eq(TopicType.SURVEY_LAUNCH), any());
+    verify(eventPersistence).persistEvent(eq(TopicType.EQ_LAUNCH), any());
   }
 
   private <T> T loadJson(Class<T[]> clazz) {

@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class SurveyLaunchEvent extends GenericEvent {
-  private SurveyLaunchPayload payload = new SurveyLaunchPayload();
+public class EqLaunchEvent extends GenericEvent {
+  private EqLaunchPayload payload = new EqLaunchPayload();
 }
