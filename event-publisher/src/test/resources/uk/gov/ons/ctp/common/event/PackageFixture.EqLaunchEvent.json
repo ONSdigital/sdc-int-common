@@ -1,7 +1,7 @@
 {
   "header": {
     "version": "0.4.0",
-    "topic": "event_survey-launch",
+    "topic": "event_eq-launch",
     "source": "RESPONDENT_HOME",
     "channel": "RH",
     "dateTime": "2020-06-29T13:25:36.042Z",

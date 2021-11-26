@@ -16,6 +16,8 @@ import uk.gov.ons.ctp.common.event.model.CaseUpdate;
 import uk.gov.ons.ctp.common.event.model.CollectionExercise;
 import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdateEvent;
 import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdatePayload;
+import uk.gov.ons.ctp.common.event.model.EqLaunchEvent;
+import uk.gov.ons.ctp.common.event.model.EqLaunchResponse;
 import uk.gov.ons.ctp.common.event.model.EventPayload;
 import uk.gov.ons.ctp.common.event.model.FulfilmentEvent;
 import uk.gov.ons.ctp.common.event.model.FulfilmentPayload;
@@ -28,8 +30,6 @@ import uk.gov.ons.ctp.common.event.model.NewCasePayloadContent;
 import uk.gov.ons.ctp.common.event.model.RefusalDetails;
 import uk.gov.ons.ctp.common.event.model.RefusalEvent;
 import uk.gov.ons.ctp.common.event.model.RefusalPayload;
-import uk.gov.ons.ctp.common.event.model.SurveyLaunchEvent;
-import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdate;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdateEvent;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdatePayload;
@@ -47,7 +47,7 @@ import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
 public abstract class EventBuilder {
   public static final EventBuilder NONE = new NullEventBuilder();
   public static final EventBuilder FULFILMENT = new FulfilmentBuilder();
-  public static final EventBuilder SURVEY_LAUNCH = new SurveyLaunchBuilder();
+  public static final EventBuilder EQ_LAUNCH = new EqLaunchBuilder();
   public static final EventBuilder SURVEY_UPDATE = new SurveyUpdateBuilder();
   public static final EventBuilder UAC_AUTHENTICATION = new UacAuthenticationBuilder();
   public static final EventBuilder CASE_UPDATE = new CaseUpdateBuilder();
@@ -186,26 +186,26 @@ public abstract class EventBuilder {
     }
   }
 
-  public static class SurveyLaunchBuilder extends EventBuilder {
+  public static class EqLaunchBuilder extends EventBuilder {
     @Override
     GenericEvent create(SendInfo sendInfo) {
-      SurveyLaunchEvent surveyLaunchedEvent = new SurveyLaunchEvent();
-      surveyLaunchedEvent.setHeader(
-          buildHeader(EventTopic.SURVEY_LAUNCH, sendInfo.getSource(), sendInfo.getChannel()));
-      surveyLaunchedEvent.getPayload().setResponse((SurveyLaunchResponse) sendInfo.getPayload());
-      return surveyLaunchedEvent;
+      EqLaunchEvent eqLaunchedEvent = new EqLaunchEvent();
+      eqLaunchedEvent.setHeader(
+          buildHeader(EventTopic.EQ_LAUNCH, sendInfo.getSource(), sendInfo.getChannel()));
+      eqLaunchedEvent.getPayload().setResponse((EqLaunchResponse) sendInfo.getPayload());
+      return eqLaunchedEvent;
     }
 
     @Override
     SendInfo create(String json) {
-      GenericEvent genericEvent = deserialiseEventJson(json, SurveyLaunchEvent.class);
-      EventPayload payload = ((SurveyLaunchEvent) genericEvent).getPayload().getResponse();
+      GenericEvent genericEvent = deserialiseEventJson(json, EqLaunchEvent.class);
+      EventPayload payload = ((EqLaunchEvent) genericEvent).getPayload().getResponse();
       return build(genericEvent, payload);
     }
 
     @Override
     EventPayload createPayload(String json) {
-      return deserialisePayloadJson(json, SurveyLaunchResponse.class);
+      return deserialisePayloadJson(json, EqLaunchResponse.class);
     }
   }
 
