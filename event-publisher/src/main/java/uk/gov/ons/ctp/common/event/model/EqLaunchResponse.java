@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SurveyLaunchResponse implements EventPayload {
+public class EqLaunchResponse implements EventPayload {
   private String questionnaireId;
   private UUID caseId;
   private String agentId;

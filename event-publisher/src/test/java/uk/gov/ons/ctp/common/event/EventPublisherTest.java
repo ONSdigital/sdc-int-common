@@ -36,6 +36,8 @@ import uk.gov.ons.ctp.common.event.model.CaseEvent;
 import uk.gov.ons.ctp.common.event.model.CaseUpdate;
 import uk.gov.ons.ctp.common.event.model.CollectionExercise;
 import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdateEvent;
+import uk.gov.ons.ctp.common.event.model.EqLaunchEvent;
+import uk.gov.ons.ctp.common.event.model.EqLaunchResponse;
 import uk.gov.ons.ctp.common.event.model.EventPayload;
 import uk.gov.ons.ctp.common.event.model.FulfilmentEvent;
 import uk.gov.ons.ctp.common.event.model.FulfilmentRequest;
@@ -45,8 +47,6 @@ import uk.gov.ons.ctp.common.event.model.NewCaseEvent;
 import uk.gov.ons.ctp.common.event.model.NewCasePayloadContent;
 import uk.gov.ons.ctp.common.event.model.RefusalDetails;
 import uk.gov.ons.ctp.common.event.model.RefusalEvent;
-import uk.gov.ons.ctp.common.event.model.SurveyLaunchEvent;
-import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdate;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdateEvent;
 import uk.gov.ons.ctp.common.event.model.UacAuthenticationEvent;
@@ -70,7 +70,7 @@ public class EventPublisherTest {
   @Captor private ArgumentCaptor<UacAuthenticationEvent> respondentAuthenticationEventCaptor;
   @Captor private ArgumentCaptor<RefusalEvent> respondentRefusalEventCaptor;
   @Captor private ArgumentCaptor<UacEvent> uacEventCaptor;
-  @Captor private ArgumentCaptor<SurveyLaunchEvent> surveyLaunchedEventCaptor;
+  @Captor private ArgumentCaptor<EqLaunchEvent> eqLaunchedEventCaptor;
   @Captor private ArgumentCaptor<CaseEvent> caseEventCaptor;
   @Captor private ArgumentCaptor<NewCaseEvent> newCaseEventCaptor;
   @Captor private ArgumentCaptor<SurveyUpdateEvent> surveyUpdateArgumentCaptor;
@@ -114,19 +114,19 @@ public class EventPublisherTest {
   }
 
   @Test
-  public void sendEventSurveyLaunchedPayload() {
-    SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
+  public void sendEventEqLaunchedPayload() {
+    EqLaunchResponse eqLaunchedResponse = loadJson(EqLaunchResponse[].class);
 
     UUID messageId =
         eventPublisher.sendEvent(
-            TopicType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
+            TopicType.EQ_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, eqLaunchedResponse);
 
-    EventTopic eventTopic = EventTopic.forType(TopicType.SURVEY_LAUNCH);
-    verify(sender, times(1)).sendEvent(eq(eventTopic), surveyLaunchedEventCaptor.capture());
-    SurveyLaunchEvent event = surveyLaunchedEventCaptor.getValue();
+    EventTopic eventTopic = EventTopic.forType(TopicType.EQ_LAUNCH);
+    verify(sender, times(1)).sendEvent(eq(eventTopic), eqLaunchedEventCaptor.capture());
+    EqLaunchEvent event = eqLaunchedEventCaptor.getValue();
     assertHeader(
-        event, messageId.toString(), EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
-    assertEquals(surveyLaunchedResponse, event.getPayload().getResponse());
+        event, messageId.toString(), EventTopic.EQ_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
+    assertEquals(eqLaunchedResponse, event.getPayload().getResponse());
   }
 
   @Test
@@ -293,13 +293,13 @@ public class EventPublisherTest {
 
   @Test
   public void shouldRejectSendForMismatchingPayload() {
-    SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
+    EqLaunchResponse eqLaunchedResponse = loadJson(EqLaunchResponse[].class);
 
     assertThrows(
         IllegalArgumentException.class,
         () ->
             eventPublisher.sendEvent(
-                TopicType.CASE_UPDATE, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse));
+                TopicType.CASE_UPDATE, Source.RESPONDENT_HOME, Channel.RH, eqLaunchedResponse));
   }
 
   // -- replay send backup event tests ...
@@ -346,13 +346,13 @@ public class EventPublisherTest {
   }
 
   @Test
-  public void shouldSendBackupSurveyLaunchedEvent() throws Exception {
-    SurveyLaunchEvent ev = aSurveyLaunchedEvent();
+  public void shouldSendBackupEqLaunchedEvent() throws Exception {
+    EqLaunchEvent ev = anEqLaunchedEvent();
     sendBackupEvent(ev);
 
-    EventTopic eventTopic = EventTopic.forType(TopicType.SURVEY_LAUNCH);
-    verify(sender).sendEvent(eq(eventTopic), surveyLaunchedEventCaptor.capture());
-    verifyEventSent(ev, surveyLaunchedEventCaptor.getValue());
+    EventTopic eventTopic = EventTopic.forType(TopicType.EQ_LAUNCH);
+    verify(sender).sendEvent(eq(eventTopic), eqLaunchedEventCaptor.capture());
+    verifyEventSent(ev, eqLaunchedEventCaptor.getValue());
   }
 
   @Test
@@ -390,7 +390,7 @@ public class EventPublisherTest {
 
   @Test
   public void shouldRejectMalformedEventBackupJson() {
-    SurveyLaunchEvent ev = aSurveyLaunchedEvent();
+    EqLaunchEvent ev = anEqLaunchedEvent();
     EventBackupData data = createEvent(ev);
     data.setEvent("xx" + data.getEvent()); // create broken Json
     assertThrows(EventPublishException.class, () -> eventPublisher.sendEvent(data));
@@ -398,17 +398,16 @@ public class EventPublisherTest {
 
   @Test
   public void shouldSendEventWithJsonPayload() {
-    String payload = FixtureHelper.loadPackageObjectNode("SurveyLaunchResponse").toString();
+    String payload = FixtureHelper.loadPackageObjectNode("EqLaunchResponse").toString();
 
     UUID messageId =
-        eventPublisher.sendEvent(
-            TopicType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, payload);
+        eventPublisher.sendEvent(TopicType.EQ_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, payload);
 
-    EventTopic eventTopic = EventTopic.forType(TopicType.SURVEY_LAUNCH);
-    verify(sender, times(1)).sendEvent(eq(eventTopic), surveyLaunchedEventCaptor.capture());
-    SurveyLaunchEvent event = surveyLaunchedEventCaptor.getValue();
+    EventTopic eventTopic = EventTopic.forType(TopicType.EQ_LAUNCH);
+    verify(sender, times(1)).sendEvent(eq(eventTopic), eqLaunchedEventCaptor.capture());
+    EqLaunchEvent event = eqLaunchedEventCaptor.getValue();
     assertHeader(
-        event, messageId.toString(), EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
+        event, messageId.toString(), EventTopic.EQ_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
   }
 
   // --- helpers
@@ -454,8 +453,8 @@ public class EventPublisherTest {
     return FixtureHelper.loadPackageFixtures(UacEvent[].class).get(0);
   }
 
-  SurveyLaunchEvent aSurveyLaunchedEvent() {
-    return FixtureHelper.loadPackageFixtures(SurveyLaunchEvent[].class).get(0);
+  EqLaunchEvent anEqLaunchedEvent() {
+    return FixtureHelper.loadPackageFixtures(EqLaunchEvent[].class).get(0);
   }
 
   CaseEvent aCaseEvent() {
