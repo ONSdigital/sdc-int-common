@@ -1,6 +1,6 @@
 {
   "header": {
-    "version": "0.4.0",
+    "version": "0.5.0",
     "topic": "event_uac-update",
     "source": "RESPONDENT_HOME",
     "channel": "RH",
@@ -12,6 +12,9 @@
   "payload": {
     "uacUpdate": {
       "caseId": "2d9beda1-b6d5-4abd-bff1-c4bd9eecac86",
+      "collectionExerciseId": "3d9beda1-b6d5-4abd-bff1-c4bd9eecac86",
+      "surveyId": "4d9beda1-b6d5-4abd-bff1-c4bd9eecac86",
+      "collectionInstrumentUrl": "url",
       "active": true,
       "uacHash": "8a9d5db4bbee34fd16e40aa2aaae52cfbdf1842559023614c30edb480ec252b4",
       "qid": "1110000009",
