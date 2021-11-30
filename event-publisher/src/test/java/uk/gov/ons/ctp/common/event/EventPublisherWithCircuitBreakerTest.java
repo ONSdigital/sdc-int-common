@@ -26,8 +26,8 @@ import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import uk.gov.ons.ctp.common.FixtureHelper;
 import uk.gov.ons.ctp.common.domain.Channel;
 import uk.gov.ons.ctp.common.domain.Source;
+import uk.gov.ons.ctp.common.event.model.EqLaunch;
 import uk.gov.ons.ctp.common.event.model.EqLaunchEvent;
-import uk.gov.ons.ctp.common.event.model.EqLaunchResponse;
 import uk.gov.ons.ctp.common.event.persistence.FirestoreEventPersistence;
 
 /** EventPublisher tests with circuit breaker */
@@ -81,18 +81,17 @@ public class EventPublisherWithCircuitBreakerTest {
   @Test
   public void shouldSendEventThroughCircuitBreaker() throws Exception {
     mockCircuitBreakerRun();
-    EqLaunchResponse eqLaunchedResponse = loadJson(EqLaunchResponse[].class);
+    EqLaunch eqLaunch = loadJson(EqLaunch[].class);
 
     UUID messageId =
-        eventPublisher.sendEvent(
-            TopicType.EQ_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, eqLaunchedResponse);
+        eventPublisher.sendEvent(TopicType.EQ_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, eqLaunch);
 
     EventTopic eventTopic = EventTopic.forType(TopicType.EQ_LAUNCH);
     verify(sender, times(1)).sendEvent(eq(eventTopic), eqLaunchedEventCaptor.capture());
     EqLaunchEvent event = eqLaunchedEventCaptor.getValue();
     assertHeader(
         event, messageId.toString(), EventTopic.EQ_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
-    assertEquals(eqLaunchedResponse, event.getPayload().getResponse());
+    assertEquals(eqLaunch, event.getPayload().getEqLaunch());
 
     // since it succeeded, the event is NOT sent to firestore
     verify(eventPersistence, never()).persistEvent(eq(TopicType.EQ_LAUNCH), any());
@@ -103,7 +102,7 @@ public class EventPublisherWithCircuitBreakerTest {
     mockCircuitBreakerFail();
     Mockito.doThrow(new RuntimeException("Publish fail")).when(sender).sendEvent(any(), any());
 
-    EqLaunchResponse eqLaunchedResponse = loadJson(EqLaunchResponse[].class);
+    EqLaunch eqLaunchedResponse = loadJson(EqLaunch[].class);
 
     eventPublisher.sendEvent(
         TopicType.EQ_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, eqLaunchedResponse);
