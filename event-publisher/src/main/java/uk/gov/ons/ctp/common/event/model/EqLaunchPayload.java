@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class EqLaunchPayload {
 
-  private EqLaunchResponse response = new EqLaunchResponse();
+  private EqLaunch eqLaunch = new EqLaunch();
 }

@@ -36,8 +36,8 @@ import uk.gov.ons.ctp.common.event.model.CaseEvent;
 import uk.gov.ons.ctp.common.event.model.CaseUpdate;
 import uk.gov.ons.ctp.common.event.model.CollectionExercise;
 import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdateEvent;
+import uk.gov.ons.ctp.common.event.model.EqLaunch;
 import uk.gov.ons.ctp.common.event.model.EqLaunchEvent;
-import uk.gov.ons.ctp.common.event.model.EqLaunchResponse;
 import uk.gov.ons.ctp.common.event.model.EventPayload;
 import uk.gov.ons.ctp.common.event.model.FulfilmentEvent;
 import uk.gov.ons.ctp.common.event.model.FulfilmentRequest;
@@ -49,8 +49,8 @@ import uk.gov.ons.ctp.common.event.model.RefusalDetails;
 import uk.gov.ons.ctp.common.event.model.RefusalEvent;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdate;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdateEvent;
+import uk.gov.ons.ctp.common.event.model.UacAuthentication;
 import uk.gov.ons.ctp.common.event.model.UacAuthenticationEvent;
-import uk.gov.ons.ctp.common.event.model.UacAuthenticationResponse;
 import uk.gov.ons.ctp.common.event.model.UacEvent;
 import uk.gov.ons.ctp.common.event.model.UacUpdate;
 import uk.gov.ons.ctp.common.event.persistence.EventBackupData;
@@ -115,31 +115,26 @@ public class EventPublisherTest {
 
   @Test
   public void sendEventEqLaunchedPayload() {
-    EqLaunchResponse eqLaunchedResponse = loadJson(EqLaunchResponse[].class);
+    EqLaunch eqLaunch = loadJson(EqLaunch[].class);
 
     UUID messageId =
-        eventPublisher.sendEvent(
-            TopicType.EQ_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, eqLaunchedResponse);
+        eventPublisher.sendEvent(TopicType.EQ_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, eqLaunch);
 
     EventTopic eventTopic = EventTopic.forType(TopicType.EQ_LAUNCH);
     verify(sender, times(1)).sendEvent(eq(eventTopic), eqLaunchedEventCaptor.capture());
     EqLaunchEvent event = eqLaunchedEventCaptor.getValue();
     assertHeader(
         event, messageId.toString(), EventTopic.EQ_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
-    assertEquals(eqLaunchedResponse, event.getPayload().getResponse());
+    assertEquals(eqLaunch, event.getPayload().getEqLaunch());
   }
 
   @Test
   public void sendEventRespondentAuthenticationPayload() {
-    UacAuthenticationResponse respondentAuthenticationResponse =
-        loadJson(UacAuthenticationResponse[].class);
+    UacAuthentication uacAuthentication = loadJson(UacAuthentication[].class);
 
     UUID messageId =
         eventPublisher.sendEvent(
-            TopicType.UAC_AUTHENTICATION,
-            Source.RESPONDENT_HOME,
-            Channel.RH,
-            respondentAuthenticationResponse);
+            TopicType.UAC_AUTHENTICATION, Source.RESPONDENT_HOME, Channel.RH, uacAuthentication);
 
     EventTopic eventTopic = EventTopic.forType(TopicType.UAC_AUTHENTICATION);
     verify(sender, times(1))
@@ -152,7 +147,7 @@ public class EventPublisherTest {
         EventTopic.UAC_AUTHENTICATION,
         Source.RESPONDENT_HOME,
         Channel.RH);
-    assertEquals(respondentAuthenticationResponse, event.getPayload().getResponse());
+    assertEquals(uacAuthentication, event.getPayload().getUacAuthentication());
   }
 
   @Test
@@ -293,7 +288,7 @@ public class EventPublisherTest {
 
   @Test
   public void shouldRejectSendForMismatchingPayload() {
-    EqLaunchResponse eqLaunchedResponse = loadJson(EqLaunchResponse[].class);
+    EqLaunch eqLaunchedResponse = loadJson(EqLaunch[].class);
 
     assertThrows(
         IllegalArgumentException.class,
@@ -398,7 +393,7 @@ public class EventPublisherTest {
 
   @Test
   public void shouldSendEventWithJsonPayload() {
-    String payload = FixtureHelper.loadPackageObjectNode("EqLaunchResponse").toString();
+    String payload = FixtureHelper.loadPackageObjectNode("EqLaunch").toString();
 
     UUID messageId =
         eventPublisher.sendEvent(TopicType.EQ_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, payload);
