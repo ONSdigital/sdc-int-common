@@ -57,6 +57,11 @@ public class RetryableCloudDataStoreImpl implements RetryableCloudDataStore {
   }
 
   @Override
+  public <T> List<T> list(Class<T> target, String schema) throws CTPException {
+    return cloudDataStore.list(target, schema);
+  }
+
+  @Override
   public <T> List<T> search(
       Class<T> target, final String schema, String[] fieldPathElements, String searchValue)
       throws CTPException {
