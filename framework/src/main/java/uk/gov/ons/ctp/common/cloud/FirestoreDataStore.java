@@ -184,7 +184,7 @@ public class FirestoreDataStore implements CloudDataStore {
   }
 
   /**
-   * List all objects found in the schema for the given schema.
+   * List all objects found in the given schema.
    *
    * @param <T> The object type that results should be returned in.
    * @param target the class of the object type that results should be returned in.
