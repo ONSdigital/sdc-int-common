@@ -4,19 +4,19 @@ public enum SurveyType {
   SOCIAL("social.json"),
   SIS("sis.json");
 
-  private String pattern;
+  private String suffix;
 
   private SurveyType(String pattern) {
-    this.pattern = pattern;
+    this.suffix = pattern;
   }
 
-  public String getPattern() {
-    return pattern;
+  public String getSuffix() {
+    return suffix;
   }
 
-  public static SurveyType fromSurveyDefinitionUrl(String url) {
+  public static SurveyType fromSampleDefinitionUrl(String url) {
     for (SurveyType type : values()) {
-      if (url != null && url.endsWith(type.pattern)) {
+      if (url != null && url.endsWith(type.suffix)) {
         return type;
       }
     }

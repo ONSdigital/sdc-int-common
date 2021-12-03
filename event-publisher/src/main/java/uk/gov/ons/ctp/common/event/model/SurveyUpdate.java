@@ -42,6 +42,6 @@ public class SurveyUpdate implements EventPayload {
   }
 
   public SurveyType surveyType() {
-    return SurveyType.fromSurveyDefinitionUrl(sampleDefinitionUrl);
+    return SurveyType.fromSampleDefinitionUrl(sampleDefinitionUrl);
   }
 }
