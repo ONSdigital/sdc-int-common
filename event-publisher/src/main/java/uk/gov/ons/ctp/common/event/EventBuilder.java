@@ -16,6 +16,8 @@ import uk.gov.ons.ctp.common.event.model.CaseUpdate;
 import uk.gov.ons.ctp.common.event.model.CollectionExercise;
 import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdateEvent;
 import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdatePayload;
+import uk.gov.ons.ctp.common.event.model.EqLaunch;
+import uk.gov.ons.ctp.common.event.model.EqLaunchEvent;
 import uk.gov.ons.ctp.common.event.model.EventPayload;
 import uk.gov.ons.ctp.common.event.model.FulfilmentEvent;
 import uk.gov.ons.ctp.common.event.model.FulfilmentPayload;
@@ -28,13 +30,11 @@ import uk.gov.ons.ctp.common.event.model.NewCasePayloadContent;
 import uk.gov.ons.ctp.common.event.model.RefusalDetails;
 import uk.gov.ons.ctp.common.event.model.RefusalEvent;
 import uk.gov.ons.ctp.common.event.model.RefusalPayload;
-import uk.gov.ons.ctp.common.event.model.SurveyLaunchEvent;
-import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdate;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdateEvent;
 import uk.gov.ons.ctp.common.event.model.SurveyUpdatePayload;
+import uk.gov.ons.ctp.common.event.model.UacAuthentication;
 import uk.gov.ons.ctp.common.event.model.UacAuthenticationEvent;
-import uk.gov.ons.ctp.common.event.model.UacAuthenticationResponse;
 import uk.gov.ons.ctp.common.event.model.UacEvent;
 import uk.gov.ons.ctp.common.event.model.UacPayload;
 import uk.gov.ons.ctp.common.event.model.UacUpdate;
@@ -47,7 +47,7 @@ import uk.gov.ons.ctp.common.jackson.CustomObjectMapper;
 public abstract class EventBuilder {
   public static final EventBuilder NONE = new NullEventBuilder();
   public static final EventBuilder FULFILMENT = new FulfilmentBuilder();
-  public static final EventBuilder SURVEY_LAUNCH = new SurveyLaunchBuilder();
+  public static final EventBuilder EQ_LAUNCH = new EqLaunchBuilder();
   public static final EventBuilder SURVEY_UPDATE = new SurveyUpdateBuilder();
   public static final EventBuilder UAC_AUTHENTICATION = new UacAuthenticationBuilder();
   public static final EventBuilder CASE_UPDATE = new CaseUpdateBuilder();
@@ -57,7 +57,7 @@ public abstract class EventBuilder {
       new CollectionExerciseUpdateBuilder();
   public static final EventBuilder NEW_CASE = new NewCaseBuilder();
 
-  private static final String EVENT_VERSION = "0.4.0";
+  private static final String EVENT_VERSION = "0.5.0";
 
   ObjectMapper objectMapper = new CustomObjectMapper();
 
@@ -186,26 +186,26 @@ public abstract class EventBuilder {
     }
   }
 
-  public static class SurveyLaunchBuilder extends EventBuilder {
+  public static class EqLaunchBuilder extends EventBuilder {
     @Override
     GenericEvent create(SendInfo sendInfo) {
-      SurveyLaunchEvent surveyLaunchedEvent = new SurveyLaunchEvent();
-      surveyLaunchedEvent.setHeader(
-          buildHeader(EventTopic.SURVEY_LAUNCH, sendInfo.getSource(), sendInfo.getChannel()));
-      surveyLaunchedEvent.getPayload().setResponse((SurveyLaunchResponse) sendInfo.getPayload());
-      return surveyLaunchedEvent;
+      EqLaunchEvent eqLaunchedEvent = new EqLaunchEvent();
+      eqLaunchedEvent.setHeader(
+          buildHeader(EventTopic.EQ_LAUNCH, sendInfo.getSource(), sendInfo.getChannel()));
+      eqLaunchedEvent.getPayload().setEqLaunch((EqLaunch) sendInfo.getPayload());
+      return eqLaunchedEvent;
     }
 
     @Override
     SendInfo create(String json) {
-      GenericEvent genericEvent = deserialiseEventJson(json, SurveyLaunchEvent.class);
-      EventPayload payload = ((SurveyLaunchEvent) genericEvent).getPayload().getResponse();
+      GenericEvent genericEvent = deserialiseEventJson(json, EqLaunchEvent.class);
+      EventPayload payload = ((EqLaunchEvent) genericEvent).getPayload().getEqLaunch();
       return build(genericEvent, payload);
     }
 
     @Override
     EventPayload createPayload(String json) {
-      return deserialisePayloadJson(json, SurveyLaunchResponse.class);
+      return deserialisePayloadJson(json, EqLaunch.class);
     }
   }
 
@@ -217,20 +217,21 @@ public abstract class EventBuilder {
           buildHeader(EventTopic.UAC_AUTHENTICATION, sendInfo.getSource(), sendInfo.getChannel()));
       respondentAuthenticationEvent
           .getPayload()
-          .setResponse((UacAuthenticationResponse) sendInfo.getPayload());
+          .setUacAuthentication((UacAuthentication) sendInfo.getPayload());
       return respondentAuthenticationEvent;
     }
 
     @Override
     SendInfo create(String json) {
       GenericEvent genericEvent = deserialiseEventJson(json, UacAuthenticationEvent.class);
-      EventPayload payload = ((UacAuthenticationEvent) genericEvent).getPayload().getResponse();
+      EventPayload payload =
+          ((UacAuthenticationEvent) genericEvent).getPayload().getUacAuthentication();
       return build(genericEvent, payload);
     }
 
     @Override
     EventPayload createPayload(String json) {
-      return deserialisePayloadJson(json, UacAuthenticationResponse.class);
+      return deserialisePayloadJson(json, UacAuthentication.class);
     }
   }
 

@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UacAuthenticationPayload {
 
-  private UacAuthenticationResponse response = new UacAuthenticationResponse();
+  private UacAuthentication uacAuthentication = new UacAuthentication();
 }

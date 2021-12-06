@@ -14,7 +14,7 @@ import uk.gov.ons.ctp.common.FixtureHelper;
 import uk.gov.ons.ctp.common.domain.Channel;
 import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.error.CTPException;
-import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
+import uk.gov.ons.ctp.common.event.model.EqLaunch;
 
 /** EventPublisher tests specific to the scenario in which event persistence is turned off. */
 @ExtendWith(MockitoExtension.class)
@@ -25,7 +25,7 @@ public class EventPublisherWithoutPersistenceTest {
 
   @Test
   public void eventSendingFailsWithException() throws CTPException {
-    SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
+    EqLaunch eqLaunchedResponse = loadJson(EqLaunch[].class);
 
     Mockito.doThrow(new RuntimeException("Failed to send")).when(sender).sendEvent(any(), any());
 
@@ -34,10 +34,7 @@ public class EventPublisherWithoutPersistenceTest {
             Exception.class,
             () -> {
               eventPublisher.sendEvent(
-                  TopicType.SURVEY_LAUNCH,
-                  Source.RESPONDENT_HOME,
-                  Channel.RH,
-                  surveyLaunchedResponse);
+                  TopicType.EQ_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, eqLaunchedResponse);
             });
     assertTrue(e.getMessage().matches("Failed to publish .*"), e.getMessage());
   }

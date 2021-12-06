@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SurveyLaunchPayload {
+public class EqLaunchPayload {
 
-  private SurveyLaunchResponse response = new SurveyLaunchResponse();
+  private EqLaunch eqLaunch = new EqLaunch();
 }

@@ -13,6 +13,12 @@ public class UacUpdate implements EventPayload {
 
   private String caseId;
 
+  private String collectionExerciseId;
+
+  private String surveyId;
+
+  private String collectionInstrumentUrl;
+
   private boolean active;
 
   @LoggingScope(scope = Scope.MASK)

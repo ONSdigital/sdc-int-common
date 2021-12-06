@@ -22,8 +22,8 @@ import uk.gov.ons.ctp.common.domain.Channel;
 import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
-import uk.gov.ons.ctp.common.event.model.SurveyLaunchEvent;
-import uk.gov.ons.ctp.common.event.model.SurveyLaunchResponse;
+import uk.gov.ons.ctp.common.event.model.EqLaunch;
+import uk.gov.ons.ctp.common.event.model.EqLaunchEvent;
 import uk.gov.ons.ctp.common.event.persistence.FirestoreEventPersistence;
 
 /**
@@ -38,29 +38,27 @@ public class EventPublisherWithPersistenceTest {
 
   @Test
   public void eventPersistedWhenPublishFails() throws CTPException {
-    SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
+    EqLaunch eqLaunch = loadJson(EqLaunch[].class);
 
-    ArgumentCaptor<SurveyLaunchEvent> eventCapture =
-        ArgumentCaptor.forClass(SurveyLaunchEvent.class);
+    ArgumentCaptor<EqLaunchEvent> eventCapture = ArgumentCaptor.forClass(EqLaunchEvent.class);
 
     Mockito.doThrow(new RuntimeException("Failed to send")).when(sender).sendEvent(any(), any());
 
     UUID messageId =
-        eventPublisher.sendEvent(
-            TopicType.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, surveyLaunchedResponse);
+        eventPublisher.sendEvent(TopicType.EQ_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, eqLaunch);
 
     // Verify that the event was persistent following simulated Publish failure
     verify(eventPersistence, times(1))
-        .persistEvent(eq(TopicType.SURVEY_LAUNCH), eventCapture.capture());
-    SurveyLaunchEvent event = eventCapture.getValue();
+        .persistEvent(eq(TopicType.EQ_LAUNCH), eventCapture.capture());
+    EqLaunchEvent event = eventCapture.getValue();
     assertHeader(
-        event, messageId.toString(), EventTopic.SURVEY_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
-    assertEquals(surveyLaunchedResponse, event.getPayload().getResponse());
+        event, messageId.toString(), EventTopic.EQ_LAUNCH, Source.RESPONDENT_HOME, Channel.RH);
+    assertEquals(eqLaunch, event.getPayload().getEqLaunch());
   }
 
   @Test
   public void exceptionThrownWhenPublishAndFirestoreFail() throws CTPException {
-    SurveyLaunchResponse surveyLaunchedResponse = loadJson(SurveyLaunchResponse[].class);
+    EqLaunch eqLaunchedResponse = loadJson(EqLaunch[].class);
 
     Mockito.doThrow(new RuntimeException("Failed to send")).when(sender).sendEvent(any(), any());
     Mockito.doThrow(new CTPException(Fault.SYSTEM_ERROR, "Firestore broken"))
@@ -72,10 +70,7 @@ public class EventPublisherWithPersistenceTest {
             Exception.class,
             () ->
                 eventPublisher.sendEvent(
-                    TopicType.SURVEY_LAUNCH,
-                    Source.RESPONDENT_HOME,
-                    Channel.RH,
-                    surveyLaunchedResponse));
+                    TopicType.EQ_LAUNCH, Source.RESPONDENT_HOME, Channel.RH, eqLaunchedResponse));
     assertTrue(
         e.getMessage().matches(".* event persistence failed following publish failure"),
         e.getMessage());
