@@ -1,9 +1,12 @@
 package uk.gov.ons.ctp.common.event.model;
 
+import java.util.List;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
-import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +25,7 @@ public class SurveyUpdate implements EventPayload {
 
   @JsonRawValue private String sampleDefinition;
 
-  @JsonRawValue private String metadata;
+  @JsonRawValue private Map<String, Object> metadata;
 
   private List<SurveyFulfilment> allowedPrintFulfilments;
 
@@ -33,10 +36,5 @@ public class SurveyUpdate implements EventPayload {
   @JsonSetter("sampleDefinition")
   void setSampleDefinitionFromJson(JsonNode data) {
     this.sampleDefinition = data.toString();
-  }
-
-  @JsonSetter("metadata")
-  void setMetadataFromJson(JsonNode data) {
-    this.metadata = data.toString();
   }
 }
