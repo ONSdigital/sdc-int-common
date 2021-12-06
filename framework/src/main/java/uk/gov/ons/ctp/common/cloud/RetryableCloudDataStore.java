@@ -64,6 +64,17 @@ public interface RetryableCloudDataStore {
       throws CTPException;
 
   /**
+   * List all objects found in the given schema.
+   *
+   * @param <T> The object type that results should be returned in.
+   * @param target the class of the object type that results should be returned in.
+   * @param schema is the schema to search.
+   * @return the List of results.
+   * @throws CTPException if anything goes wrong.
+   */
+  <T> List<T> list(Class<T> target, final String schema) throws CTPException;
+
+  /**
    * Runs an object search. This returns objects whose field is equal to the search value.
    *
    * @param <T> The object type that results should be returned in.

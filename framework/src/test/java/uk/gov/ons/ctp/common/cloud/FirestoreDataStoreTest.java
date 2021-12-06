@@ -169,6 +169,35 @@ public class FirestoreDataStoreTest extends CloudTestBase {
   }
 
   @Test
+  public void shouldListNoResults() throws Exception {
+    mockFirestoreList(TEST_SCHEMA, null, null);
+    List<DummyCase> cases = firestoreDataStore.list(DummyCase.class, TEST_SCHEMA);
+    assertTrue(cases.isEmpty());
+  }
+
+  @Test
+  public void shouldListSingleResult() throws Exception {
+    mockFirestoreList(TEST_SCHEMA, null, null, CASE1);
+    List<DummyCase> cases = firestoreDataStore.list(DummyCase.class, TEST_SCHEMA);
+    assertFalse(cases.isEmpty());
+    assertEquals(1, cases.size());
+    assertEquals(CASE1.getId(), cases.get(0).getId());
+    assertEquals(CASE1, cases.get(0));
+  }
+
+  @Test
+  public void shouldListMultipleResults() throws Exception {
+    mockFirestoreList(TEST_SCHEMA, null, null, CASE1, CASE2);
+    List<DummyCase> cases = firestoreDataStore.list(DummyCase.class, TEST_SCHEMA);
+    assertFalse(cases.isEmpty());
+    assertEquals(2, cases.size());
+    assertEquals(CASE1.getId(), cases.get(0).getId());
+    assertEquals(CASE1, cases.get(0));
+    assertEquals(CASE2.getId(), cases.get(1).getId());
+    assertEquals(CASE2, cases.get(1));
+  }
+
+  @Test
   public void testSearch_noResults() throws Exception {
     mockFirestoreSearch(TEST_SCHEMA, "Bob", null, null);
 
@@ -337,6 +366,15 @@ public class FirestoreDataStoreTest extends CloudTestBase {
     mockFirestoreSearch(expectedSchema, expectedSearchValue, exception, null, case1);
   }
 
+  private void mockFirestoreList(
+      String expectedSchema,
+      Exception searchException,
+      Exception serialisationException,
+      DummyCase... resultData)
+      throws Exception {
+    mockFirestoreSearch(expectedSchema, null, searchException, serialisationException, resultData);
+  }
+
   private void mockFirestoreSearch(
       String expectedSchema,
       String expectedSearchValue,
@@ -375,14 +413,17 @@ public class FirestoreDataStoreTest extends CloudTestBase {
       when(apiFuture.get()).thenReturn(querySnapshot);
     }
 
-    Query query = Mockito.mock(Query.class);
-    when(query.get()).thenReturn(apiFuture);
-
     CollectionReference collectionReference = Mockito.mock(CollectionReference.class);
-    when(collectionReference.whereEqualTo((FieldPath) any(), eq(expectedSearchValue)))
-        .thenReturn(query);
-
     when(firestore.collection(eq(expectedSchema))).thenReturn(collectionReference);
+
+    if (expectedSearchValue == null) {
+      when(collectionReference.get()).thenReturn(apiFuture);
+    } else {
+      Query query = Mockito.mock(Query.class);
+      when(query.get()).thenReturn(apiFuture);
+      when(collectionReference.whereEqualTo((FieldPath) any(), eq(expectedSearchValue)))
+          .thenReturn(query);
+    }
   }
 
   private ApiFuture<WriteResult> mockFirestoreForExpectedDelete(

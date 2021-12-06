@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uk.gov.ons.ctp.common.domain.SurveyType;
 
 @Data
 @NoArgsConstructor
@@ -36,5 +37,9 @@ public class SurveyUpdate implements EventPayload {
   @JsonSetter("sampleDefinition")
   void setSampleDefinitionFromJson(JsonNode data) {
     this.sampleDefinition = data.toString();
+  }
+
+  public SurveyType surveyType() {
+    return SurveyType.fromSampleDefinitionUrl(sampleDefinitionUrl);
   }
 }
