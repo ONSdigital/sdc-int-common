@@ -25,7 +25,7 @@ public class SurveyUpdate implements EventPayload {
 
   @JsonRawValue private String sampleDefinition;
 
-  @JsonRawValue private Map<String, Object> metadata;
+  private Map<String, Object> metadata;
 
   private List<SurveyFulfilment> allowedPrintFulfilments;
 
