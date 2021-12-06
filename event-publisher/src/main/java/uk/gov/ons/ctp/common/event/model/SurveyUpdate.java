@@ -7,6 +7,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uk.gov.ons.ctp.common.domain.SurveyType;
 
 @Data
 @NoArgsConstructor
@@ -38,5 +39,9 @@ public class SurveyUpdate implements EventPayload {
   @JsonSetter("metadata")
   void setMetadataFromJson(JsonNode data) {
     this.metadata = data.toString();
+  }
+
+  public SurveyType surveyType() {
+    return SurveyType.fromSampleDefinitionUrl(sampleDefinitionUrl);
   }
 }

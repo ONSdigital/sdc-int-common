@@ -22,6 +22,8 @@ public interface CloudDataStore {
   <T> List<T> search(Class<T> target, final String schema, String[] fieldPath, String searchValue)
       throws CTPException;
 
+  <T> List<T> list(Class<T> target, final String schema) throws CTPException;
+
   void deleteObject(final String schema, final String key) throws CTPException;
 
   Set<String> getCollectionNames();

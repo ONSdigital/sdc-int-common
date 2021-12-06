@@ -1,5 +1,6 @@
 package uk.gov.ons.ctp.common.cloud;
 
+import static java.util.stream.Collectors.toList;
 import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
 
 import com.google.api.core.ApiFuture;
@@ -180,6 +181,36 @@ public class FirestoreDataStore implements CloudDataStore {
       throw new CTPException(Fault.SYSTEM_ERROR, failureMessage);
     }
     return result;
+  }
+
+  /**
+   * List all objects found in the given schema.
+   *
+   * @param <T> The object type that results should be returned in.
+   * @param target the class of the object type that results should be returned in.
+   * @param schema is the schema to search.
+   * @return the List of results.
+   * @throws CTPException if anything goes wrong.
+   */
+  @Override
+  public <T> List<T> list(Class<T> target, String schema) throws CTPException {
+    log.debug("Listing all items in Firestore", kv("schema", schema), kv("target", target));
+    try {
+      ApiFuture<QuerySnapshot> query = firestore.collection(schema).get();
+      QuerySnapshot querySnapshot = query.get();
+      List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
+      return documents.stream().map(d -> d.toObject(target)).collect(toList());
+    } catch (Exception e) {
+      log.error(
+          "Failed to list Firestore items {} {}", kv("target", target), kv("schema", schema), e);
+      String failureMessage =
+          "Failed to list Firestore items. Target class: '"
+              + target
+              + "', schema: '"
+              + schema
+              + "'";
+      throw new CTPException(Fault.SYSTEM_ERROR, e, failureMessage);
+    }
   }
 
   /**
