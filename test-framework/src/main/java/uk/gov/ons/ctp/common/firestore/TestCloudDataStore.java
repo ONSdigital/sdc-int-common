@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.ons.ctp.common.cloud.CloudDataStore;
 import uk.gov.ons.ctp.common.cloud.FirestoreDataStore;
@@ -25,11 +26,14 @@ public class TestCloudDataStore implements CloudDataStore {
 
   @Autowired private FirestoreDataStore dataStore;
 
+  @Value("${spring.cloud.gcp.firestore.project-id}")
+  private String gcpProject;
+
   private Firestore firestore;
 
   @PostConstruct
   public void create() {
-    firestore = FirestoreOptions.getDefaultInstance().getService();
+    firestore = FirestoreOptions.newBuilder().setProjectId(gcpProject).build().getService();
   }
 
   public long deleteCollection(String schema) {
@@ -101,10 +105,15 @@ public class TestCloudDataStore implements CloudDataStore {
       throw new IllegalArgumentException("collection and key must be provided");
     }
 
-    FirestoreWait firestore =
-        FirestoreWait.builder().collection(collection).key(key).timeout(timeoutMillis).build();
+    FirestoreWait firestoreWait =
+        FirestoreWait.builder()
+            .collection(collection)
+            .key(key)
+            .timeout(timeoutMillis)
+            .firestore(firestore)
+            .build();
 
-    return firestore.waitForObject() != null;
+    return firestoreWait.waitForObject() != null;
   }
 
   // there is no firestore method to delete a collection, so we delete in batches.

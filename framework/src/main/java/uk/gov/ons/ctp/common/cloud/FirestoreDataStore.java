@@ -30,7 +30,7 @@ import uk.gov.ons.ctp.common.error.CTPException.Fault;
 @Service
 public class FirestoreDataStore implements CloudDataStore {
 
-  @Value("${GOOGLE_CLOUD_PROJECT}")
+  @Value("${spring.cloud.gcp.firestore.project-id}")
   private String gcpProject;
 
   private Firestore firestore;
@@ -38,7 +38,7 @@ public class FirestoreDataStore implements CloudDataStore {
   @PostConstruct
   public void create() {
     log.info("Connecting to Firestore project {}", gcpProject);
-    firestore = FirestoreOptions.getDefaultInstance().getService();
+    firestore = FirestoreOptions.newBuilder().setProjectId(gcpProject).build().getService();
   }
 
   /**
