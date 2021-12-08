@@ -22,7 +22,7 @@ public class FirestoreEventPersistence implements EventPersistence {
   private RetryableCloudDataStore cloudDataStore;
   private CustomObjectMapper objectMapper;
 
-  @Value("${GOOGLE_CLOUD_PROJECT}")
+  @Value("${spring.cloud.gcp.firestore.project-id}")
   String gcpProject;
 
   @Value("${cloud-storage.event-backup-schema-name}")
