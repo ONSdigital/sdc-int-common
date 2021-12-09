@@ -16,7 +16,7 @@ public class FirestoreProviderImpl implements FirestoreProvider {
   private Firestore firestore;
 
   @PostConstruct
-  private void create() {
+  public void create() {
     log.info("Connecting to Firestore project {}", gcpProject);
     firestore = FirestoreOptions.newBuilder().setProjectId(gcpProject).build().getService();
   }

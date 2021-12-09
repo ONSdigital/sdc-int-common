@@ -2,6 +2,7 @@ package uk.gov.ons.ctp.common.cloud;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,28 +11,39 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.ons.ctp.common.util.LockKey;
 
 /**
  * This class tests the FirestoreDataStore class by connecting to a real firestore project.
  *
- * <p>To run this code: This class tests Firestore using the firestore API. 1) Uncomment the @Ignore
- * annotations. 2) Make sure the Firestore environment variables are set. eg, I use:
- * GOOGLE_APPLICATION_CREDENTIALS =
- * /Users/peterbochel/.config/gcloud/application_default_credentials.json GOOGLE_CLOUD_PROJECT =
- * census-rh-peterb
+ * <p>To run this code: This class tests Firestore using the firestore API.
+ *
+ * <ol>
+ *   <li>Uncomment the @Disabled annotation.
+ *   <li>Make sure the Firestore environment variables are set. eg:
+ *       <pre>
+ * GOOGLE_APPLICATION_CREDENTIALS = /Users/peterbochel/.config/gcloud/application_default_credentials.json
+ * GOOGLE_CLOUD_PROJECT = census-rh-peterb
+ *      </pre>
+ * </ol>
  */
 @Disabled
+@ResourceLock(value = LockKey.FIRESTORE_TEST, mode = READ_WRITE)
 public class Firestore_IT extends CloudTestBase {
   private static final String FIRESTORE_PROJECT_ENV_NAME = "GOOGLE_CLOUD_PROJECT";
+  private static FirestoreProviderImpl firestoreProvider;
   private static FirestoreDataStore firestoreDataStore;
 
   @BeforeAll
   public static void setUp() {
-    firestoreDataStore = new FirestoreDataStore();
+    firestoreProvider = new FirestoreProviderImpl();
     ReflectionTestUtils.setField(
-        firestoreDataStore, "gcpProject", System.getenv(FIRESTORE_PROJECT_ENV_NAME));
-    // firestoreDataStore.create(); // FIXME
+        firestoreProvider, "gcpProject", System.getenv(FIRESTORE_PROJECT_ENV_NAME));
+    firestoreProvider.create();
+    firestoreDataStore = new FirestoreDataStore();
+    ReflectionTestUtils.setField(firestoreDataStore, "provider", firestoreProvider);
   }
 
   @BeforeEach
