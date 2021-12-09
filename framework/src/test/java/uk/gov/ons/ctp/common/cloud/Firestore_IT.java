@@ -31,7 +31,7 @@ public class Firestore_IT extends CloudTestBase {
     firestoreDataStore = new FirestoreDataStore();
     ReflectionTestUtils.setField(
         firestoreDataStore, "gcpProject", System.getenv(FIRESTORE_PROJECT_ENV_NAME));
-    firestoreDataStore.create();
+    // firestoreDataStore.create(); // FIXME
   }
 
   @BeforeEach

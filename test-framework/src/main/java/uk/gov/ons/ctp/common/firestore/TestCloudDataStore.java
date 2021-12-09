@@ -2,8 +2,6 @@ package uk.gov.ons.ctp.common.firestore;
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.CollectionReference;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.FirestoreOptions;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.firestore.WriteResult;
@@ -11,12 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.ons.ctp.common.cloud.CloudDataStore;
 import uk.gov.ons.ctp.common.cloud.FirestoreDataStore;
+import uk.gov.ons.ctp.common.cloud.FirestoreProvider;
 import uk.gov.ons.ctp.common.error.CTPException;
 
 /** Access the Cloud data store for testing purposes. */
@@ -26,18 +23,10 @@ public class TestCloudDataStore implements CloudDataStore {
 
   @Autowired private FirestoreDataStore dataStore;
 
-  @Value("${spring.cloud.gcp.firestore.project-id}")
-  private String gcpProject;
-
-  private Firestore firestore;
-
-  @PostConstruct
-  public void create() {
-    firestore = FirestoreOptions.newBuilder().setProjectId(gcpProject).build().getService();
-  }
+  @Autowired private FirestoreProvider provider;
 
   public long deleteCollection(String schema) {
-    CollectionReference collection = firestore.collection(schema);
+    CollectionReference collection = provider.get().collection(schema);
 
     long totalDeleted = 0;
     int numDeletedInBatch = 0;
@@ -110,7 +99,7 @@ public class TestCloudDataStore implements CloudDataStore {
             .collection(collection)
             .key(key)
             .timeout(timeoutMillis)
-            .firestore(firestore)
+            .firestore(provider.get())
             .build();
 
     return firestoreWait.waitForObject() != null;

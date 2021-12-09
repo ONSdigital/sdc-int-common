@@ -41,10 +41,12 @@ public class FirestoreDataStoreTest extends CloudTestBase {
   private FirestoreDataStore firestoreDataStore = new FirestoreDataStore();
 
   @Mock private Firestore firestore;
+  @Mock private FirestoreProvider provider;
 
   @BeforeEach
   public void setUp() {
-    ReflectionTestUtils.setField(firestoreDataStore, "firestore", firestore);
+    ReflectionTestUtils.setField(firestoreDataStore, "provider", provider);
+    when(provider.get()).thenReturn(firestore);
   }
 
   @Test
