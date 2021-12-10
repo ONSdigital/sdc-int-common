@@ -4,7 +4,7 @@
   <groupId>ons.sdc.int.common</groupId>
   <artifactId>common</artifactId>
   <!-- version auto updated by CloudBuild mvn release -->
-  <version>1.0.68-259-SNAPSHOT</version>
+  <version>1.0.69-259-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>SDC : Integrations Common</name>
   <description>Parent project with common modules for SDC Integrations application projects</description>
