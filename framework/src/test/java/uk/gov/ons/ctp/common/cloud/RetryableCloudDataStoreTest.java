@@ -28,7 +28,7 @@ import uk.gov.ons.ctp.common.error.CTPException.Fault;
 @ExtendWith(MockitoExtension.class)
 public class RetryableCloudDataStoreTest extends CloudTestBase {
 
-  @Mock private CloudDataStore cloudDataStore;
+  @Mock private FirestoreDataStore cloudDataStore;
 
   private RetryableCloudDataStoreImpl.Retrier retrier;
 

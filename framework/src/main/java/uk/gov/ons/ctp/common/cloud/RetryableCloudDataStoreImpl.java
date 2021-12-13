@@ -23,11 +23,11 @@ import uk.gov.ons.ctp.common.error.CTPException.Fault;
 @Service
 public class RetryableCloudDataStoreImpl implements RetryableCloudDataStore {
 
-  private CloudDataStore cloudDataStore;
+  private FirestoreDataStore cloudDataStore;
   private Retrier retrier;
 
   @Autowired
-  public RetryableCloudDataStoreImpl(CloudDataStore cloudDataStore, Retrier retrier) {
+  public RetryableCloudDataStoreImpl(FirestoreDataStore cloudDataStore, Retrier retrier) {
     this.cloudDataStore = cloudDataStore;
     this.retrier = retrier;
   }
@@ -94,11 +94,11 @@ public class RetryableCloudDataStoreImpl implements RetryableCloudDataStore {
   @Slf4j
   @Component
   static class Retrier {
-    private CloudDataStore cloudDataStore;
+    private FirestoreDataStore cloudDataStore;
     private RetryConfig retryConfig;
 
     @Autowired
-    public Retrier(CloudDataStore cloudDataStore, RetryConfig retryConfig) {
+    public Retrier(FirestoreDataStore cloudDataStore, RetryConfig retryConfig) {
       this.cloudDataStore = cloudDataStore;
       this.retryConfig = retryConfig;
       log.info("CloudDataStore retry configuration: {}", this.retryConfig);

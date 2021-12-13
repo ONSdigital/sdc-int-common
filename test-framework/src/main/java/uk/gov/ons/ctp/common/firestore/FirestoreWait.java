@@ -1,5 +1,6 @@
 package uk.gov.ons.ctp.common.firestore;
 
+import com.google.cloud.firestore.Firestore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -26,6 +27,8 @@ import uk.gov.ons.ctp.common.error.CTPException.Fault;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FirestoreWait {
+
+  @NonNull private Firestore firestore;
 
   // This is the name of the collection to search, eg, 'case'
   @NonNull private String collection;
@@ -112,7 +115,7 @@ public class FirestoreWait {
     long objectUpdateTimestamp;
     do {
       objectUpdateTimestamp =
-          FirestoreService.instance()
+          new FirestoreService(firestore)
               .objectExists(collection, key, newerThan, contentCheckPath, expectedValue);
       if (objectUpdateTimestamp > 0) {
         log.debug("Found object");

@@ -6,8 +6,6 @@ import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.FieldPath;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.FirestoreOptions;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.firestore.WriteResult;
@@ -19,9 +17,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
@@ -30,16 +27,7 @@ import uk.gov.ons.ctp.common.error.CTPException.Fault;
 @Service
 public class FirestoreDataStore implements CloudDataStore {
 
-  @Value("${GOOGLE_CLOUD_PROJECT}")
-  private String gcpProject;
-
-  private Firestore firestore;
-
-  @PostConstruct
-  public void create() {
-    log.info("Connecting to Firestore project {}", gcpProject);
-    firestore = FirestoreOptions.getDefaultInstance().getService();
-  }
+  @Autowired private FirestoreProvider provider;
 
   /**
    * Write object to Firestore collection. If the collection already holds an object with the
@@ -60,7 +48,7 @@ public class FirestoreDataStore implements CloudDataStore {
     log.info("Saving object to Firestore", kv("schema", schema), kv("key", key));
 
     // Store the object
-    ApiFuture<WriteResult> result = firestore.collection(schema).document(key).set(value);
+    ApiFuture<WriteResult> result = provider.get().collection(schema).document(key).set(value);
 
     // Wait for Firestore to complete
     try {
@@ -196,7 +184,7 @@ public class FirestoreDataStore implements CloudDataStore {
   public <T> List<T> list(Class<T> target, String schema) throws CTPException {
     log.debug("Listing all items in Firestore", kv("schema", schema), kv("target", target));
     try {
-      ApiFuture<QuerySnapshot> query = firestore.collection(schema).get();
+      ApiFuture<QuerySnapshot> query = provider.get().collection(schema).get();
       QuerySnapshot querySnapshot = query.get();
       List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
       return documents.stream().map(d -> d.toObject(target)).collect(toList());
@@ -251,7 +239,7 @@ public class FirestoreDataStore implements CloudDataStore {
       throws CTPException {
     // Run a query
     ApiFuture<QuerySnapshot> query =
-        firestore.collection(schema).whereEqualTo(fieldPath, searchValue).get();
+        provider.get().collection(schema).whereEqualTo(fieldPath, searchValue).get();
 
     // Wait for query to complete and get results
     QuerySnapshot querySnapshot;
@@ -290,7 +278,7 @@ public class FirestoreDataStore implements CloudDataStore {
     log.info("Deleting object from Firestore", kv("schema", schema), kv("key", key));
 
     // Tell firestore to delete object
-    DocumentReference docRef = firestore.collection(schema).document(key);
+    DocumentReference docRef = provider.get().collection(schema).document(key);
     ApiFuture<WriteResult> result = docRef.delete();
 
     // Wait for delete to complete
@@ -313,7 +301,7 @@ public class FirestoreDataStore implements CloudDataStore {
   @Override
   public Set<String> getCollectionNames() {
     Set<String> collectionNames = new HashSet<>();
-    firestore.listCollections().forEach(c -> collectionNames.add(c.getId()));
+    provider.get().listCollections().forEach(c -> collectionNames.add(c.getId()));
     return collectionNames;
   }
 }
