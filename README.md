@@ -27,4 +27,4 @@ Each of the following modules will result in a jar being released:
 
 The 'standards' sub folder does not declare a pom, no jar is built, and is just a convenient location for project code formatter xml etc
 standards
-  
+ 
