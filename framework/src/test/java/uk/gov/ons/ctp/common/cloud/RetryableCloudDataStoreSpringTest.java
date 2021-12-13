@@ -38,7 +38,7 @@ import uk.gov.ons.ctp.common.util.LockKey;
 @ResourceLock(value = LockKey.SPRING_TEST, mode = READ_WRITE)
 public class RetryableCloudDataStoreSpringTest extends CloudTestBase {
 
-  @MockBean private CloudDataStore cloudDataStore;
+  @MockBean private FirestoreDataStore cloudDataStore;
 
   @Autowired private RetryableCloudDataStore retryDataStore;
 

@@ -3,7 +3,6 @@ package uk.gov.ons.ctp.common.firestore;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.FieldPath;
 import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.FirestoreOptions;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import lombok.extern.slf4j.Slf4j;
@@ -17,19 +16,12 @@ import uk.gov.ons.ctp.common.error.CTPException.Fault;
  */
 @Slf4j
 class FirestoreService {
-  private static FirestoreService instance = new FirestoreService();
-
   private Firestore firestore;
   private String gcpProject;
 
-  public static synchronized FirestoreService instance() {
-    return instance;
-  }
-
-  private FirestoreService() {
-    firestore = FirestoreOptions.getDefaultInstance().getService();
-
-    gcpProject = firestore.getOptions().getProjectId();
+  FirestoreService(Firestore firestore) {
+    this.firestore = firestore;
+    this.gcpProject = firestore.getOptions().getProjectId();
     log.info("Connected to Firestore project: " + gcpProject);
   }
 
