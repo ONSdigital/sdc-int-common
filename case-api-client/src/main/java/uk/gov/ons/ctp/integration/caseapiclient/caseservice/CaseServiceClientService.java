@@ -14,17 +14,15 @@ import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.SingleUseQuest
 
 /** This class is responsible for communications with the Case Service. */
 @Slf4j
-public class CaseServiceClientServiceImpl {
+public class CaseServiceClientService {
   private static final String CASE_BY_ID_QUERY_PATH = "/cases/{case-id}";
-  private static final String CASE_BY_UPRN_QUERY_PATH = "/cases/uprn/{uprn}";
   private static final String CASE_BY_CASE_REFERENCE_QUERY_PATH = "/cases/ref/{reference}";
   private static final String CASE_GET_REUSABLE_QUESTIONNAIRE_ID_PATH = "/cases/ccs/{caseId}/qid";
   private static final String CASE_CREATE_SINGLE_USE_QUESTIONNAIRE_ID_PATH = "/cases/{caseId}/qid";
-  private static final String CCS_CASE_BY_POSTCODE_QUERY_PATH = "/cases/ccs/postcode/{postcode}";
 
   private RestClient caseServiceClient;
 
-  public CaseServiceClientServiceImpl(RestClient caseServiceClient) {
+  public CaseServiceClientService(RestClient caseServiceClient) {
     super();
     this.caseServiceClient = caseServiceClient;
   }
@@ -43,43 +41,6 @@ public class CaseServiceClientServiceImpl {
             CASE_BY_ID_QUERY_PATH, RmCaseDTO.class, null, queryParams, caseId.toString());
     log.debug("getCaseById() found case details for case ID", kv("caseId", caseId));
     return caseDetails;
-  }
-
-  public List<RmCaseDTO> getCaseByUprn(Long uprn, Boolean listCaseEvents) {
-    log.debug(
-        "getCaseByUprn() calling Case Service to find case details by Uprn", kv("uprn", uprn));
-
-    // Build map for query params
-    MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
-    queryParams.add("caseEvents", Boolean.toString(listCaseEvents));
-    queryParams.add("validAddressOnly", Boolean.TRUE.toString());
-
-    // Ask Case Service to find case details
-    List<RmCaseDTO> cases =
-        caseServiceClient.getResources(
-            CASE_BY_UPRN_QUERY_PATH,
-            RmCaseDTO[].class,
-            null,
-            queryParams,
-            Long.toString(uprn));
-
-    log.debug("getCaseByUprn() found case details by Uprn", kv("uprn", uprn));
-    return cases;
-  }
-
-  public List<RmCaseDTO> getCcsCaseByPostcode(String postcode) {
-    log.debug(
-        "getCcsCaseByPostcode() calling Case Service to find ccs case details by postcode",
-        kv("postcode", postcode));
-
-    // Ask Case Service to find ccs case details
-    List<RmCaseDTO> cases =
-        caseServiceClient.getResources(
-            CCS_CASE_BY_POSTCODE_QUERY_PATH, RmCaseDTO[].class, null, null, postcode);
-
-    log.debug("getCaseByPostcode() found ccs case details by postcode", kv("postcode", postcode));
-
-    return cases;
   }
 
   public RmCaseDTO getCaseByCaseRef(Long caseReference, Boolean listCaseEvents) {
