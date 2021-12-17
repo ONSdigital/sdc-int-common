@@ -16,7 +16,7 @@ import org.bouncycastle.util.encoders.Hex;
 import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
-import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.CaseContainerDTO;
+import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.RmCaseDTO;
 import uk.gov.ons.ctp.integration.eqlaunch.crypto.JweEncryptor;
 import uk.gov.ons.ctp.integration.eqlaunch.crypto.KeyStore;
 import uk.gov.ons.ctp.integration.eqlaunch.service.EqLaunchCoreData;
@@ -79,7 +79,7 @@ public class EqLaunchServiceImpl implements EqLaunchService {
    */
   Map<String, Object> createPayloadMap(
       EqLaunchCoreData coreData,
-      CaseContainerDTO caseContainer,
+      RmCaseDTO caseContainer,
       String userId,
       String role,
       String accountServiceUrl,
@@ -98,66 +98,67 @@ public class EqLaunchServiceImpl implements EqLaunchService {
     payload.computeIfAbsent("iat", (k) -> currentTimeInSeconds);
     payload.computeIfAbsent("exp", (k) -> currentTimeInSeconds + (5 * 60));
 
-    if (role == null || !role.equals(ROLE_FLUSHER)) {
-      Objects.requireNonNull(
-          caseContainer, "CaseContainer mandatory unless role is '" + ROLE_FLUSHER + "'");
+    //TODO there's a separate ticket to align this with the current version of EQ - SOCINT-334
+//    if (role == null || !role.equals(ROLE_FLUSHER)) {
+//      Objects.requireNonNull(
+//          caseContainer, "CaseContainer mandatory unless role is '" + ROLE_FLUSHER + "'");
 
-      payload.computeIfAbsent("case_type", (k) -> caseContainer.getCaseType());
-      validateCase(source, caseContainer, questionnaireId);
-      String caseIdStr = caseContainer.getId().toString();
-      payload.computeIfAbsent(
-          "collection_exercise_sid", (k) -> caseContainer.getCollectionExerciseId().toString());
-      String convertedRegionCode = convertRegionCode(caseContainer.getRegion());
-      payload.computeIfAbsent("region_code", (k) -> convertedRegionCode);
-      payload.computeIfAbsent(
-          "ru_ref",
-          (k) ->
-              caseContainer.getSurveyType().equalsIgnoreCase("CCS")
-                  ? caseIdStr
-                  : caseContainer.getUprn());
-      payload.computeIfAbsent("case_id", (k) -> caseIdStr);
-      payload.computeIfAbsent(
-          "display_address",
-          (k) ->
-              buildDisplayAddress(
-                  caseContainer.getAddressLine1(),
-                  caseContainer.getAddressLine2(),
-                  caseContainer.getAddressLine3(),
-                  caseContainer.getTownName(),
-                  caseContainer.getPostcode()));
-      payload.computeIfAbsent("survey", (k) -> caseContainer.getSurveyType());
-    }
-    String responseId = encryptResponseId(questionnaireId, coreData.getSalt());
-    payload.computeIfAbsent("language_code", (k) -> coreData.getLanguage().getIsoLikeCode());
-    payload.computeIfAbsent("response_id", (k) -> responseId);
-    payload.computeIfAbsent("account_service_url", (k) -> accountServiceUrl);
-    payload.computeIfAbsent("account_service_log_out_url", (k) -> accountServiceLogoutUrl);
-    payload.computeIfAbsent("channel", (k) -> coreData.getChannel().name().toLowerCase());
-    payload.computeIfAbsent("user_id", (k) -> userId);
-    payload.computeIfAbsent("roles", (k) -> role);
-    payload.computeIfAbsent("questionnaire_id", (k) -> questionnaireId);
-
-    payload.computeIfAbsent("eq_id", (k) -> "census");
-    payload.computeIfAbsent("period_id", (k) -> "2021");
-    payload.computeIfAbsent("form_type", (k) -> coreData.getFormType());
+//      payload.computeIfAbsent("case_type", (k) -> caseContainer.getCaseType());
+//      validateCase(source, caseContainer, questionnaireId);
+//      String caseIdStr = caseContainer.getId().toString();
+//      payload.computeIfAbsent(
+//          "collection_exercise_sid", (k) -> caseContainer.getCollectionExerciseId().toString());
+//      String convertedRegionCode = convertRegionCode(caseContainer.getRegion());
+//      payload.computeIfAbsent("region_code", (k) -> convertedRegionCode);
+//      payload.computeIfAbsent(
+//          "ru_ref",
+//          (k) ->
+//              caseContainer.getSurveyType().equalsIgnoreCase("CCS")
+//                  ? caseIdStr
+//                  : caseContainer.getUprn());
+//      payload.computeIfAbsent("case_id", (k) -> caseIdStr);
+//      payload.computeIfAbsent(
+//          "display_address",
+//          (k) ->
+//              buildDisplayAddress(
+//                  caseContainer.getAddressLine1(),
+//                  caseContainer.getAddressLine2(),
+//                  caseContainer.getAddressLine3(),
+//                  caseContainer.getTownName(),
+//                  caseContainer.getPostcode()));
+//      payload.computeIfAbsent("survey", (k) -> caseContainer.getSurveyType());
+//    }
+//    String responseId = encryptResponseId(questionnaireId, coreData.getSalt());
+//    payload.computeIfAbsent("language_code", (k) -> coreData.getLanguage().getIsoLikeCode());
+//    payload.computeIfAbsent("response_id", (k) -> responseId);
+//    payload.computeIfAbsent("account_service_url", (k) -> accountServiceUrl);
+//    payload.computeIfAbsent("account_service_log_out_url", (k) -> accountServiceLogoutUrl);
+//    payload.computeIfAbsent("channel", (k) -> coreData.getChannel().name().toLowerCase());
+//    payload.computeIfAbsent("user_id", (k) -> userId);
+//    payload.computeIfAbsent("roles", (k) -> role);
+//    payload.computeIfAbsent("questionnaire_id", (k) -> questionnaireId);
+//
+//    payload.computeIfAbsent("eq_id", (k) -> "census");
+//    payload.computeIfAbsent("period_id", (k) -> "2021");
+//    payload.computeIfAbsent("form_type", (k) -> coreData.getFormType());
 
     log.debug("Payload for EQ", kv("payload", payload));
 
     return payload;
   }
 
-  private void validateCase(Source source, CaseContainerDTO caseContainer, String questionnaireId)
+  private void validateCase(Source source, RmCaseDTO caseContainer, String questionnaireId)
       throws CTPException {
     UUID caseId = caseContainer.getId();
 
     verifyNotNull(caseContainer.getId(), "case id", caseId);
-    verifyNotNull(caseContainer.getCaseType(), "case type", caseId);
-    verifyNotNull(caseContainer.getCollectionExerciseId(), "collection id", caseId);
-    verifyNotNull(questionnaireId, "questionnaireId", caseId);
-    if (source != FIELD_SERVICE && !CCS.equalsIgnoreCase(caseContainer.getSurveyType())) {
-      verifyNotNull(caseContainer.getUprn(), "address uprn", caseId);
-    }
-    verifyNotNull(caseContainer.getSurveyType(), "survey type", caseId);
+//    verifyNotNull(caseContainer.getCaseType(), "case type", caseId);
+//    verifyNotNull(caseContainer.getCollectionExerciseId(), "collection id", caseId);
+//    verifyNotNull(questionnaireId, "questionnaireId", caseId);
+//    if (source != FIELD_SERVICE && !CCS.equalsIgnoreCase(caseContainer.getSurveyType())) {
+//      verifyNotNull(caseContainer.getUprn(), "address uprn", caseId);
+//    }
+//    verifyNotNull(caseContainer.getSurveyType(), "survey type", caseId);
   }
 
   private void verifyNotNull(Object fieldValue, String fieldName, UUID caseId) throws CTPException {

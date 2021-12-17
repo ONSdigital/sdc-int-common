@@ -23,8 +23,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.MultiValueMap;
 import uk.gov.ons.ctp.common.FixtureHelper;
 import uk.gov.ons.ctp.common.domain.UniquePropertyReferenceNumber;
+import uk.gov.ons.ctp.common.event.model.CaseUpdate;
 import uk.gov.ons.ctp.common.rest.RestClient;
-import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.CaseContainerDTO;
+import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.RmCaseDTO;
 import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.QuestionnaireIdDTO;
 import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.SingleUseQuestionnaireIdDTO;
 
@@ -56,30 +57,6 @@ public class CaseServiceClientServiceImplTest {
   @Test
   public void testGetCaseById_withNoCaseEvents() {
     doTestGetCaseById(false, 0);
-  }
-
-  @Test
-  public void shouldFindNonSecureEstablishment() {
-    CaseContainerDTO result = doTestGetCaseById(true, 0);
-    assertFalse(result.isSecureEstablishment());
-  }
-
-  @Test
-  public void shouldFindSecureEstablishment() {
-    CaseContainerDTO result = doTestGetCaseById(true, 2);
-    assertTrue(result.isSecureEstablishment());
-  }
-
-  @Test
-  public void shouldFindEstablishmentUprn() {
-    CaseContainerDTO result = doTestGetCaseById(true, 2);
-    assertEquals("334111111111", result.getEstabUprn());
-  }
-
-  @Test
-  public void shouldNotFindEstablishmentUprn() {
-    CaseContainerDTO result = doTestGetCaseById(true, 0);
-    assertNull(result.getEstabUprn());
   }
 
   @Test
@@ -137,23 +114,23 @@ public class CaseServiceClientServiceImplTest {
   }
 
   @SneakyThrows
-  private CaseContainerDTO doTestGetCaseById(boolean requireCaseEvents, int index) {
+  private RmCaseDTO doTestGetCaseById(boolean requireCaseEvents, int index) {
     UUID testUuid = UUID.fromString(IDS.get(index));
 
     // Build results to be returned by the case service
-    CaseContainerDTO resultsFromCaseService =
-        FixtureHelper.loadClassFixtures(CaseContainerDTO[].class).get(index);
+    RmCaseDTO resultsFromCaseService =
+        FixtureHelper.loadClassFixtures(RmCaseDTO[].class).get(index);
     Mockito.when(
             restClient.getResource(
                 eq("/cases/{case-id}"),
-                eq(CaseContainerDTO.class),
+                eq(RmCaseDTO.class),
                 any(),
                 any(),
                 eq(testUuid.toString())))
         .thenReturn(resultsFromCaseService);
 
     // Run the request
-    CaseContainerDTO results = caseServiceClientService.getCaseById(testUuid, requireCaseEvents);
+    RmCaseDTO results = caseServiceClientService.getCaseById(testUuid, requireCaseEvents);
 
     // Sanity check the response
     assertEquals(testUuid, results.getId());
@@ -184,27 +161,27 @@ public class CaseServiceClientServiceImplTest {
     UniquePropertyReferenceNumber uprn = new UniquePropertyReferenceNumber(334999999999L);
 
     // Build results to be returned by the case service
-    List<CaseContainerDTO> caseData = FixtureHelper.loadClassFixtures(CaseContainerDTO[].class);
+    List<RmCaseDTO> caseData = FixtureHelper.loadClassFixtures(RmCaseDTO[].class);
     Mockito.when(
             restClient.getResources(
                 eq("/cases/uprn/{uprn}"),
-                eq(CaseContainerDTO[].class),
+                eq(RmCaseDTO[].class),
                 any(),
                 any(),
                 eq(Long.toString(uprn.getValue()))))
         .thenReturn(caseData);
 
     // Run the request
-    List<CaseContainerDTO> results =
+    List<RmCaseDTO> results =
         caseServiceClientService.getCaseByUprn(uprn.getValue(), requireCaseEvents);
 
     // Sanity check the response
     assertEquals(UUID.fromString(caseId1), results.get(0).getId());
-    assertEquals(Long.toString(uprn.getValue()), results.get(0).getUprn());
+    assertEquals(Long.toString(uprn.getValue()), results.get(0).getSample().get(CaseUpdate.ATTRIBUTE_UPRN));
     assertNotNull(results.get(0).getCaseEvents()); // Events not removed yet
 
     assertEquals(UUID.fromString(caseId2), results.get(1).getId());
-    assertEquals(Long.toString(uprn.getValue()), results.get(1).getUprn());
+    assertEquals(Long.toString(uprn.getValue()), results.get(1).getSample().get(CaseUpdate.ATTRIBUTE_UPRN));
     assertNotNull(results.get(1).getCaseEvents()); // Events not removed yet
 
     // Make sure the caseEvents arg was passed through correctly
@@ -222,25 +199,25 @@ public class CaseServiceClientServiceImplTest {
     String postcode = "G1 2AA";
 
     // Build results to be returned by the case service
-    List<CaseContainerDTO> caseData = FixtureHelper.loadClassFixtures(CaseContainerDTO[].class);
+    List<RmCaseDTO> caseData = FixtureHelper.loadClassFixtures(RmCaseDTO[].class);
     Mockito.when(
             restClient.getResources(
                 eq("/cases/ccs/postcode/{postcode}"),
-                eq(CaseContainerDTO[].class),
+                eq(RmCaseDTO[].class),
                 any(),
                 any(),
                 eq(postcode)))
         .thenReturn(caseData);
 
     // Run the request
-    List<CaseContainerDTO> results = caseServiceClientService.getCcsCaseByPostcode(postcode);
+    List<RmCaseDTO> results = caseServiceClientService.getCcsCaseByPostcode(postcode);
 
     // Sanity check the response
     assertEquals(UUID.fromString(caseId1), results.get(0).getId());
-    assertEquals(postcode, results.get(0).getPostcode());
+    assertEquals(postcode, results.get(0).getSample().get(CaseUpdate.ATTRIBUTE_POSTCODE));
 
     assertEquals(UUID.fromString(caseId2), results.get(1).getId());
-    assertEquals(postcode, results.get(1).getPostcode());
+    assertEquals(postcode, results.get(1).getSample().get(CaseUpdate.ATTRIBUTE_POSTCODE));
   }
 
   @Test
@@ -258,19 +235,19 @@ public class CaseServiceClientServiceImplTest {
     Long testCaseRef = 52224L;
 
     // Build results to be returned by the case service
-    CaseContainerDTO resultsFromCaseService =
-        FixtureHelper.loadClassFixtures(CaseContainerDTO[].class).get(0);
+    RmCaseDTO resultsFromCaseService =
+        FixtureHelper.loadClassFixtures(RmCaseDTO[].class).get(0);
     Mockito.when(
             restClient.getResource(
                 eq("/cases/ref/{reference}"),
-                eq(CaseContainerDTO.class),
+                eq(RmCaseDTO.class),
                 any(),
                 any(),
                 eq(testCaseRef)))
         .thenReturn(resultsFromCaseService);
 
     // Run the request
-    CaseContainerDTO results =
+    RmCaseDTO results =
         caseServiceClientService.getCaseByCaseRef(testCaseRef, requireCaseEvents);
 
     // Sanity check the response
