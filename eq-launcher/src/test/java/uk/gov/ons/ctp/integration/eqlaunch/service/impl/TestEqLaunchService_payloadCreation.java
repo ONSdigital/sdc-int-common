@@ -1,20 +1,9 @@
 package uk.gov.ons.ctp.integration.eqlaunch.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import org.junit.jupiter.api.Test;
-import uk.gov.ons.ctp.common.FixtureHelper;
-import uk.gov.ons.ctp.common.domain.Channel;
-import uk.gov.ons.ctp.common.domain.Language;
-import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.RmCaseDTO;
-import uk.gov.ons.ctp.integration.eqlaunch.crypto.JweDecryptor;
-import uk.gov.ons.ctp.integration.eqlaunch.crypto.KeyStore;
 import uk.gov.ons.ctp.integration.eqlaunch.service.EqLaunchCoreData;
 import uk.gov.ons.ctp.integration.eqlaunch.service.EqLaunchData;
 
