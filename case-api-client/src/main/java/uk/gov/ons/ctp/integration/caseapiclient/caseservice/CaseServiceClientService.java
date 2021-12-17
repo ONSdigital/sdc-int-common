@@ -8,28 +8,26 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import uk.gov.ons.ctp.common.rest.RestClient;
-import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.CaseContainerDTO;
+import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.RmCaseDTO;
 import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.QuestionnaireIdDTO;
 import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.SingleUseQuestionnaireIdDTO;
 
 /** This class is responsible for communications with the Case Service. */
 @Slf4j
-public class CaseServiceClientServiceImpl {
+public class CaseServiceClientService {
   private static final String CASE_BY_ID_QUERY_PATH = "/cases/{case-id}";
-  private static final String CASE_BY_UPRN_QUERY_PATH = "/cases/uprn/{uprn}";
   private static final String CASE_BY_CASE_REFERENCE_QUERY_PATH = "/cases/ref/{reference}";
   private static final String CASE_GET_REUSABLE_QUESTIONNAIRE_ID_PATH = "/cases/ccs/{caseId}/qid";
   private static final String CASE_CREATE_SINGLE_USE_QUESTIONNAIRE_ID_PATH = "/cases/{caseId}/qid";
-  private static final String CCS_CASE_BY_POSTCODE_QUERY_PATH = "/cases/ccs/postcode/{postcode}";
 
   private RestClient caseServiceClient;
 
-  public CaseServiceClientServiceImpl(RestClient caseServiceClient) {
+  public CaseServiceClientService(RestClient caseServiceClient) {
     super();
     this.caseServiceClient = caseServiceClient;
   }
 
-  public CaseContainerDTO getCaseById(UUID caseId, Boolean listCaseEvents) {
+  public RmCaseDTO getCaseById(UUID caseId, Boolean listCaseEvents) {
     log.debug(
         "getCaseById() calling Case Service to find case details by ID", kv("caseId", caseId));
 
@@ -38,51 +36,14 @@ public class CaseServiceClientServiceImpl {
     queryParams.add("caseEvents", Boolean.toString(listCaseEvents));
 
     // Ask Case Service to find case details
-    CaseContainerDTO caseDetails =
+    RmCaseDTO caseDetails =
         caseServiceClient.getResource(
-            CASE_BY_ID_QUERY_PATH, CaseContainerDTO.class, null, queryParams, caseId.toString());
+            CASE_BY_ID_QUERY_PATH, RmCaseDTO.class, null, queryParams, caseId.toString());
     log.debug("getCaseById() found case details for case ID", kv("caseId", caseId));
     return caseDetails;
   }
 
-  public List<CaseContainerDTO> getCaseByUprn(Long uprn, Boolean listCaseEvents) {
-    log.debug(
-        "getCaseByUprn() calling Case Service to find case details by Uprn", kv("uprn", uprn));
-
-    // Build map for query params
-    MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
-    queryParams.add("caseEvents", Boolean.toString(listCaseEvents));
-    queryParams.add("validAddressOnly", Boolean.TRUE.toString());
-
-    // Ask Case Service to find case details
-    List<CaseContainerDTO> cases =
-        caseServiceClient.getResources(
-            CASE_BY_UPRN_QUERY_PATH,
-            CaseContainerDTO[].class,
-            null,
-            queryParams,
-            Long.toString(uprn));
-
-    log.debug("getCaseByUprn() found case details by Uprn", kv("uprn", uprn));
-    return cases;
-  }
-
-  public List<CaseContainerDTO> getCcsCaseByPostcode(String postcode) {
-    log.debug(
-        "getCcsCaseByPostcode() calling Case Service to find ccs case details by postcode",
-        kv("postcode", postcode));
-
-    // Ask Case Service to find ccs case details
-    List<CaseContainerDTO> cases =
-        caseServiceClient.getResources(
-            CCS_CASE_BY_POSTCODE_QUERY_PATH, CaseContainerDTO[].class, null, null, postcode);
-
-    log.debug("getCaseByPostcode() found ccs case details by postcode", kv("postcode", postcode));
-
-    return cases;
-  }
-
-  public CaseContainerDTO getCaseByCaseRef(Long caseReference, Boolean listCaseEvents) {
+  public RmCaseDTO getCaseByCaseRef(Long caseReference, Boolean listCaseEvents) {
     log.debug(
         "getCaseByCaseReference() calling Case Service to find case details by case reference",
         kv("caseReference", caseReference));
@@ -92,10 +53,10 @@ public class CaseServiceClientServiceImpl {
     queryParams.add("caseEvents", Boolean.toString(listCaseEvents));
 
     // Ask Case Service to find case details
-    CaseContainerDTO caseDetails =
+    RmCaseDTO caseDetails =
         caseServiceClient.getResource(
             CASE_BY_CASE_REFERENCE_QUERY_PATH,
-            CaseContainerDTO.class,
+            RmCaseDTO.class,
             null,
             queryParams,
             caseReference);
