@@ -1,6 +1,5 @@
 package uk.gov.ons.ctp.integration.eqlaunch.service.impl;
 
-import static uk.gov.ons.ctp.common.domain.Source.FIELD_SERVICE;
 import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
 
 import java.security.MessageDigest;
@@ -11,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
 import uk.gov.ons.ctp.common.domain.Source;
@@ -26,7 +26,6 @@ import uk.gov.ons.ctp.integration.eqlaunch.service.EqLaunchService;
 @Slf4j
 public class EqLaunchServiceImpl implements EqLaunchService {
   private static final String ROLE_FLUSHER = "flusher";
-  private static final String CCS = "CCS";
   private JweEncryptor codec;
 
   public EqLaunchServiceImpl(KeyStore keyStore) throws CTPException {
@@ -68,11 +67,11 @@ public class EqLaunchServiceImpl implements EqLaunchService {
    * <p>This code assumes that the channel is CC or field, and will need the user_id field to be
    * cleared if it is ever used from RH.
    *
-   * @param coreData core launch data
-   * @param caseContainer case container
-   * @param userId user id
-   * @param role role
-   * @param accountServiceUrl service url
+   * @param coreData                core launch data
+   * @param caseContainer           case container
+   * @param userId                  user id
+   * @param role                    role
+   * @param accountServiceUrl       service url
    * @param accountServiceLogoutUrl logout url
    * @return
    * @throws CTPException on error
@@ -99,48 +98,41 @@ public class EqLaunchServiceImpl implements EqLaunchService {
     payload.computeIfAbsent("exp", (k) -> currentTimeInSeconds + (5 * 60));
 
     //TODO there's a separate ticket to align this with the current version of EQ - SOCINT-334
-//    if (role == null || !role.equals(ROLE_FLUSHER)) {
-//      Objects.requireNonNull(
-//          caseContainer, "CaseContainer mandatory unless role is '" + ROLE_FLUSHER + "'");
+    if (role == null || !role.equals(ROLE_FLUSHER)) {
+      Objects.requireNonNull(
+          caseContainer, "CaseContainer mandatory unless role is '" + ROLE_FLUSHER + "'");
 
-//      payload.computeIfAbsent("case_type", (k) -> caseContainer.getCaseType());
-//      validateCase(source, caseContainer, questionnaireId);
-//      String caseIdStr = caseContainer.getId().toString();
-//      payload.computeIfAbsent(
-//          "collection_exercise_sid", (k) -> caseContainer.getCollectionExerciseId().toString());
-//      String convertedRegionCode = convertRegionCode(caseContainer.getRegion());
-//      payload.computeIfAbsent("region_code", (k) -> convertedRegionCode);
-//      payload.computeIfAbsent(
-//          "ru_ref",
-//          (k) ->
-//              caseContainer.getSurveyType().equalsIgnoreCase("CCS")
-//                  ? caseIdStr
-//                  : caseContainer.getUprn());
-//      payload.computeIfAbsent("case_id", (k) -> caseIdStr);
-//      payload.computeIfAbsent(
-//          "display_address",
-//          (k) ->
-//              buildDisplayAddress(
+      validateCase(source, caseContainer, questionnaireId);
+      String caseIdStr = caseContainer.getId().toString();
+      payload.computeIfAbsent(
+          "collection_exercise_sid", (k) -> "foo"); //SOCINT-334
+      String convertedRegionCode = convertRegionCode(null); //SOCINT-334
+      payload.computeIfAbsent("region_code", (k) -> convertedRegionCode);
+      payload.computeIfAbsent("ru_ref", (k) -> questionnaireId); //SOCINT-334
+      payload.computeIfAbsent("case_id", (k) -> caseIdStr);
+      payload.computeIfAbsent(
+          "display_address",
+          (k) ->
+              buildDisplayAddress("")); //SOCINT-334
 //                  caseContainer.getAddressLine1(),
 //                  caseContainer.getAddressLine2(),
 //                  caseContainer.getAddressLine3(),
 //                  caseContainer.getTownName(),
 //                  caseContainer.getPostcode()));
-//      payload.computeIfAbsent("survey", (k) -> caseContainer.getSurveyType());
-//    }
-//    String responseId = encryptResponseId(questionnaireId, coreData.getSalt());
-//    payload.computeIfAbsent("language_code", (k) -> coreData.getLanguage().getIsoLikeCode());
-//    payload.computeIfAbsent("response_id", (k) -> responseId);
-//    payload.computeIfAbsent("account_service_url", (k) -> accountServiceUrl);
-//    payload.computeIfAbsent("account_service_log_out_url", (k) -> accountServiceLogoutUrl);
-//    payload.computeIfAbsent("channel", (k) -> coreData.getChannel().name().toLowerCase());
-//    payload.computeIfAbsent("user_id", (k) -> userId);
-//    payload.computeIfAbsent("roles", (k) -> role);
-//    payload.computeIfAbsent("questionnaire_id", (k) -> questionnaireId);
-//
-//    payload.computeIfAbsent("eq_id", (k) -> "census");
-//    payload.computeIfAbsent("period_id", (k) -> "2021");
-//    payload.computeIfAbsent("form_type", (k) -> coreData.getFormType());
+    }
+    String responseId = encryptResponseId(questionnaireId, coreData.getSalt());
+    payload.computeIfAbsent("language_code", (k) -> coreData.getLanguage().getIsoLikeCode());
+    payload.computeIfAbsent("response_id", (k) -> responseId);
+    payload.computeIfAbsent("account_service_url", (k) -> accountServiceUrl);
+    payload.computeIfAbsent("account_service_log_out_url", (k) -> accountServiceLogoutUrl);
+    payload.computeIfAbsent("channel", (k) -> coreData.getChannel().name().toLowerCase());
+    payload.computeIfAbsent("user_id", (k) -> userId);
+    payload.computeIfAbsent("roles", (k) -> role);
+    payload.computeIfAbsent("questionnaire_id", (k) -> questionnaireId);
+
+    payload.computeIfAbsent("eq_id", (k) -> "census");
+    payload.computeIfAbsent("period_id", (k) -> "2021");
+    payload.computeIfAbsent("form_type", (k) -> coreData.getFormType());
 
     log.debug("Payload for EQ", kv("payload", payload));
 
@@ -152,13 +144,12 @@ public class EqLaunchServiceImpl implements EqLaunchService {
     UUID caseId = caseContainer.getId();
 
     verifyNotNull(caseContainer.getId(), "case id", caseId);
-//    verifyNotNull(caseContainer.getCaseType(), "case type", caseId);
-//    verifyNotNull(caseContainer.getCollectionExerciseId(), "collection id", caseId);
-//    verifyNotNull(questionnaireId, "questionnaireId", caseId);
-//    if (source != FIELD_SERVICE && !CCS.equalsIgnoreCase(caseContainer.getSurveyType())) {
+//    verifyNotNull(caseContainer.getCollectionExerciseId(), "collection id", caseId); //SOCINT-334
+    verifyNotNull(questionnaireId, "questionnaireId", caseId);
+//    if (source != FIELD_SERVICE) { //SOCINT-334
 //      verifyNotNull(caseContainer.getUprn(), "address uprn", caseId);
 //    }
-//    verifyNotNull(caseContainer.getSurveyType(), "survey type", caseId);
+//    verifyNotNull(caseContainer.getSurveyType(), "survey type", caseId); //SOCINT-334
   }
 
   private void verifyNotNull(Object fieldValue, String fieldName, UUID caseId) throws CTPException {
