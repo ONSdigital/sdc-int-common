@@ -17,7 +17,7 @@ import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdate;
 public class EqLaunchData extends EqLaunchCoreData {
 	  @NonNull private CaseUpdate caseUpdate;
 	  @NonNull private SurveyType surveyType;
-	  @NonNull private CollectionExerciseUpdate collectionExercise;
+	  @NonNull private CollectionExerciseUpdate collectionExerciseUpdate;
 	  @NonNull private String userId;
 	  private String accountServiceUrl;
 	  private String accountServiceLogoutUrl;

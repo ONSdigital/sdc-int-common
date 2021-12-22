@@ -495,7 +495,7 @@ public class TestEqLaunchService_payloadCreation {
         .uacUpdate(coreData.getUacUpdate())
         .caseUpdate(caseUpdate)
         .surveyType(surveyType)
-        .collectionExercise(collectionExercise)
+        .collectionExerciseUpdate(collectionExercise)
         .userId(userId)
         .accountServiceUrl(accountServiceUrl)
         .accountServiceLogoutUrl(accountServiceLogoutUrl)

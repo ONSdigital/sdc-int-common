@@ -57,7 +57,7 @@ public class EqLaunchService {
         createPayloadMap(
             coreLaunchData,
             launchData.getSurveyType(),
-            launchData.getCollectionExercise(),
+            launchData.getCollectionExerciseUpdate(),
             launchData.getCaseUpdate(),
             launchData.getUserId(),
             null,
