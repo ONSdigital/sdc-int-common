@@ -25,7 +25,7 @@ import uk.gov.ons.ctp.common.domain.SurveyType;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
 import uk.gov.ons.ctp.common.event.model.CaseUpdate;
-import uk.gov.ons.ctp.common.event.model.CollectionExercise;
+import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdate;
 import uk.gov.ons.ctp.integration.eqlaunch.crypto.JweEncryptor;
 import uk.gov.ons.ctp.integration.eqlaunch.crypto.KeyStore;
 
@@ -97,7 +97,7 @@ public class EqLaunchService {
   Map<String, Object> createPayloadMap(
       EqLaunchCoreData coreData,
       SurveyType surveyType,
-      CollectionExercise collectionExercise,
+      CollectionExerciseUpdate collectionExercise,
       CaseUpdate caseUpdate,
       String userId,
       String role,

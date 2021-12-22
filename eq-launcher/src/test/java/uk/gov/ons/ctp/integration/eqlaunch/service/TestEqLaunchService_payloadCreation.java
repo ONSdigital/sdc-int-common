@@ -16,7 +16,7 @@ import uk.gov.ons.ctp.common.domain.Language;
 import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.domain.SurveyType;
 import uk.gov.ons.ctp.common.event.model.CaseUpdate;
-import uk.gov.ons.ctp.common.event.model.CollectionExercise;
+import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdate;
 import uk.gov.ons.ctp.common.event.model.UacUpdate;
 import uk.gov.ons.ctp.integration.eqlaunch.crypto.JweDecryptor;
 import uk.gov.ons.ctp.integration.eqlaunch.crypto.KeyStore;
@@ -421,7 +421,7 @@ public class TestEqLaunchService_payloadCreation {
 
     // Load case, collex and UAC
     CaseUpdate caseData = FixtureHelper.loadClassFixtures(CaseUpdate[].class).get(0);
-    CollectionExercise collexData = FixtureHelper.loadClassFixtures(CollectionExercise[].class).get(0);
+    CollectionExerciseUpdate collexData = FixtureHelper.loadClassFixtures(CollectionExerciseUpdate[].class).get(0);
     UacUpdate uacUpdate = FixtureHelper.loadClassFixtures(UacUpdate[].class).get(0);
 
     // create expectation
@@ -481,7 +481,7 @@ public class TestEqLaunchService_payloadCreation {
 
   private EqLaunchData build(
       EqLaunchCoreData coreData,
-      CollectionExercise collectionExercise,
+      CollectionExerciseUpdate collectionExercise,
       CaseUpdate caseUpdate,
       SurveyType surveyType,
       String userId,
@@ -502,7 +502,7 @@ public class TestEqLaunchService_payloadCreation {
         .build();
   }
 
-  private Map<String, Object> getExpectedMap(CaseUpdate caseData, CollectionExercise collexData, UacUpdate uacData) {
+  private Map<String, Object> getExpectedMap(CaseUpdate caseData, CollectionExerciseUpdate collexData, UacUpdate uacData) {
     Map<String, Object> expectedMap = new HashMap<>();
     expectedMap.put("jti", "88888888-8888-8888-8888-888888888888");
     expectedMap.put("tx_id", "88888888-8888-8888-8888-888888888888");

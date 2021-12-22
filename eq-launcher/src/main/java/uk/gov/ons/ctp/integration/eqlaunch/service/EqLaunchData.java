@@ -8,7 +8,7 @@ import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 import uk.gov.ons.ctp.common.domain.SurveyType;
 import uk.gov.ons.ctp.common.event.model.CaseUpdate;
-import uk.gov.ons.ctp.common.event.model.CollectionExercise;
+import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdate;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @SuperBuilder
@@ -17,7 +17,7 @@ import uk.gov.ons.ctp.common.event.model.CollectionExercise;
 public class EqLaunchData extends EqLaunchCoreData {
 	  @NonNull private CaseUpdate caseUpdate;
 	  @NonNull private SurveyType surveyType;
-	  @NonNull private CollectionExercise collectionExercise;
+	  @NonNull private CollectionExerciseUpdate collectionExercise;
 	  @NonNull private String userId;
 	  private String accountServiceUrl;
 	  private String accountServiceLogoutUrl;
