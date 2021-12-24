@@ -107,7 +107,6 @@ public class EqLaunchService {
 
     UUID caseId = UUID.fromString(caseUpdate.getCaseId());
     String questionnaireId = coreData.getUacUpdate().getQid();
-    Source source = coreData.getSource();
 
     long currentTimeInSeconds = System.currentTimeMillis() / 1000;
 
@@ -125,7 +124,7 @@ public class EqLaunchService {
     
     if (role == null || !role.equals(ROLE_FLUSHER)) {
       Objects.requireNonNull(
-          caseUpdate, "CaseContainer mandatory unless role is '" + ROLE_FLUSHER + "'");
+          caseUpdate, "caseUpdate mandatory unless role is '" + ROLE_FLUSHER + "'");
 
 	  verifyNotNull(caseUpdate.getCollectionExerciseId(), "collection id", caseId);
 	  verifyNotNull(questionnaireId, "questionnaireId", caseId);
