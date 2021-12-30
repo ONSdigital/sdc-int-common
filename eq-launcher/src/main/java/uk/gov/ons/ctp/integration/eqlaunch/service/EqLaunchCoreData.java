@@ -9,7 +9,6 @@ import lombok.experimental.SuperBuilder;
 import uk.gov.ons.ctp.common.domain.Channel;
 import uk.gov.ons.ctp.common.domain.Language;
 import uk.gov.ons.ctp.common.domain.Source;
-import uk.gov.ons.ctp.common.domain.SurveyType;
 import uk.gov.ons.ctp.common.event.model.UacUpdate;
 
 @AllArgsConstructor(access = AccessLevel.PROTECTED)

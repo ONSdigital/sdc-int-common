@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import org.bouncycastle.util.encoders.Hex;
 
 import lombok.extern.slf4j.Slf4j;
-import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.domain.SurveyType;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
@@ -35,13 +34,13 @@ public class EqLaunchService {
 
   // TODO : FLEXIBLE CASE
   private Map<SurveyType, String[]> surveyTypeAddressAttribs = new HashMap<>();
-  
-  private static final String [] socialAddressAttribs = {
-		  ATTRIBUTE_ADDRESS_LINE_1,
-		  ATTRIBUTE_ADDRESS_LINE_2,
-		  ATTRIBUTE_ADDRESS_LINE_3,
-		  ATTRIBUTE_TOWN_NAME,
-		  ATTRIBUTE_POSTCODE
+
+  private static final String[] socialAddressAttribs = {
+      ATTRIBUTE_ADDRESS_LINE_1,
+      ATTRIBUTE_ADDRESS_LINE_2,
+      ATTRIBUTE_ADDRESS_LINE_3,
+      ATTRIBUTE_TOWN_NAME,
+      ATTRIBUTE_POSTCODE
   };
   private JweEncryptor codec;
 
@@ -53,43 +52,44 @@ public class EqLaunchService {
   public String getEqLaunchJwe(EqLaunchData launchData) throws CTPException {
     EqLaunchCoreData coreLaunchData = launchData.coreCopy();
 
-    Map<String, Object> payload =
-        createPayloadMap(
-            coreLaunchData,
-            launchData.getSurveyType(),
-            launchData.getCollectionExerciseUpdate(),
-            launchData.getCaseUpdate(),
-            launchData.getUserId(),
-            null,
-            launchData.getAccountServiceUrl(),
-            launchData.getAccountServiceLogoutUrl());
+    Map<String, Object> payload = createPayloadMap(
+        coreLaunchData,
+        launchData.getSurveyType(),
+        launchData.getCollectionExerciseUpdate(),
+        launchData.getCaseUpdate(),
+        launchData.getUserId(),
+        null,
+        launchData.getAccountServiceUrl(),
+        launchData.getAccountServiceLogoutUrl());
 
     return codec.encrypt(payload);
   }
 
   public String getEqFlushLaunchJwe(EqLaunchCoreData launchData) throws CTPException {
 
-    Map<String, Object> payload =
-        createPayloadMap(launchData, null, null, null, null, ROLE_FLUSHER, null, null);
+    Map<String, Object> payload = createPayloadMap(launchData, null, null, null, null, ROLE_FLUSHER, null, null);
 
     return codec.encrypt(payload);
   }
 
   /**
-   * This method builds the payload of a URL that will be used to launch EQ. This code replicates
-   * the payload building done by the Python code in the census-rh-ui project for class /app/eq.py.
+   * This method builds the payload of a URL that will be used to launch EQ.
+   * This code replicates the payload building done by the Python code in the
+   * census-rh-ui project for class /app/eq.py.
    *
-   * <p>EQ requires a payload string formatted as a Python serialised dictionary, so this code has
-   * to replicate all Python formatting quirks.
+   * <p>
+   * EQ requires a payload string formatted as a Python serialised dictionary,
+   * so this code has to replicate all Python formatting quirks.
    *
-   * <p>This code assumes that the channel is CC or field, and will need the user_id field to be
-   * cleared if it is ever used from RH.
+   * <p>
+   * This code assumes that the channel is CC or field, and will need the
+   * user_id field to be cleared if it is ever used from RH.
    *
-   * @param coreData                core launch data
-   * @param caseContainer           case container
-   * @param userId                  user id
-   * @param role                    role
-   * @param accountServiceUrl       service url
+   * @param coreData core launch data
+   * @param caseContainer case container
+   * @param userId user id
+   * @param role role
+   * @param accountServiceUrl service url
    * @param accountServiceLogoutUrl logout url
    * @return
    * @throws CTPException on error
@@ -117,40 +117,38 @@ public class EqLaunchService {
     payload.computeIfAbsent("iat", (k) -> currentTimeInSeconds);
     payload.computeIfAbsent("exp", (k) -> currentTimeInSeconds + (5 * 60));
     payload.computeIfAbsent(
-          "collection_exercise_sid", (k) -> caseUpdate.getCollectionExerciseId());
+        "collection_exercise_sid", (k) -> caseUpdate.getCollectionExerciseId());
 
     String convertedRegionCode = convertRegionCode(caseUpdate.getSample().get("region"));
     payload.computeIfAbsent("region_code", (k) -> convertedRegionCode);
-    
+
     if (role == null || !role.equals(ROLE_FLUSHER)) {
       Objects.requireNonNull(
           caseUpdate, "caseUpdate mandatory unless role is '" + ROLE_FLUSHER + "'");
 
-	  verifyNotNull(caseUpdate.getCollectionExerciseId(), "collection id", caseId);
-	  verifyNotNull(questionnaireId, "questionnaireId", caseId);
+      verifyNotNull(caseUpdate.getCollectionExerciseId(), "collection id", caseId);
+      verifyNotNull(questionnaireId, "questionnaireId", caseId);
 
       payload.computeIfAbsent("ru_ref", (k) -> questionnaireId);
       payload.computeIfAbsent("user_id", (k) -> userId);
       String caseIdStr = caseUpdate.getCaseId();
       payload.computeIfAbsent("case_id", (k) -> caseIdStr);
-	  payload.computeIfAbsent("language_code", (k) -> coreData.getLanguage().getIsoLikeCode());
-	  payload.computeIfAbsent("eq_id", (k) -> "9999");
-	  payload.computeIfAbsent("period_id", (k) -> caseUpdate.getCollectionExerciseId());
-	  payload.computeIfAbsent("form_type", (k) -> "zzz");
-	  payload.computeIfAbsent("schema_name", (k) -> "zzz_9999");
-	  payload.computeIfAbsent("period_str", (k) -> collectionExercise.getName());
-	  payload.computeIfAbsent("survey_url", (k) -> coreData.getUacUpdate().getCollectionInstrumentUrl());
+      payload.computeIfAbsent("language_code", (k) -> coreData.getLanguage().getIsoLikeCode());
+      payload.computeIfAbsent("eq_id", (k) -> "9999");
+      payload.computeIfAbsent("period_id", (k) -> caseUpdate.getCollectionExerciseId());
+      payload.computeIfAbsent("form_type", (k) -> "zzz");
+      payload.computeIfAbsent("schema_name", (k) -> "zzz_9999");
+      payload.computeIfAbsent("period_str", (k) -> collectionExercise.getName());
+      payload.computeIfAbsent("survey_url", (k) -> coreData.getUacUpdate().getCollectionInstrumentUrl());
       payload.computeIfAbsent("case_ref", (k) -> caseUpdate.getCaseRef());
-	  payload.computeIfAbsent("ru_name", (k) -> "West Efford Cottage");
-				
+      payload.computeIfAbsent("ru_name", (k) -> "West Efford Cottage");
 
-	  String [] displayAddressAttribs = surveyTypeAddressAttribs.get(surveyType);
-	  verifyNotNull(displayAddressAttribs, "displayAddress", caseId);
-	  
-	  payload.computeIfAbsent(
+      String[] displayAddressAttribs = surveyTypeAddressAttribs.get(surveyType);
+      verifyNotNull(displayAddressAttribs, "displayAddress", caseId);
+
+      payload.computeIfAbsent(
           "display_address",
-          (k) ->
-              buildDisplayAddress(caseUpdate, displayAddressAttribs));
+          (k) -> buildDisplayAddress(caseUpdate, displayAddressAttribs));
     }
     String responseId = encryptResponseId(questionnaireId, coreData.getSalt());
     payload.computeIfAbsent("response_id", (k) -> responseId);
@@ -158,7 +156,6 @@ public class EqLaunchService {
     payload.computeIfAbsent("account_service_log_out_url", (k) -> accountServiceLogoutUrl);
     payload.computeIfAbsent("channel", (k) -> coreData.getChannel().name().toLowerCase());
     payload.computeIfAbsent("questionnaire_id", (k) -> questionnaireId);
-
 
     log.debug("Payload for EQ", kv("payload", payload));
 
@@ -193,12 +190,11 @@ public class EqLaunchService {
   // Create an address from the first 2 non-null parts of the address.
   // This replicates RHUI's creation of the display address.
   private String buildDisplayAddress(CaseUpdate caseUpdate, String... addressElements) {
-    String displayAddress =
-        Arrays.stream(addressElements)
-            .map(a -> caseUpdate.getSample().get(a))
-            .filter(a -> a != null)
-            .limit(2)
-            .collect(Collectors.joining(", "));
+    String displayAddress = Arrays.stream(addressElements)
+        .map(a -> caseUpdate.getSample().get(a))
+        .filter(a -> a != null)
+        .limit(2)
+        .collect(Collectors.joining(", "));
     return displayAddress;
   }
 

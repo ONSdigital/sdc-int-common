@@ -20,9 +20,6 @@ import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdate;
 import uk.gov.ons.ctp.common.event.model.UacUpdate;
 import uk.gov.ons.ctp.integration.eqlaunch.crypto.JweDecryptor;
 import uk.gov.ons.ctp.integration.eqlaunch.crypto.KeyStore;
-import uk.gov.ons.ctp.integration.eqlaunch.service.EqLaunchCoreData;
-import uk.gov.ons.ctp.integration.eqlaunch.service.EqLaunchData;
-import uk.gov.ons.ctp.integration.eqlaunch.service.EqLaunchService;
 
 public class TestEqLaunchService_payloadCreation {
 
