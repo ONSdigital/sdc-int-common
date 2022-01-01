@@ -1,12 +1,9 @@
 package uk.gov.ons.ctp.integration.notifyapiclient;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -17,8 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uk.gov.ons.ctp.common.FixtureHelper;
 import uk.gov.ons.ctp.common.domain.Channel;
@@ -32,11 +27,6 @@ import uk.gov.ons.ctp.integration.notifyapiclient.model.NotifyResponseDTO;
  */
 @ExtendWith(MockitoExtension.class)
 public class NotifyServiceClientServiceTest {
-  private static final String ID_0 = "b7565b5e-1396-4965-91a2-918c0d3642ed";
-  private static final String ID_1 = "b7565b5e-2222-2222-2222-918c0d3642ed";
-  private static final String ID_2 = "603d440b-18a0-41a0-992a-e12ea858ed35";
-
-  private static final List<String> IDS = Arrays.asList(ID_0, ID_1, ID_2);
 
   @Mock RestClient restClient;
 

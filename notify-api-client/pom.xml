@@ -85,12 +85,6 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>ons.sdc.int.common</groupId>
-      <artifactId>event-publisher</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
   </dependencies>
 
   <build>
