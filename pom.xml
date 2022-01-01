@@ -28,6 +28,7 @@
     <module>eq-launcher</module>
     <module>event-publisher</module>
     <module>case-api-client</module>
+    <module>notify-api-client</module>
     <module>rate-limiter-client</module>
     <module>util-framework</module>
 
