@@ -1,4 +1,4 @@
-package uk.gov.ons.ctp.integration.caseapiclient.config;
+package uk.gov.ons.ctp.integration.notifyapiclient.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +11,6 @@ import lombok.Data;
 @Configuration
 @ConfigurationProperties
 @Data
-public class CaseApiAppConfig {
-  private CaseServiceSettings caseServiceSettings;
+public class NotifyApiAppConfig {
+  private NotifyServiceSettings caseServiceSettings;
 }
