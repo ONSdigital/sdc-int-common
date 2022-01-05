@@ -203,7 +203,8 @@ public class TestEqLaunchService_payloadCreation {
   private static final String ENCRYTPED_RESPONSE_ID = A_QUESTIONNAIRE_ID + "804def6a16184d28";
 
 
-  //TODO these tests are out of date and will be updated as part of SOCINT-334
+  //TODO FieldsService and Flushing are being mothballed for the time being until we know that they
+  //will ever be used again.
 
   /**
    * Calls both the public and package methods in the class under test and asserts that each returns
