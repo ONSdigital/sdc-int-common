@@ -35,7 +35,7 @@ public class EqLaunchService {
   // TODO : FLEXIBLE CASE
   private Map<SurveyType, String[]> surveyTypeAddressAttribs = new HashMap<>();
 
-  private static final String[] socialAddressAttribs = {
+  private static final String[] SOCIAL_ADDRESS_ATTRIBS = {
       ATTRIBUTE_ADDRESS_LINE_1,
       ATTRIBUTE_ADDRESS_LINE_2,
       ATTRIBUTE_ADDRESS_LINE_3,
@@ -46,7 +46,7 @@ public class EqLaunchService {
 
   public EqLaunchService(KeyStore keyStore) throws CTPException {
     this.codec = new JweEncryptor(keyStore, "authentication");
-    this.surveyTypeAddressAttribs.put(SurveyType.SOCIAL, socialAddressAttribs);
+    this.surveyTypeAddressAttribs.put(SurveyType.SOCIAL, SOCIAL_ADDRESS_ATTRIBS);
   }
 
   public String getEqLaunchJwe(EqLaunchData launchData) throws CTPException {

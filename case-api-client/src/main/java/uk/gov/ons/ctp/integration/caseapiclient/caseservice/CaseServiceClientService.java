@@ -73,20 +73,17 @@ public class CaseServiceClientService {
         "getSingleUseQuestionnaireId() calling Case Service to get new questionnaire ID",
         kv("caseId", caseId));
 
-    // Build map for query params
-    MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
-
     // Ask Case Service to find case details
     TelephoneCaptureDTO teleCaptureResponseDTO =
         caseServiceClient.getResource(
             CASE_GET_QUESTIONNAIRE_ID_PATH,
             TelephoneCaptureDTO.class,
             null,
-            queryParams,
+            null,
             caseId.toString());
 
     log.debug(
-        "getNewQuestionnaireIdForCase() generated new questionnaireId",
+        "getSingleUseQuestionnaireId() generated new questionnaireId",
         kv("caseId", caseId),
         kv("qId", teleCaptureResponseDTO.getQId()));
 

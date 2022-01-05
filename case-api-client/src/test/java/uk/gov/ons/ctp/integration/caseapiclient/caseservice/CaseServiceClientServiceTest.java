@@ -54,7 +54,7 @@ public class CaseServiceClientServiceTest {
   }
 
   @Test
-  public void doTestGetSingleUseQid() throws Exception {
+  public void testGetSingleUseQid() throws Exception {
     UUID testUuid = UUID.fromString("b7565b5e-1396-4965-91a2-918c0d3642ed");
 
     // Build results to be returned by the case service
