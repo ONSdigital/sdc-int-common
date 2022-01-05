@@ -9,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 import uk.gov.ons.ctp.common.domain.Channel;
 import uk.gov.ons.ctp.common.domain.Language;
 import uk.gov.ons.ctp.common.domain.Source;
+import uk.gov.ons.ctp.common.event.model.UacUpdate;
 
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,8 +19,7 @@ public class EqLaunchCoreData {
   @NonNull private Language language;
   @NonNull private Source source;
   @NonNull private Channel channel;
-  @NonNull private String questionnaireId;
-  @NonNull private String formType;
+  @NonNull private UacUpdate uacUpdate;
   @NonNull private String salt;
 
   public EqLaunchCoreData coreCopy() {

@@ -13,7 +13,7 @@ import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.event.model.CaseEvent;
 import uk.gov.ons.ctp.common.event.model.CasePayload;
 import uk.gov.ons.ctp.common.event.model.CaseUpdate;
-import uk.gov.ons.ctp.common.event.model.CollectionExercise;
+import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdate;
 import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdateEvent;
 import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdatePayload;
 import uk.gov.ons.ctp.common.event.model.EqLaunch;
@@ -342,7 +342,7 @@ public abstract class EventBuilder {
           buildHeader(
               EventTopic.COLLECTION_EXERCISE_UPDATE, sendInfo.getSource(), sendInfo.getChannel()));
       CollectionExerciseUpdatePayload collectionExerciseUpdateEventPayload =
-          new CollectionExerciseUpdatePayload((CollectionExercise) sendInfo.getPayload());
+          new CollectionExerciseUpdatePayload((CollectionExerciseUpdate) sendInfo.getPayload());
       collectionExerciseUpdateEvent.setPayload(collectionExerciseUpdateEventPayload);
       return collectionExerciseUpdateEvent;
     }
@@ -357,7 +357,7 @@ public abstract class EventBuilder {
 
     @Override
     EventPayload createPayload(String json) {
-      return deserialisePayloadJson(json, CollectionExercise.class);
+      return deserialisePayloadJson(json, CollectionExerciseUpdate.class);
     }
   }
 

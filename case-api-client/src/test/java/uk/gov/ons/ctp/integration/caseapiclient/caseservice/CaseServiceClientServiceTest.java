@@ -21,8 +21,7 @@ import org.springframework.util.MultiValueMap;
 import uk.gov.ons.ctp.common.FixtureHelper;
 import uk.gov.ons.ctp.common.rest.RestClient;
 import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.RmCaseDTO;
-import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.QuestionnaireIdDTO;
-import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.SingleUseQuestionnaireIdDTO;
+import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.TelephoneCaptureDTO;
 
 /**
  * This class contains unit tests for the CaseServiceClientServiceImpl class. It mocks out the Rest
@@ -55,57 +54,27 @@ public class CaseServiceClientServiceTest {
   }
 
   @Test
-  public void testGetReusableQid() throws Exception {
-    doTestGetReusableQid();
-  }
-
-  private void doTestGetReusableQid() throws Exception {
+  public void testGetSingleUseQid() throws Exception {
     UUID testUuid = UUID.fromString("b7565b5e-1396-4965-91a2-918c0d3642ed");
 
     // Build results to be returned by the case service
-    QuestionnaireIdDTO resultsFromCaseService =
-        FixtureHelper.loadClassFixtures(QuestionnaireIdDTO[].class).get(0);
+    TelephoneCaptureDTO expectedResponse =
+        FixtureHelper.loadClassFixtures(TelephoneCaptureDTO[].class).get(0);
     Mockito.when(
             restClient.getResource(
-                eq("/cases/ccs/{caseId}/qid"),
-                eq(QuestionnaireIdDTO.class),
+                eq("/cases/{caseId}/telephone-capture"),
+                eq(TelephoneCaptureDTO.class),
                 any(),
                 any(),
                 eq(testUuid.toString())))
-        .thenReturn(resultsFromCaseService);
+        .thenReturn(expectedResponse);
 
     // Run the request
-    QuestionnaireIdDTO results = caseServiceClientService.getReusableQuestionnaireId(testUuid);
+    TelephoneCaptureDTO actualResponse =
+        caseServiceClientService.getSingleUseQuestionnaireId(testUuid);
 
-    assertEquals(resultsFromCaseService.getQuestionnaireId(), results.getQuestionnaireId());
-    assertEquals(resultsFromCaseService.getFormType(), results.getFormType());
-    assertEquals(resultsFromCaseService.isActive(), results.isActive());
-  }
-
-  @Test
-  public void doTestGetSingleUseQid() throws Exception {
-    UUID testUuid = UUID.fromString("b7565b5e-1396-4965-91a2-918c0d3642ed");
-
-    // Build results to be returned by the case service
-    SingleUseQuestionnaireIdDTO resultsFromCaseService =
-        FixtureHelper.loadClassFixtures(SingleUseQuestionnaireIdDTO[].class).get(0);
-    Mockito.when(
-            restClient.getResource(
-                eq("/cases/{caseId}/qid"),
-                eq(SingleUseQuestionnaireIdDTO.class),
-                any(),
-                any(),
-                eq(testUuid.toString())))
-        .thenReturn(resultsFromCaseService);
-
-    // Run the request
-    SingleUseQuestionnaireIdDTO results =
-        caseServiceClientService.getSingleUseQuestionnaireId(testUuid, true, UUID.randomUUID());
-
-    assertEquals(resultsFromCaseService.getQuestionnaireId(), results.getQuestionnaireId());
-    assertEquals(resultsFromCaseService.getUac(), results.getUac());
-    assertEquals(resultsFromCaseService.getFormType(), results.getFormType());
-    assertEquals(resultsFromCaseService.getQuestionnaireType(), results.getQuestionnaireType());
+    assertEquals(expectedResponse.getQId(), actualResponse.getQId());
+    assertEquals(expectedResponse.getCaseId(), actualResponse.getCaseId());
   }
 
   @SneakyThrows
@@ -113,7 +82,7 @@ public class CaseServiceClientServiceTest {
     UUID testUuid = UUID.fromString(IDS.get(index));
 
     // Build results to be returned by the case service
-    RmCaseDTO resultsFromCaseService =
+    RmCaseDTO expectedResponse =
         FixtureHelper.loadClassFixtures(RmCaseDTO[].class).get(index);
     Mockito.when(
             restClient.getResource(
@@ -122,17 +91,17 @@ public class CaseServiceClientServiceTest {
                 any(),
                 any(),
                 eq(testUuid.toString())))
-        .thenReturn(resultsFromCaseService);
+        .thenReturn(expectedResponse);
 
     // Run the request
-    RmCaseDTO results = caseServiceClientService.getCaseById(testUuid, requireCaseEvents);
+    RmCaseDTO actualResponse = caseServiceClientService.getCaseById(testUuid, requireCaseEvents);
 
     // Sanity check the response
-    assertEquals(testUuid, results.getId());
-    assertNotNull(results.getCaseEvents()); // Response will have events as not removed at this
+    assertEquals(testUuid, actualResponse.getId());
+    assertNotNull(actualResponse.getCaseEvents()); // Response will have events as not removed at this
     // level
     verifyRequestUsedCaseEventsQueryParam(requireCaseEvents);
-    return results;
+    return actualResponse;
   }
 
   @Test
@@ -150,7 +119,7 @@ public class CaseServiceClientServiceTest {
     Long testCaseRef = 52224L;
 
     // Build results to be returned by the case service
-    RmCaseDTO resultsFromCaseService =
+    RmCaseDTO expectedResponse =
         FixtureHelper.loadClassFixtures(RmCaseDTO[].class).get(0);
     Mockito.when(
             restClient.getResource(
@@ -159,16 +128,16 @@ public class CaseServiceClientServiceTest {
                 any(),
                 any(),
                 eq(testCaseRef)))
-        .thenReturn(resultsFromCaseService);
+        .thenReturn(expectedResponse);
 
     // Run the request
-    RmCaseDTO results =
+    RmCaseDTO actualResponse =
         caseServiceClientService.getCaseByCaseRef(testCaseRef, requireCaseEvents);
 
     // Sanity check the response
-    assertEquals(Long.toString(testCaseRef), results.getCaseRef());
-    assertEquals(testUuid, results.getId());
-    assertNotNull(results.getCaseEvents()); // Response will have events as not removed at this
+    assertEquals(Long.toString(testCaseRef), actualResponse.getCaseRef());
+    assertEquals(testUuid, actualResponse.getId());
+    assertNotNull(actualResponse.getCaseEvents()); // Response will have events as not removed at this
     // level
     verifyRequestUsedCaseEventsQueryParam(requireCaseEvents);
   }

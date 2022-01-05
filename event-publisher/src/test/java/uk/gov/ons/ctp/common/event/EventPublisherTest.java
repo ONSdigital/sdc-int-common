@@ -34,7 +34,7 @@ import uk.gov.ons.ctp.common.domain.Channel;
 import uk.gov.ons.ctp.common.domain.Source;
 import uk.gov.ons.ctp.common.event.model.CaseEvent;
 import uk.gov.ons.ctp.common.event.model.CaseUpdate;
-import uk.gov.ons.ctp.common.event.model.CollectionExercise;
+import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdate;
 import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdateEvent;
 import uk.gov.ons.ctp.common.event.model.EqLaunch;
 import uk.gov.ons.ctp.common.event.model.EqLaunchEvent;
@@ -269,7 +269,7 @@ public class EventPublisherTest {
   }
 
   private void assertSendCollectionExercise(EventTopic topic) {
-    CollectionExercise payload = loadJson(CollectionExercise[].class);
+    CollectionExerciseUpdate payload = loadJson(CollectionExerciseUpdate[].class);
 
     UUID messageId =
         eventPublisher.sendEvent(topic.getType(), Source.CONTACT_CENTRE_API, Channel.CC, payload);
