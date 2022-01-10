@@ -1,7 +1,9 @@
 package uk.gov.ons.ctp.integration.caseapiclient.caseservice.model;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import java.util.Date;
+
 import lombok.Data;
 
 @Data
@@ -14,5 +16,5 @@ public class EventDTO {
 
   private String description;
 
-  private Date createdDateTime;
+  private LocalDateTime createdDateTime;
 }
