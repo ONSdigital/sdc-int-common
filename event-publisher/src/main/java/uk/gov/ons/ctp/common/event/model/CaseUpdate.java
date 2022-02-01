@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class CaseUpdate implements EventPayload {
 
   // Key names for expected sample attributes
+  //TODO : FLEXIBLE CASE
   public static String ATTRIBUTE_QUESTIONNAIRE = "questionnaire";
   public static String ATTRIBUTE_SAMPLE_UNIT_REF = "sampleUnitRef";
   public static String ATTRIBUTE_COHORT = "cohort";
