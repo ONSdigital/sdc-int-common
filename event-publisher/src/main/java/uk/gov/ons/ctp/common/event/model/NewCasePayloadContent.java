@@ -2,7 +2,6 @@ package uk.gov.ons.ctp.common.event.model;
 
 import java.util.Map;
 import java.util.UUID;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class NewCasePayloadContent implements EventPayload {
 
-  //TODO : FLEXIBLE CASE
+  // TODO : FLEXIBLE CASE
   // Sample attributes
   public static final String ATTRIBUTE_SCHOOL_ID = "schoolId";
   public static final String ATTRIBUTE_SCHOOL_NAME = "schoolName";

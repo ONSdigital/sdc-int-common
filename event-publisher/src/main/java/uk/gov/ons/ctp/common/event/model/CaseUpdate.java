@@ -2,7 +2,6 @@ package uk.gov.ons.ctp.common.event.model;
 
 import java.util.Date;
 import java.util.Map;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class CaseUpdate implements EventPayload {
 
   // Key names for expected sample attributes
-  //TODO : FLEXIBLE CASE
+  // TODO : FLEXIBLE CASE
   public static String ATTRIBUTE_QUESTIONNAIRE = "questionnaire";
   public static String ATTRIBUTE_SAMPLE_UNIT_REF = "sampleUnitRef";
   public static String ATTRIBUTE_COHORT = "cohort";
