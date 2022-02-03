@@ -21,7 +21,8 @@ public enum TopicType {
   EQ_LAUNCH(EqLaunch.class, EventBuilder.EQ_LAUNCH),
   UAC_UPDATE(UacUpdate.class, EventBuilder.UAC_UPDATE),
   SURVEY_UPDATE(SurveyUpdate.class, EventBuilder.SURVEY_UPDATE),
-  COLLECTION_EXERCISE_UPDATE(CollectionExerciseUpdate.class, EventBuilder.COLLECTION_EXCERSISE_UPDATE),
+  COLLECTION_EXERCISE_UPDATE(
+      CollectionExerciseUpdate.class, EventBuilder.COLLECTION_EXCERSISE_UPDATE),
   NEW_CASE(NewCasePayloadContent.class, EventBuilder.NEW_CASE);
 
   private Class<? extends EventPayload> payloadType;
