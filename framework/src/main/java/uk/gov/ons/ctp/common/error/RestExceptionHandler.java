@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import javax.validation.ConstraintViolationException;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -332,6 +335,27 @@ public class RestExceptionHandler {
         "Uncaught MethodArgumentNotValidException. {} {}",
         kv("message", message),
         kv("parameter", ex.getParameter().getParameterName()));
+
+    CTPException ourException = new CTPException(CTPException.Fault.VALIDATION_FAILED, message);
+    return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
+  }
+
+  /**
+   * Handles Path param not valid Exception, which is generated for validation on the path fields
+   *
+   * @param ex exception
+   * @return ResponseEntity containing exception and BAD_REQUEST http status
+   */
+  @ResponseBody
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<?> handleConstraintViolationException(
+      ConstraintViolationException ex) {
+    String message = createCleanedUpErrorMessage(ex);
+
+    log.warn(
+        "Uncaught ConstraintViolationException. {} {}",
+        kv("message", message),
+        kv("parameter", ex.getConstraintViolations()));
 
     CTPException ourException = new CTPException(CTPException.Fault.VALIDATION_FAILED, message);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
