@@ -3,11 +3,9 @@ package uk.gov.ons.ctp.integration.caseapiclient.caseservice;
 import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
 
 import java.util.UUID;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-
-import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.rest.RestClient;
 import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.RmCaseDTO;
 import uk.gov.ons.ctp.integration.caseapiclient.caseservice.model.TelephoneCaptureDTO;
@@ -54,11 +52,7 @@ public class CaseServiceClientService {
     // Ask Case Service to find case details
     RmCaseDTO caseDetails =
         caseServiceClient.getResource(
-            CASE_BY_CASE_REFERENCE_QUERY_PATH,
-            RmCaseDTO.class,
-            null,
-            queryParams,
-            caseReference);
+            CASE_BY_CASE_REFERENCE_QUERY_PATH, RmCaseDTO.class, null, queryParams, caseReference);
 
     log.debug(
         "getCaseByCaseReference() found case details by case reference",
@@ -66,9 +60,7 @@ public class CaseServiceClientService {
     return caseDetails;
   }
 
-
-  public TelephoneCaptureDTO getSingleUseQuestionnaireId(
-      UUID caseId) {
+  public TelephoneCaptureDTO getSingleUseQuestionnaireId(UUID caseId) {
     log.debug(
         "getSingleUseQuestionnaireId() calling Case Service to get new questionnaire ID",
         kv("caseId", caseId));

@@ -1,7 +1,6 @@
 package uk.gov.ons.ctp.integration.notifyapiclient.model;
 
 import java.util.UUID;
-
 import lombok.Data;
 
 @Data

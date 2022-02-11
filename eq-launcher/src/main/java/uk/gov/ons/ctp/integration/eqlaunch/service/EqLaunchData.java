@@ -15,10 +15,10 @@ import uk.gov.ons.ctp.common.event.model.CollectionExerciseUpdate;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class EqLaunchData extends EqLaunchCoreData {
-	  @NonNull private CaseUpdate caseUpdate;
-	  @NonNull private SurveyType surveyType;
-	  @NonNull private CollectionExerciseUpdate collectionExerciseUpdate;
-	  @NonNull private String userId;
-	  private String accountServiceUrl;
-	  private String accountServiceLogoutUrl;
+  @NonNull private CaseUpdate caseUpdate;
+  @NonNull private SurveyType surveyType;
+  @NonNull private CollectionExerciseUpdate collectionExerciseUpdate;
+  @NonNull private String userId;
+  private String accountServiceUrl;
+  private String accountServiceLogoutUrl;
 }

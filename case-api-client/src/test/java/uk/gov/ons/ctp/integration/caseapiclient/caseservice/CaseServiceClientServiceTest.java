@@ -38,8 +38,7 @@ public class CaseServiceClientServiceTest {
   @Mock RestClient restClient;
 
   @InjectMocks
-  CaseServiceClientService caseServiceClientService =
-      new CaseServiceClientService(restClient);
+  CaseServiceClientService caseServiceClientService = new CaseServiceClientService(restClient);
 
   @Captor ArgumentCaptor<MultiValueMap<String, String>> queryParamsCaptor;
 
@@ -82,15 +81,10 @@ public class CaseServiceClientServiceTest {
     UUID testUuid = UUID.fromString(IDS.get(index));
 
     // Build results to be returned by the case service
-    RmCaseDTO expectedResponse =
-        FixtureHelper.loadClassFixtures(RmCaseDTO[].class).get(index);
+    RmCaseDTO expectedResponse = FixtureHelper.loadClassFixtures(RmCaseDTO[].class).get(index);
     Mockito.when(
             restClient.getResource(
-                eq("/cases/{case-id}"),
-                eq(RmCaseDTO.class),
-                any(),
-                any(),
-                eq(testUuid.toString())))
+                eq("/cases/{case-id}"), eq(RmCaseDTO.class), any(), any(), eq(testUuid.toString())))
         .thenReturn(expectedResponse);
 
     // Run the request
@@ -98,7 +92,8 @@ public class CaseServiceClientServiceTest {
 
     // Sanity check the response
     assertEquals(testUuid, actualResponse.getId());
-    assertNotNull(actualResponse.getCaseEvents()); // Response will have events as not removed at this
+    assertNotNull(
+        actualResponse.getCaseEvents()); // Response will have events as not removed at this
     // level
     verifyRequestUsedCaseEventsQueryParam(requireCaseEvents);
     return actualResponse;
@@ -119,15 +114,10 @@ public class CaseServiceClientServiceTest {
     Long testCaseRef = 52224L;
 
     // Build results to be returned by the case service
-    RmCaseDTO expectedResponse =
-        FixtureHelper.loadClassFixtures(RmCaseDTO[].class).get(0);
+    RmCaseDTO expectedResponse = FixtureHelper.loadClassFixtures(RmCaseDTO[].class).get(0);
     Mockito.when(
             restClient.getResource(
-                eq("/cases/ref/{reference}"),
-                eq(RmCaseDTO.class),
-                any(),
-                any(),
-                eq(testCaseRef)))
+                eq("/cases/ref/{reference}"), eq(RmCaseDTO.class), any(), any(), eq(testCaseRef)))
         .thenReturn(expectedResponse);
 
     // Run the request
@@ -137,7 +127,8 @@ public class CaseServiceClientServiceTest {
     // Sanity check the response
     assertEquals(Long.toString(testCaseRef), actualResponse.getCaseRef());
     assertEquals(testUuid, actualResponse.getId());
-    assertNotNull(actualResponse.getCaseEvents()); // Response will have events as not removed at this
+    assertNotNull(
+        actualResponse.getCaseEvents()); // Response will have events as not removed at this
     // level
     verifyRequestUsedCaseEventsQueryParam(requireCaseEvents);
   }
