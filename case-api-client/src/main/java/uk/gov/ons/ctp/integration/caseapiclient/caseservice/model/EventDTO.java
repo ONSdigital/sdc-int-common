@@ -1,9 +1,7 @@
 package uk.gov.ons.ctp.integration.caseapiclient.caseservice.model;
 
-import java.time.LocalDateTime;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data

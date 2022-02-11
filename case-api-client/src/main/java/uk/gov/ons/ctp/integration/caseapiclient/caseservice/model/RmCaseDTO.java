@@ -1,12 +1,10 @@
 package uk.gov.ons.ctp.integration.caseapiclient.caseservice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import lombok.Data;
 
 @Data
@@ -28,5 +26,4 @@ public class RmCaseDTO {
   RefusalType refusalReceived;
 
   Map<String, String> sample;
-
 }

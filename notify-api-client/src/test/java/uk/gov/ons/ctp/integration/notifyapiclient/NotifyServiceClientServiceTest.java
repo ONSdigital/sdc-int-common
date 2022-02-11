@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import java.util.UUID;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -14,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import uk.gov.ons.ctp.common.FixtureHelper;
 import uk.gov.ons.ctp.common.domain.Channel;
 import uk.gov.ons.ctp.common.rest.RestClient;
@@ -49,13 +47,13 @@ public class NotifyServiceClientServiceTest {
         FixtureHelper.loadClassFixtures(NotifyResponseDTO[].class).get(0);
     Mockito.when(
             restClient.postResource(
-                eq("/sms-fulfilment/{case-id}"),
-                any(),any(),
-                eq(testUuid.toString())))
+                eq("/sms-fulfilment/{case-id}"), any(), any(), eq(testUuid.toString())))
         .thenReturn(resultsFromNotifyService);
 
     // Run the request
-    NotifyResponseDTO results = notifyServiceClientService.requestSmsFulfilment(testUuid, testTelNo, testPackCode, Channel.CC, testUser, testCorrelationId);
+    NotifyResponseDTO results =
+        notifyServiceClientService.requestSmsFulfilment(
+            testUuid, testTelNo, testPackCode, Channel.CC, testUser, testCorrelationId);
 
     assertEquals(resultsFromNotifyService.getQid(), results.getQid());
     assertEquals(resultsFromNotifyService.getUacHash(), results.getUacHash());
@@ -87,13 +85,13 @@ public class NotifyServiceClientServiceTest {
         FixtureHelper.loadClassFixtures(NotifyResponseDTO[].class).get(0);
     Mockito.when(
             restClient.postResource(
-                eq("/email-fulfilment/{case-id}"),
-                any(),any(),
-                eq(testUuid.toString())))
+                eq("/email-fulfilment/{case-id}"), any(), any(), eq(testUuid.toString())))
         .thenReturn(resultsFromNotifyService);
 
     // Run the request
-    NotifyResponseDTO results = notifyServiceClientService.requestEmailFulfilment(testUuid, testEmail, testPackCode, Channel.CC, testUser, testCorrelationId);
+    NotifyResponseDTO results =
+        notifyServiceClientService.requestEmailFulfilment(
+            testUuid, testEmail, testPackCode, Channel.CC, testUser, testCorrelationId);
 
     assertEquals(resultsFromNotifyService.getQid(), results.getQid());
     assertEquals(resultsFromNotifyService.getUacHash(), results.getUacHash());

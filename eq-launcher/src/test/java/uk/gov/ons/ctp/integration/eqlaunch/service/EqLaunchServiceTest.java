@@ -2,14 +2,11 @@ package uk.gov.ons.ctp.integration.eqlaunch.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.jupiter.api.Test;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
 import uk.gov.ons.ctp.common.FixtureHelper;
 import uk.gov.ons.ctp.common.domain.Channel;
 import uk.gov.ons.ctp.common.domain.Language;
@@ -202,9 +199,8 @@ public class EqLaunchServiceTest {
   private static final String A_QUESTIONNAIRE_ID = "11100000009";
   private static final String ENCRYTPED_RESPONSE_ID = A_QUESTIONNAIRE_ID + "804def6a16184d28";
 
-
-  //TODO FieldsService and Flushing are being mothballed for the time being until we know that they
-  //will ever be used again.
+  // TODO FieldsService and Flushing are being mothballed for the time being until we know that they
+  // will ever be used again.
 
   /**
    * Calls both the public and package methods in the class under test and asserts that each returns
@@ -217,114 +213,117 @@ public class EqLaunchServiceTest {
    */
   @Test
   public void createFieldServicePayload() throws Exception {
-//
-//    Until Field Service is resurrected for SDC (possibly never) keep this code
-//	  commented out. We will revisit the EQ launch requirements for field when it is actually needed
-//    and in the meantime not add to our maintainence burden.
-//
-//
-//
-//    KeyStore keyStoreEncryption = new KeyStore(JWTKEYS_ENCRYPTION);
-//    EqLaunchServiceImpl eqLaunchService = new EqLaunchServiceImpl(keyStoreEncryption);
-//
-//    KeyStore keyStoreDecryption = new KeyStore(JWTKEYS_DECRYPTION);
-//    JweDecryptor decryptor = new JweDecryptor(keyStoreDecryption);
-//
-//    // create expectation
-//    UUID collectionExerciseId = UUID.randomUUID();
-//    String uprn = "10023122451";
-//    UUID caseId = UUID.randomUUID();
-//
-//    Map<String, Object> expectedMap = new HashMap<>();
-//    expectedMap.put("jti", "88888888-8888-8888-8888-888888888888");
-//    expectedMap.put("tx_id", "88888888-8888-8888-8888-888888888888");
-//    expectedMap.put("iat", "12345");
-//    expectedMap.put("exp", "12345");
-//    expectedMap.put("case_type", "H");
-//    expectedMap.put("collection_exercise_sid", collectionExerciseId.toString());
-//    expectedMap.put("region_code", "GB-ENG");
-//    expectedMap.put("ru_ref", uprn);
-//    expectedMap.put("case_id", caseId.toString());
-//    expectedMap.put("language_code", "en");
-//    expectedMap.put("display_address", "ONS, Segensworth\'s Road");
-//    expectedMap.put("response_id", ENCRYTPED_RESPONSE_ID);
-//    expectedMap.put("account_service_url", "http://localhost:9092/start");
-//    expectedMap.put("account_service_log_out_url", "http://localhost:9092/start/save-and-exit");
-//    expectedMap.put("channel", "field");
-//    expectedMap.put("user_id", "1234567890");
-//    expectedMap.put("questionnaire_id", A_QUESTIONNAIRE_ID);
-//    expectedMap.put("eq_id", "census");
-//    expectedMap.put("period_id", "2021");
-//    expectedMap.put("form_type", "H");
-//    expectedMap.put("survey", "CENSUS");
-//
-//    // create params for code under test
-//    Language language = Language.ENGLISH;
-//    Source source = Source.FIELD_SERVICE;
-//    Channel channel = Channel.FIELD;
-//    RmCaseDTO caseContainer = new RmCaseDTO();
-//    String userId = "1234567890";
-//    String questionnaireId = A_QUESTIONNAIRE_ID;
-//    String formType = "H";
-//    String accountServiceUrl = "http://localhost:9092/start";
-//    String accountServiceLogoutUrl = "http://localhost:9092/start/save-and-exit";
+    //
+    //    Until Field Service is resurrected for SDC (possibly never) keep this code
+    //	  commented out. We will revisit the EQ launch requirements for field when it is actually
+    // needed
+    //    and in the meantime not add to our maintainence burden.
+    //
+    //
+    //
+    //    KeyStore keyStoreEncryption = new KeyStore(JWTKEYS_ENCRYPTION);
+    //    EqLaunchServiceImpl eqLaunchService = new EqLaunchServiceImpl(keyStoreEncryption);
+    //
+    //    KeyStore keyStoreDecryption = new KeyStore(JWTKEYS_DECRYPTION);
+    //    JweDecryptor decryptor = new JweDecryptor(keyStoreDecryption);
+    //
+    //    // create expectation
+    //    UUID collectionExerciseId = UUID.randomUUID();
+    //    String uprn = "10023122451";
+    //    UUID caseId = UUID.randomUUID();
+    //
+    //    Map<String, Object> expectedMap = new HashMap<>();
+    //    expectedMap.put("jti", "88888888-8888-8888-8888-888888888888");
+    //    expectedMap.put("tx_id", "88888888-8888-8888-8888-888888888888");
+    //    expectedMap.put("iat", "12345");
+    //    expectedMap.put("exp", "12345");
+    //    expectedMap.put("case_type", "H");
+    //    expectedMap.put("collection_exercise_sid", collectionExerciseId.toString());
+    //    expectedMap.put("region_code", "GB-ENG");
+    //    expectedMap.put("ru_ref", uprn);
+    //    expectedMap.put("case_id", caseId.toString());
+    //    expectedMap.put("language_code", "en");
+    //    expectedMap.put("display_address", "ONS, Segensworth\'s Road");
+    //    expectedMap.put("response_id", ENCRYTPED_RESPONSE_ID);
+    //    expectedMap.put("account_service_url", "http://localhost:9092/start");
+    //    expectedMap.put("account_service_log_out_url",
+    // "http://localhost:9092/start/save-and-exit");
+    //    expectedMap.put("channel", "field");
+    //    expectedMap.put("user_id", "1234567890");
+    //    expectedMap.put("questionnaire_id", A_QUESTIONNAIRE_ID);
+    //    expectedMap.put("eq_id", "census");
+    //    expectedMap.put("period_id", "2021");
+    //    expectedMap.put("form_type", "H");
+    //    expectedMap.put("survey", "CENSUS");
+    //
+    //    // create params for code under test
+    //    Language language = Language.ENGLISH;
+    //    Source source = Source.FIELD_SERVICE;
+    //    Channel channel = Channel.FIELD;
+    //    RmCaseDTO caseContainer = new RmCaseDTO();
+    //    String userId = "1234567890";
+    //    String questionnaireId = A_QUESTIONNAIRE_ID;
+    //    String formType = "H";
+    //    String accountServiceUrl = "http://localhost:9092/start";
+    //    String accountServiceLogoutUrl = "http://localhost:9092/start/save-and-exit";
 
-//    caseContainer.setCaseType("H");
-//    caseContainer.setCollectionExerciseId(collectionExerciseId);
-//    caseContainer.setRegion("E");
-//    caseContainer.setUprn(uprn); // for the 'ru_ref' field
-//    caseContainer.setId(caseId);
-//    caseContainer.setAddressLine1("ONS");
-//    caseContainer.setAddressLine2(null);
-//    caseContainer.setAddressLine3("Segensworth's Road");
-//    caseContainer.setTownName("Titchfield");
-//    caseContainer.setPostcode("PO15 5RR");
-//    caseContainer.setSurveyType("CENSUS");
+    //    caseContainer.setCaseType("H");
+    //    caseContainer.setCollectionExerciseId(collectionExerciseId);
+    //    caseContainer.setRegion("E");
+    //    caseContainer.setUprn(uprn); // for the 'ru_ref' field
+    //    caseContainer.setId(caseId);
+    //    caseContainer.setAddressLine1("ONS");
+    //    caseContainer.setAddressLine2(null);
+    //    caseContainer.setAddressLine3("Segensworth's Road");
+    //    caseContainer.setTownName("Titchfield");
+    //    caseContainer.setPostcode("PO15 5RR");
+    //    caseContainer.setSurveyType("CENSUS");
 
-//    EqLaunchCoreData coreLaunchData =
-//        EqLaunchCoreData.builder()
-//            .language(language)
-//            .source(source)
-//            .channel(channel)
-//            .questionnaireId(questionnaireId)
-//            .formType(formType)
-//            .salt(SALT)
-//            .build();
-//
-//    // Run code under to test to get a payload
-//    Map<String, Object> payloadMapFromComplexCall =
-//        eqLaunchService.createPayloadMap(
-//            coreLaunchData,
-//            caseContainer,
-//            userId,
-//            null,
-//            accountServiceUrl,
-//            accountServiceLogoutUrl);
-//
-//    assertEquals(
-//        expectedMap,
-//        cleanPayloadMap(payloadMapFromComplexCall),
-//        "expectedMap should equal the cleaned map from the complex call");
-//
-//    EqLaunchData launchData =
-//        build(coreLaunchData, caseContainer, userId, accountServiceUrl, accountServiceLogoutUrl);
-//
-//    // Run code under test to get encrypted payload string
-//    String payloadStringFromSimpleCall = eqLaunchService.getEqLaunchJwe(launchData);
-//
-//    // decrypt it
-//    String decrypted = decryptor.decrypt(payloadStringFromSimpleCall);
-//
-//    // turn it back into a map
-//    ObjectMapper mapper = new ObjectMapper();
-//    TypeReference<HashMap<String, Object>> typeRef =
-//        new TypeReference<HashMap<String, Object>>() {};
-//    Map<String, Object> payloadMapFromSimpleCall = mapper.readValue(decrypted, typeRef);
-//
-//    assertEquals(
-//        expectedMap,
-//        cleanPayloadMap(payloadMapFromSimpleCall),
-//        "expectedMap should equal the cleaned map from the simple call");
+    //    EqLaunchCoreData coreLaunchData =
+    //        EqLaunchCoreData.builder()
+    //            .language(language)
+    //            .source(source)
+    //            .channel(channel)
+    //            .questionnaireId(questionnaireId)
+    //            .formType(formType)
+    //            .salt(SALT)
+    //            .build();
+    //
+    //    // Run code under to test to get a payload
+    //    Map<String, Object> payloadMapFromComplexCall =
+    //        eqLaunchService.createPayloadMap(
+    //            coreLaunchData,
+    //            caseContainer,
+    //            userId,
+    //            null,
+    //            accountServiceUrl,
+    //            accountServiceLogoutUrl);
+    //
+    //    assertEquals(
+    //        expectedMap,
+    //        cleanPayloadMap(payloadMapFromComplexCall),
+    //        "expectedMap should equal the cleaned map from the complex call");
+    //
+    //    EqLaunchData launchData =
+    //        build(coreLaunchData, caseContainer, userId, accountServiceUrl,
+    // accountServiceLogoutUrl);
+    //
+    //    // Run code under test to get encrypted payload string
+    //    String payloadStringFromSimpleCall = eqLaunchService.getEqLaunchJwe(launchData);
+    //
+    //    // decrypt it
+    //    String decrypted = decryptor.decrypt(payloadStringFromSimpleCall);
+    //
+    //    // turn it back into a map
+    //    ObjectMapper mapper = new ObjectMapper();
+    //    TypeReference<HashMap<String, Object>> typeRef =
+    //        new TypeReference<HashMap<String, Object>>() {};
+    //    Map<String, Object> payloadMapFromSimpleCall = mapper.readValue(decrypted, typeRef);
+    //
+    //    assertEquals(
+    //        expectedMap,
+    //        cleanPayloadMap(payloadMapFromSimpleCall),
+    //        "expectedMap should equal the cleaned map from the simple call");
   }
 
   /**
@@ -338,75 +337,76 @@ public class EqLaunchServiceTest {
    */
   @Test
   public void createFlusherPayload() throws Exception {
-//
-//    Until Flusher is resurrected for SDC (possibly never) keep this code
-//	  commented out. We will revisit the EQ launch requirements for flushing when it is actually needed
-//    and in the meantime not add to our maintainence burden.
-//
-//
-//    KeyStore keyStoreEncryption = new KeyStore(JWTKEYS_ENCRYPTION);
-//    EqLaunchServiceImpl eqLaunchService = new EqLaunchServiceImpl(keyStoreEncryption);
-//
-//    KeyStore keyStoreDecryption = new KeyStore(JWTKEYS_DECRYPTION);
-//    JweDecryptor decryptor = new JweDecryptor(keyStoreDecryption);
-//
-//    // create expectation
-//    Map<String, Object> expectedMap = new HashMap<>();
-//    expectedMap.put("jti", "88888888-8888-8888-8888-888888888888");
-//    expectedMap.put("tx_id", "88888888-8888-8888-8888-888888888888");
-//    expectedMap.put("iat", "12345");
-//    expectedMap.put("exp", "12345");
-//    expectedMap.put("language_code", "en");
-//    expectedMap.put("response_id", ENCRYTPED_RESPONSE_ID);
-//    expectedMap.put("channel", "rh");
-//    expectedMap.put("roles", "flusher");
-//    expectedMap.put("questionnaire_id", A_QUESTIONNAIRE_ID);
-//    expectedMap.put("eq_id", "census");
-//    expectedMap.put("period_id", "2021");
-//    expectedMap.put("form_type", "H");
-//
-//    // create params for code under test
-//    Language language = Language.ENGLISH;
-//    Source source = Source.RESPONDENT_HOME;
-//    Channel channel = Channel.RH;
-//    String questionnaireId = A_QUESTIONNAIRE_ID;
-//    String formType = "H";
-//
-//    EqLaunchCoreData launchData =
-//        EqLaunchCoreData.builder()
-//            .language(language)
-//            .source(source)
-//            .channel(channel)
-//            .questionnaireId(questionnaireId)
-//            .formType(formType)
-//            .salt(SALT)
-//            .build();
-//
-//    // Run code under to test to get the payload map.
-//    Map<String, Object> payloadMapFromComplexCall =
-//        eqLaunchService.createPayloadMap(launchData, null, null, "flusher", null, null);
-//
-//    assertEquals(
-//        expectedMap,
-//        cleanPayloadMap(payloadMapFromComplexCall),
-//        "expectedMap should equal the cleaned map from the complex call");
-//
-//    // Run code under test to get encrypted payload string
-//    String payloadStringFromSimpleCall = eqLaunchService.getEqFlushLaunchJwe(launchData);
-//
-//    // decrypt it
-//    String decrypted = decryptor.decrypt(payloadStringFromSimpleCall);
-//
-//    // turn it back into a map
-//    ObjectMapper mapper = new ObjectMapper();
-//    TypeReference<HashMap<String, Object>> typeRef =
-//        new TypeReference<HashMap<String, Object>>() {};
-//    Map<String, Object> payloadMapFromSimpleCall = mapper.readValue(decrypted, typeRef);
-//
-//    assertEquals(
-//        expectedMap,
-//        cleanPayloadMap(payloadMapFromSimpleCall),
-//        "expectedMap should equal the cleaned map from the simple call");
+    //
+    //    Until Flusher is resurrected for SDC (possibly never) keep this code
+    //	  commented out. We will revisit the EQ launch requirements for flushing when it is actually
+    // needed
+    //    and in the meantime not add to our maintainence burden.
+    //
+    //
+    //    KeyStore keyStoreEncryption = new KeyStore(JWTKEYS_ENCRYPTION);
+    //    EqLaunchServiceImpl eqLaunchService = new EqLaunchServiceImpl(keyStoreEncryption);
+    //
+    //    KeyStore keyStoreDecryption = new KeyStore(JWTKEYS_DECRYPTION);
+    //    JweDecryptor decryptor = new JweDecryptor(keyStoreDecryption);
+    //
+    //    // create expectation
+    //    Map<String, Object> expectedMap = new HashMap<>();
+    //    expectedMap.put("jti", "88888888-8888-8888-8888-888888888888");
+    //    expectedMap.put("tx_id", "88888888-8888-8888-8888-888888888888");
+    //    expectedMap.put("iat", "12345");
+    //    expectedMap.put("exp", "12345");
+    //    expectedMap.put("language_code", "en");
+    //    expectedMap.put("response_id", ENCRYTPED_RESPONSE_ID);
+    //    expectedMap.put("channel", "rh");
+    //    expectedMap.put("roles", "flusher");
+    //    expectedMap.put("questionnaire_id", A_QUESTIONNAIRE_ID);
+    //    expectedMap.put("eq_id", "census");
+    //    expectedMap.put("period_id", "2021");
+    //    expectedMap.put("form_type", "H");
+    //
+    //    // create params for code under test
+    //    Language language = Language.ENGLISH;
+    //    Source source = Source.RESPONDENT_HOME;
+    //    Channel channel = Channel.RH;
+    //    String questionnaireId = A_QUESTIONNAIRE_ID;
+    //    String formType = "H";
+    //
+    //    EqLaunchCoreData launchData =
+    //        EqLaunchCoreData.builder()
+    //            .language(language)
+    //            .source(source)
+    //            .channel(channel)
+    //            .questionnaireId(questionnaireId)
+    //            .formType(formType)
+    //            .salt(SALT)
+    //            .build();
+    //
+    //    // Run code under to test to get the payload map.
+    //    Map<String, Object> payloadMapFromComplexCall =
+    //        eqLaunchService.createPayloadMap(launchData, null, null, "flusher", null, null);
+    //
+    //    assertEquals(
+    //        expectedMap,
+    //        cleanPayloadMap(payloadMapFromComplexCall),
+    //        "expectedMap should equal the cleaned map from the complex call");
+    //
+    //    // Run code under test to get encrypted payload string
+    //    String payloadStringFromSimpleCall = eqLaunchService.getEqFlushLaunchJwe(launchData);
+    //
+    //    // decrypt it
+    //    String decrypted = decryptor.decrypt(payloadStringFromSimpleCall);
+    //
+    //    // turn it back into a map
+    //    ObjectMapper mapper = new ObjectMapper();
+    //    TypeReference<HashMap<String, Object>> typeRef =
+    //        new TypeReference<HashMap<String, Object>>() {};
+    //    Map<String, Object> payloadMapFromSimpleCall = mapper.readValue(decrypted, typeRef);
+    //
+    //    assertEquals(
+    //        expectedMap,
+    //        cleanPayloadMap(payloadMapFromSimpleCall),
+    //        "expectedMap should equal the cleaned map from the simple call");
   }
 
   @Test
@@ -419,7 +419,8 @@ public class EqLaunchServiceTest {
 
     // Load case, collex and UAC
     CaseUpdate caseData = FixtureHelper.loadClassFixtures(CaseUpdate[].class).get(0);
-    CollectionExerciseUpdate collexData = FixtureHelper.loadClassFixtures(CollectionExerciseUpdate[].class).get(0);
+    CollectionExerciseUpdate collexData =
+        FixtureHelper.loadClassFixtures(CollectionExerciseUpdate[].class).get(0);
     UacUpdate uacUpdate = FixtureHelper.loadClassFixtures(UacUpdate[].class).get(0);
 
     // create expectation
@@ -431,7 +432,6 @@ public class EqLaunchServiceTest {
     Channel channel = Channel.CC;
     String agentId = "123456";
     String accountServiceLogoutUrl = "https://localhost/questionnaireSaved";
-
 
     EqLaunchCoreData coreLaunchData =
         EqLaunchCoreData.builder()
@@ -445,12 +445,26 @@ public class EqLaunchServiceTest {
     // Run code under to test to get the payload map.
     Map<String, Object> payloadMapFromComplexCall =
         eqLaunchService.createPayloadMap(
-            coreLaunchData, SurveyType.SOCIAL, collexData, caseData, agentId, null, null, accountServiceLogoutUrl);
+            coreLaunchData,
+            SurveyType.SOCIAL,
+            collexData,
+            caseData,
+            agentId,
+            null,
+            null,
+            accountServiceLogoutUrl);
 
     assertEquals(expectedMap, cleanPayloadMap(payloadMapFromComplexCall));
 
     EqLaunchData launchData =
-        build(coreLaunchData, collexData, caseData, SurveyType.SOCIAL, agentId, null, accountServiceLogoutUrl);
+        build(
+            coreLaunchData,
+            collexData,
+            caseData,
+            SurveyType.SOCIAL,
+            agentId,
+            null,
+            accountServiceLogoutUrl);
 
     // Run code under test to get encrypted payload string
     String payloadStringFromSimpleCall = eqLaunchService.getEqLaunchJwe(launchData);
@@ -466,8 +480,6 @@ public class EqLaunchServiceTest {
 
     assertEquals(expectedMap, cleanPayloadMap(payloadMapFromSimpleCall));
   }
-
-
 
   private Map<String, Object> cleanPayloadMap(Map<String, Object> payloadMap) {
     payloadMap.put("jti", "88888888-8888-8888-8888-888888888888");
@@ -500,7 +512,8 @@ public class EqLaunchServiceTest {
         .build();
   }
 
-  private Map<String, Object> getExpectedMap(CaseUpdate caseData, CollectionExerciseUpdate collexData, UacUpdate uacData) {
+  private Map<String, Object> getExpectedMap(
+      CaseUpdate caseData, CollectionExerciseUpdate collexData, UacUpdate uacData) {
     Map<String, Object> expectedMap = new HashMap<>();
     expectedMap.put("jti", "88888888-8888-8888-8888-888888888888");
     expectedMap.put("tx_id", "88888888-8888-8888-8888-888888888888");
@@ -519,11 +532,14 @@ public class EqLaunchServiceTest {
     expectedMap.put("collection_exercise_sid", caseData.getCollectionExerciseId());
     expectedMap.put("survey_url", uacData.getCollectionInstrumentUrl());
     expectedMap.put("region_code", "GB-ENG");
-    expectedMap.put( "ru_ref", uacData.getQid());
+    expectedMap.put("ru_ref", uacData.getQid());
     expectedMap.put("case_id", caseData.getCaseId());
     expectedMap.put("case_ref", caseData.getCaseRef());
     expectedMap.put(
-        "display_address", caseData.getSample().get(CaseUpdate.ATTRIBUTE_ADDRESS_LINE_1) + ", " + caseData.getSample().get(CaseUpdate.ATTRIBUTE_ADDRESS_LINE_2));
+        "display_address",
+        caseData.getSample().get(CaseUpdate.ATTRIBUTE_ADDRESS_LINE_1)
+            + ", "
+            + caseData.getSample().get(CaseUpdate.ATTRIBUTE_ADDRESS_LINE_2));
     expectedMap.put("user_id", "123456");
     expectedMap.put("account_service_log_out_url", "https://localhost/questionnaireSaved");
     return expectedMap;

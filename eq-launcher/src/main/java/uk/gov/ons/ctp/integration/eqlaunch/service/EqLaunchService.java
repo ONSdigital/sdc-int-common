@@ -16,10 +16,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import org.bouncycastle.util.encoders.Hex;
-
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.util.encoders.Hex;
 import uk.gov.ons.ctp.common.domain.SurveyType;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
@@ -36,11 +34,11 @@ public class EqLaunchService {
   private Map<SurveyType, String[]> surveyTypeAddressAttribs = new HashMap<>();
 
   private static final String[] SOCIAL_ADDRESS_ATTRIBS = {
-      ATTRIBUTE_ADDRESS_LINE_1,
-      ATTRIBUTE_ADDRESS_LINE_2,
-      ATTRIBUTE_ADDRESS_LINE_3,
-      ATTRIBUTE_TOWN_NAME,
-      ATTRIBUTE_POSTCODE
+    ATTRIBUTE_ADDRESS_LINE_1,
+    ATTRIBUTE_ADDRESS_LINE_2,
+    ATTRIBUTE_ADDRESS_LINE_3,
+    ATTRIBUTE_TOWN_NAME,
+    ATTRIBUTE_POSTCODE
   };
   private JweEncryptor codec;
 
@@ -52,38 +50,37 @@ public class EqLaunchService {
   public String getEqLaunchJwe(EqLaunchData launchData) throws CTPException {
     EqLaunchCoreData coreLaunchData = launchData.coreCopy();
 
-    Map<String, Object> payload = createPayloadMap(
-        coreLaunchData,
-        launchData.getSurveyType(),
-        launchData.getCollectionExerciseUpdate(),
-        launchData.getCaseUpdate(),
-        launchData.getUserId(),
-        null,
-        launchData.getAccountServiceUrl(),
-        launchData.getAccountServiceLogoutUrl());
+    Map<String, Object> payload =
+        createPayloadMap(
+            coreLaunchData,
+            launchData.getSurveyType(),
+            launchData.getCollectionExerciseUpdate(),
+            launchData.getCaseUpdate(),
+            launchData.getUserId(),
+            null,
+            launchData.getAccountServiceUrl(),
+            launchData.getAccountServiceLogoutUrl());
 
     return codec.encrypt(payload);
   }
 
   public String getEqFlushLaunchJwe(EqLaunchCoreData launchData) throws CTPException {
 
-    Map<String, Object> payload = createPayloadMap(launchData, null, null, null, null, ROLE_FLUSHER, null, null);
+    Map<String, Object> payload =
+        createPayloadMap(launchData, null, null, null, null, ROLE_FLUSHER, null, null);
 
     return codec.encrypt(payload);
   }
 
   /**
-   * This method builds the payload of a URL that will be used to launch EQ.
-   * This code replicates the payload building done by the Python code in the
-   * census-rh-ui project for class /app/eq.py.
+   * This method builds the payload of a URL that will be used to launch EQ. This code replicates
+   * the payload building done by the Python code in the census-rh-ui project for class /app/eq.py.
    *
-   * <p>
-   * EQ requires a payload string formatted as a Python serialised dictionary,
-   * so this code has to replicate all Python formatting quirks.
+   * <p>EQ requires a payload string formatted as a Python serialised dictionary, so this code has
+   * to replicate all Python formatting quirks.
    *
-   * <p>
-   * This code assumes that the channel is CC or field, and will need the
-   * user_id field to be cleared if it is ever used from RH.
+   * <p>This code assumes that the channel is CC or field, and will need the user_id field to be
+   * cleared if it is ever used from RH.
    *
    * @param coreData core launch data
    * @param caseContainer case container
@@ -116,8 +113,7 @@ public class EqLaunchService {
     payload.computeIfAbsent("tx_id", (k) -> UUID.randomUUID().toString());
     payload.computeIfAbsent("iat", (k) -> currentTimeInSeconds);
     payload.computeIfAbsent("exp", (k) -> currentTimeInSeconds + (5 * 60));
-    payload.computeIfAbsent(
-        "collection_exercise_sid", (k) -> caseUpdate.getCollectionExerciseId());
+    payload.computeIfAbsent("collection_exercise_sid", (k) -> caseUpdate.getCollectionExerciseId());
 
     String convertedRegionCode = convertRegionCode(caseUpdate.getSample().get("region"));
     payload.computeIfAbsent("region_code", (k) -> convertedRegionCode);
@@ -139,7 +135,8 @@ public class EqLaunchService {
       payload.computeIfAbsent("form_type", (k) -> "zzz");
       payload.computeIfAbsent("schema_name", (k) -> "zzz_9999");
       payload.computeIfAbsent("period_str", (k) -> collectionExercise.getName());
-      payload.computeIfAbsent("survey_url", (k) -> coreData.getUacUpdate().getCollectionInstrumentUrl());
+      payload.computeIfAbsent(
+          "survey_url", (k) -> coreData.getUacUpdate().getCollectionInstrumentUrl());
       payload.computeIfAbsent("case_ref", (k) -> caseUpdate.getCaseRef());
       payload.computeIfAbsent("ru_name", (k) -> "West Efford Cottage");
 
@@ -147,8 +144,7 @@ public class EqLaunchService {
       verifyNotNull(displayAddressAttribs, "displayAddress", caseId);
 
       payload.computeIfAbsent(
-          "display_address",
-          (k) -> buildDisplayAddress(caseUpdate, displayAddressAttribs));
+          "display_address", (k) -> buildDisplayAddress(caseUpdate, displayAddressAttribs));
     }
     String responseId = encryptResponseId(questionnaireId, coreData.getSalt());
     payload.computeIfAbsent("response_id", (k) -> responseId);
@@ -190,11 +186,12 @@ public class EqLaunchService {
   // Create an address from the first 2 non-null parts of the address.
   // This replicates RHUI's creation of the display address.
   private String buildDisplayAddress(CaseUpdate caseUpdate, String... addressElements) {
-    String displayAddress = Arrays.stream(addressElements)
-        .map(a -> caseUpdate.getSample().get(a))
-        .filter(a -> a != null)
-        .limit(2)
-        .collect(Collectors.joining(", "));
+    String displayAddress =
+        Arrays.stream(addressElements)
+            .map(a -> caseUpdate.getSample().get(a))
+            .filter(a -> a != null)
+            .limit(2)
+            .collect(Collectors.joining(", "));
     return displayAddress;
   }
 

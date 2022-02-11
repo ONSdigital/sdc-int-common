@@ -3,7 +3,6 @@ package uk.gov.ons.ctp.integration.notifyapiclient;
 import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
 
 import java.util.UUID;
-
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.domain.Channel;
 import uk.gov.ons.ctp.common.rest.RestClient;
@@ -27,9 +26,18 @@ public class NotifyServiceClientService {
     this.notifyServiceClient = notifyServiceClient;
   }
 
-  public NotifyResponseDTO requestSmsFulfilment(UUID caseId, String telephoneNumber, String packCode, Channel channel, String userId, UUID correlationId) {
+  public NotifyResponseDTO requestSmsFulfilment(
+      UUID caseId,
+      String telephoneNumber,
+      String packCode,
+      Channel channel,
+      String userId,
+      UUID correlationId) {
     log.debug(
-        "requestSmsFulfilment() calling Notify Service", kv("caseId", caseId), kv("packCode", packCode), kv("userId", userId));
+        "requestSmsFulfilment() calling Notify Service",
+        kv("caseId", caseId),
+        kv("packCode", packCode),
+        kv("userId", userId));
 
     NotifyRequestDTO request = constructRequestBody(channel, userId, correlationId);
     SmsFulfilment smsFulfilment = new SmsFulfilment();
@@ -39,17 +47,29 @@ public class NotifyServiceClientService {
     NotifyRequestPayloadDTO payload = new NotifyRequestPayloadDTO();
     payload.setSmsFulfilment(smsFulfilment);
     request.setPayload(payload);
-    
+
     NotifyResponseDTO response =
         notifyServiceClient.postResource(
             REQUEST_SMS_FULFILMENT_PATH, request, NotifyResponseDTO.class, caseId.toString());
-    log.debug("requestSmsFulfilment() given questionnaire ID for case", kv("caseId", caseId), kv("questionnaireId", response.getQid()));
+    log.debug(
+        "requestSmsFulfilment() given questionnaire ID for case",
+        kv("caseId", caseId),
+        kv("questionnaireId", response.getQid()));
     return response;
   }
-  
-  public NotifyResponseDTO requestEmailFulfilment(UUID caseId, String email, String packCode, Channel channel, String userId, UUID correlationId) {
+
+  public NotifyResponseDTO requestEmailFulfilment(
+      UUID caseId,
+      String email,
+      String packCode,
+      Channel channel,
+      String userId,
+      UUID correlationId) {
     log.debug(
-        "requestEmailFulfilment() calling Notify Service", kv("caseId", caseId), kv("packCode", packCode), kv("userId", userId));
+        "requestEmailFulfilment() calling Notify Service",
+        kv("caseId", caseId),
+        kv("packCode", packCode),
+        kv("userId", userId));
 
     NotifyRequestDTO request = constructRequestBody(channel, userId, correlationId);
     EmailFulfilment emailFulfilment = new EmailFulfilment();
@@ -59,15 +79,19 @@ public class NotifyServiceClientService {
     NotifyRequestPayloadDTO payload = new NotifyRequestPayloadDTO();
     payload.setEmailFulfilment(emailFulfilment);
     request.setPayload(payload);
-    
+
     NotifyResponseDTO response =
         notifyServiceClient.postResource(
             REQUEST_EMAIL_FULFILMENT_PATH, request, NotifyResponseDTO.class, caseId.toString());
-    log.debug("requestEmailFulfilment() given questionnaire ID for case", kv("caseId", caseId), kv("questionnaireId", response.getQid()));
+    log.debug(
+        "requestEmailFulfilment() given questionnaire ID for case",
+        kv("caseId", caseId),
+        kv("questionnaireId", response.getQid()));
     return response;
   }
 
-  private NotifyRequestDTO constructRequestBody(Channel channel, String userId, UUID correlationId) {
+  private NotifyRequestDTO constructRequestBody(
+      Channel channel, String userId, UUID correlationId) {
     NotifyRequestDTO request = new NotifyRequestDTO();
     NotifyRequestHeaderDTO header = new NotifyRequestHeaderDTO();
     header.setCorrelationId(correlationId);
@@ -77,6 +101,4 @@ public class NotifyServiceClientService {
     request.setHeader(header);
     return request;
   }
-
-
 }

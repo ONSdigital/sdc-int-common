@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import javax.validation.ConstraintViolationException;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -348,8 +346,7 @@ public class RestExceptionHandler {
    */
   @ResponseBody
   @ExceptionHandler(ConstraintViolationException.class)
-  public ResponseEntity<?> handleConstraintViolationException(
-      ConstraintViolationException ex) {
+  public ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException ex) {
     String message = createCleanedUpErrorMessage(ex);
 
     log.warn(
