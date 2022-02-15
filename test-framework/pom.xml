@@ -11,7 +11,7 @@
     <groupId>ons.sdc.int.common</groupId>
     <artifactId>common</artifactId>
     <!-- version auto updated by Travis mvn release -->
-    <version>1.0.80-SNAPSHOT</version>
+    <version>1.0.80-409-SNAPSHOT</version>
   </parent>
 
   <dependencies>
@@ -46,6 +46,13 @@
       <scope>compile</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>${lombok.version}</version><!--$NO-MVN-MAN-VER$-->
+      <scope>provided</scope>
+    </dependency>
+ 
     <!-- ONS libraries -->
 
     <dependency>
