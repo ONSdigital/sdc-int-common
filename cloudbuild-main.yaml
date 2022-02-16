@@ -12,8 +12,8 @@ steps:
     args: ['xpzf', 'm2.tar.gz']
 
 
-  - name: openjdk:11-jdk-slim
-    id: Prepare JDK11
+  - name: openjdk:17-jdk-slim
+    id: Prepare JDK17
     entrypoint: bash
     args:
       - -c
@@ -21,7 +21,7 @@ steps:
         java -version
     volumes:
       - name: javahome
-        path: /usr/local/openjdk-11
+        path: /usr/local/openjdk-17
 
   - name: gcr.io/cloud-builders/git
     id: Prepare Git
@@ -47,7 +47,7 @@ steps:
     secretEnv: [ SDC_INT_COMMON_DEPLOY_KEY ]
     env:
       - TZ=Europe/London
-      - JAVA_HOME=/usr/local/openjdk-11
+      - JAVA_HOME=/usr/local/openjdk-17
     entrypoint: bash
     dir: /workspace
     args:
@@ -62,7 +62,7 @@ steps:
       - name: ssh
         path: /root/.ssh
       - name: javahome
-        path: /usr/local/openjdk-11
+        path: /usr/local/openjdk-17
 
 
   # Update M2 repo cache
