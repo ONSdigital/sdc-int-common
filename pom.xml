@@ -163,6 +163,7 @@
         <groupId>org.projectlombok</groupId>
         <artifactId>lombok</artifactId>
         <version>${lombok.version}</version> <!--$NO-MVN-MAN-VER$-->
+        <scope>provided</scope>
       </dependency>
 
       <dependency>
@@ -560,3 +561,4 @@
   </distributionManagement>
 
 </project>
+
