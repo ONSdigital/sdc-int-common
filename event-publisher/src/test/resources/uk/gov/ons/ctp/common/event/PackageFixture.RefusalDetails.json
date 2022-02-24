@@ -1,4 +1,5 @@
 {
   "caseId" : "18353ceb-28cf-4a64-bee2-c4dc556d1268",
-  "type" : "EXTRAORDINARY_REFUSAL"
+  "type" : "EXTRAORDINARY_REFUSAL",
+  "eraseData": false
 }

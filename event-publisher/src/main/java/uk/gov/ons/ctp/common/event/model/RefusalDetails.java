@@ -12,4 +12,5 @@ public class RefusalDetails implements EventPayload {
 
   private UUID caseId;
   private String type;
+  private boolean eraseData;
 }
