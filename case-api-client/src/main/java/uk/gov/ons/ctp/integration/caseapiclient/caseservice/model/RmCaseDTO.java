@@ -1,11 +1,12 @@
 package uk.gov.ons.ctp.integration.caseapiclient.caseservice.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import uk.gov.ons.ctp.common.domain.RefusalType;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)

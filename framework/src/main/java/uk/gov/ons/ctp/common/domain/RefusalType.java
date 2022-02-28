@@ -1,4 +1,4 @@
-package uk.gov.ons.ctp.integration.caseapiclient.caseservice.model;
+package uk.gov.ons.ctp.common.domain;
 
 public enum RefusalType {
   HARD_REFUSAL,
