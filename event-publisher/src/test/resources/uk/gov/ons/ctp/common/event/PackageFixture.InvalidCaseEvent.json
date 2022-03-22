@@ -1,0 +1,18 @@
+{
+  "header": {
+    "version": "0.6.0",
+    "topic": "event_invalid-case",
+    "source": "SAMPLE_LOADER",
+    "channel": "CC",
+    "dateTime": "2021-11-12T16:14:05.044Z",
+    "messageId": "c18ba0dd-c831-404e-96e0-50e589e28774",
+    "correlationId": "c18ba0dd-c831-404e-96e0-50e589e28774",
+    "originatingUser": "TBD"
+  },
+  "payload": {
+    "invalidCase": {
+      "caseId": "3883af91-0052-4497-9805-3238544fcf8a",
+      "reason" : "The boat has sunk"
+    }
+  }
+}

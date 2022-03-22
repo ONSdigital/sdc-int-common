@@ -24,6 +24,9 @@ import uk.gov.ons.ctp.common.event.model.FulfilmentPayload;
 import uk.gov.ons.ctp.common.event.model.FulfilmentRequest;
 import uk.gov.ons.ctp.common.event.model.GenericEvent;
 import uk.gov.ons.ctp.common.event.model.Header;
+import uk.gov.ons.ctp.common.event.model.InvalidCase;
+import uk.gov.ons.ctp.common.event.model.InvalidCaseEvent;
+import uk.gov.ons.ctp.common.event.model.InvalidCasePayload;
 import uk.gov.ons.ctp.common.event.model.NewCaseEvent;
 import uk.gov.ons.ctp.common.event.model.NewCasePayload;
 import uk.gov.ons.ctp.common.event.model.NewCasePayloadContent;
@@ -56,6 +59,7 @@ public abstract class EventBuilder {
   public static final EventBuilder COLLECTION_EXCERSISE_UPDATE =
       new CollectionExerciseUpdateBuilder();
   public static final EventBuilder NEW_CASE = new NewCaseBuilder();
+  public static final EventBuilder INVALID_CASE = new InvalidCaseBuilder();
 
   private static final String EVENT_VERSION = "0.5.0";
 
@@ -383,6 +387,31 @@ public abstract class EventBuilder {
     @Override
     EventPayload createPayload(String json) {
       return deserialisePayloadJson(json, NewCasePayloadContent.class);
+    }
+  }
+
+  public static class InvalidCaseBuilder extends EventBuilder {
+    @Override
+    GenericEvent create(SendInfo sendInfo) {
+      InvalidCaseEvent invalidCaseEvent = new InvalidCaseEvent();
+      invalidCaseEvent.setHeader(
+              buildHeader(EventTopic.INVALID_CASE, sendInfo.getSource(), sendInfo.getChannel()));
+      InvalidCasePayload invalidCasePayload =
+              new InvalidCasePayload((InvalidCase) sendInfo.getPayload());
+      invalidCaseEvent.setPayload(invalidCasePayload);
+      return invalidCaseEvent;
+    }
+
+    @Override
+    SendInfo create(String json) {
+      GenericEvent genericEvent = deserialiseEventJson(json, InvalidCaseEvent.class);
+      EventPayload payload = ((InvalidCaseEvent) genericEvent).getPayload().getInvalidCase();
+      return build(genericEvent, payload);
+    }
+
+    @Override
+    EventPayload createPayload(String json) {
+      return deserialisePayloadJson(json, InvalidCase.class);
     }
   }
 }

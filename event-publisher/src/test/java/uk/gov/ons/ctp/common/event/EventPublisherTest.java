@@ -43,6 +43,8 @@ import uk.gov.ons.ctp.common.event.model.FulfilmentEvent;
 import uk.gov.ons.ctp.common.event.model.FulfilmentRequest;
 import uk.gov.ons.ctp.common.event.model.GenericEvent;
 import uk.gov.ons.ctp.common.event.model.Header;
+import uk.gov.ons.ctp.common.event.model.InvalidCase;
+import uk.gov.ons.ctp.common.event.model.InvalidCaseEvent;
 import uk.gov.ons.ctp.common.event.model.NewCaseEvent;
 import uk.gov.ons.ctp.common.event.model.NewCasePayloadContent;
 import uk.gov.ons.ctp.common.event.model.RefusalDetails;
@@ -75,6 +77,7 @@ public class EventPublisherTest {
   @Captor private ArgumentCaptor<NewCaseEvent> newCaseEventCaptor;
   @Captor private ArgumentCaptor<SurveyUpdateEvent> surveyUpdateArgumentCaptor;
   @Captor private ArgumentCaptor<CollectionExerciseUpdateEvent> collectionExerciseArgumentCaptor;
+  @Captor private ArgumentCaptor<InvalidCaseEvent> invalidCaseEventArgumentCaptor;
 
   private Date startOfTestDateTime;
 
@@ -284,6 +287,24 @@ public class EventPublisherTest {
   @Test
   public void shouldSendCollectionExerciseUpdate() {
     assertSendCollectionExercise(EventTopic.COLLECTION_EXERCISE_UPDATE);
+  }
+
+  private void assertSendInvalidateCase(EventTopic topic) {
+    InvalidCase payload = loadJson(InvalidCase[].class);
+
+    UUID messageId =
+            eventPublisher.sendEvent(topic.getType(), Source.CONTACT_CENTRE_API, Channel.CC, payload);
+
+    verify(sender).sendEvent(eq(topic), invalidCaseEventArgumentCaptor.capture());
+    InvalidCaseEvent event = invalidCaseEventArgumentCaptor.getValue();
+
+    assertHeader(event, messageId.toString(), topic, Source.CONTACT_CENTRE_API, Channel.CC);
+    assertEquals(payload, event.getPayload().getInvalidCase());
+  }
+
+  @Test
+  public void shouldSendInvalidateCase() {
+    assertSendInvalidateCase(EventTopic.INVALID_CASE);
   }
 
   @Test
