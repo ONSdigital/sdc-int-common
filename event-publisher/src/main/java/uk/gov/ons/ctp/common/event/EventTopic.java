@@ -14,7 +14,8 @@ public enum EventTopic {
   SURVEY_UPDATE("event_survey-update", TopicType.SURVEY_UPDATE),
   COLLECTION_EXERCISE_UPDATE(
       "event_collection-exercise-update", TopicType.COLLECTION_EXERCISE_UPDATE),
-  NEW_CASE("event_new-case", TopicType.NEW_CASE);
+  NEW_CASE("event_new-case", TopicType.NEW_CASE),
+  INVALID_CASE("event_invalid-case", TopicType.INVALID_CASE);
 
   @JsonValue private String topic;
   private TopicType type;
