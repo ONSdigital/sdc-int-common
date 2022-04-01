@@ -11,14 +11,11 @@
   },
   "payload": {
     "fulfilmentRequest": {
-      "fulfilmentCode": "ENH1",
-      "caseId": "id-123",
-      "individualCaseId": "ead8aa0e-793f-4489-ae26-1989e0bd76b1",
-      "contact": {
-        "title": "Ms",
-        "forename": "jo",
-        "surname": "smith",
-        "telNo": "+447890000000"
+      "packCode": "ENH1",
+      "caseId": "ead8aa0e-793f-4489-ae26-1989e0bd76b1",
+      "personalisation" : {
+        "forename" : "jo",
+        "surname" : "smith"
       }
     }
   }

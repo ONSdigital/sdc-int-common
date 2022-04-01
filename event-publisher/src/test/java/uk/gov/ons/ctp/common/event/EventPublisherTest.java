@@ -167,7 +167,7 @@ public class EventPublisherTest {
 
     assertHeader(
         event, messageId.toString(), EventTopic.FULFILMENT, Source.CONTACT_CENTRE_API, Channel.CC);
-    assertEquals("id-123", event.getPayload().getFulfilmentRequest().getCaseId());
+    assertEquals("ead8aa0e-793f-4489-ae26-1989e0bd76b1", event.getPayload().getFulfilmentRequest().getCaseId());
   }
 
   @Test
