@@ -3,6 +3,7 @@
 # sdc-int-common
 Shared Java components for ONS SDC Integration Projects
 
+
 The common project uses Maven modules - each sub module is built when common is built.
 Only the top level pom declares the common version, which is incremented by a maven release, currently performed
 by CloudBuild when a merge into main occurs.
