@@ -13,6 +13,6 @@ public class FulfilmentRequest implements EventPayload {
 
   private String caseId;
   private String packCode;
-  private Map<String, String> uacMetadata;
-  private Map<String, String> personalisation;
+  private Map<String, Object> uacMetadata;
+  private Map<String, Object> personalisation;
 }
