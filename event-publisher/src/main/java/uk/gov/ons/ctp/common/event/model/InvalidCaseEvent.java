@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 public class InvalidCaseEvent extends GenericEvent {
 
-    private InvalidCasePayload payload;
+  private InvalidCasePayload payload;
 }

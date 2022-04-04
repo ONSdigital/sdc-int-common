@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class InvalidCasePayload {
 
-    private InvalidCase invalidCase;
+  private InvalidCase invalidCase;
 }

@@ -395,9 +395,9 @@ public abstract class EventBuilder {
     GenericEvent create(SendInfo sendInfo) {
       InvalidCaseEvent invalidCaseEvent = new InvalidCaseEvent();
       invalidCaseEvent.setHeader(
-              buildHeader(EventTopic.INVALID_CASE, sendInfo.getSource(), sendInfo.getChannel()));
+          buildHeader(EventTopic.INVALID_CASE, sendInfo.getSource(), sendInfo.getChannel()));
       InvalidCasePayload invalidCasePayload =
-              new InvalidCasePayload((InvalidCase) sendInfo.getPayload());
+          new InvalidCasePayload((InvalidCase) sendInfo.getPayload());
       invalidCaseEvent.setPayload(invalidCasePayload);
       return invalidCaseEvent;
     }
