@@ -1,10 +1,6 @@
 package uk.gov.ons.ctp.integration.ratelimiter.client;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -16,13 +12,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ResponseStatusException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import uk.gov.ons.ctp.common.domain.Product;
+import uk.gov.ons.ctp.common.domain.ProductGroup;
+import uk.gov.ons.ctp.common.domain.DeliveryChannel;
 import uk.gov.ons.ctp.common.domain.UniquePropertyReferenceNumber;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.rest.RestClient;
 import uk.gov.ons.ctp.common.rest.RestClientConfig;
-import uk.gov.ons.ctp.integration.common.product.model.Product;
-import uk.gov.ons.ctp.integration.common.product.model.Product.DeliveryChannel;
-import uk.gov.ons.ctp.integration.common.product.model.Product.ProductGroup;
 
 /**
  * This is a program for manually testing the client against an real/fake limiter.
@@ -159,18 +158,7 @@ public class RateLimiterClient_IT {
     System.out.println(narrative);
     System.out.println("Expecting: " + expectedHttpStatus.name());
 
-    Product product =
-        new Product(
-            "F1",
-            ProductGroup.QUESTIONNAIRE,
-            "Big print",
-            null,
-            true,
-            null,
-            DeliveryChannel.SMS,
-            null,
-            null,
-            null);
+    Product product = Product.builder().fulfilmentCode("F1").productGroup( ProductGroup.UAC).description("Big print").deliveryChannel(DeliveryChannel.SMS).build();
 
     HttpStatus actualHttpStatus;
     try {

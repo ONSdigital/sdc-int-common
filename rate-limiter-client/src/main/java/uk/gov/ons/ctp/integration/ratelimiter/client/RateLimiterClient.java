@@ -1,26 +1,25 @@
 package uk.gov.ons.ctp.integration.ratelimiter.client;
 
 import static uk.gov.ons.ctp.common.log.ScopedStructuredArguments.kv;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.InetAddressValidator;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
+import lombok.extern.slf4j.Slf4j;
+import uk.gov.ons.ctp.common.domain.Product;
 import uk.gov.ons.ctp.common.domain.UniquePropertyReferenceNumber;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
 import uk.gov.ons.ctp.common.rest.RestClient;
-import uk.gov.ons.ctp.integration.common.product.model.Product;
 import uk.gov.ons.ctp.integration.ratelimiter.model.DescriptorEntry;
 import uk.gov.ons.ctp.integration.ratelimiter.model.LimitDescriptor;
 import uk.gov.ons.ctp.integration.ratelimiter.model.LimitStatus;
@@ -44,9 +43,7 @@ public class RateLimiterClient {
 
   // Names of descriptor entries for limiter requests
   private static final String DESC_PRODUCT_GROUP = "productGroup";
-  private static final String DESC_INDIVIDUAL = "individual";
   private static final String DESC_DELIVERY_CHANNEL = "deliveryChannel";
-  private static final String DESC_CASE_TYPE = "caseType";
   private static final String DESC_IP_ADDRESS = "ipAddress";
   private static final String DESC_UPRN = "uprn";
   private static final String DESC_TEL_NO = "telNo";
@@ -55,10 +52,10 @@ public class RateLimiterClient {
 
   // Lists of descriptors to be sent to the limiter. Fulfilment requests only.
   private static String[] DESCRIPTORS_WITH_UPRN = {
-    DESC_DELIVERY_CHANNEL, DESC_PRODUCT_GROUP, DESC_INDIVIDUAL, DESC_CASE_TYPE, DESC_UPRN
+    DESC_DELIVERY_CHANNEL, DESC_PRODUCT_GROUP, DESC_UPRN
   };
   private static String[] DESCRIPTORS_WITH_TEL_NO = {
-    DESC_DELIVERY_CHANNEL, DESC_PRODUCT_GROUP, DESC_INDIVIDUAL, DESC_CASE_TYPE, DESC_TEL_NO
+    DESC_DELIVERY_CHANNEL, DESC_PRODUCT_GROUP, DESC_TEL_NO
   };
   private static String[] DELIVERYCHANNEL_WITH_ONLY_UPRN = {DESC_DELIVERY_CHANNEL, DESC_UPRN};
   private static String[] DELIVERYCHANNEL_WITH_ONLY_TEL_NO = {DESC_DELIVERY_CHANNEL, DESC_TEL_NO};
@@ -142,7 +139,6 @@ public class RateLimiterClient {
         "Fulfilment rate limit. Going to call Rate Limiter Service",
         kv("domain", domain.domainName),
         kv("productGroup", product.getProductGroup().name()),
-        kv("individual", product.getIndividual().toString()),
         kv("deliveryChannel", product.getDeliveryChannel().name()),
         kv("ipAddress", ipAddress),
         kv("uprn", uprn.getValue()),
@@ -151,7 +147,6 @@ public class RateLimiterClient {
     // Make it easy to access limiter parameters by adding to a hashmap
     Map<String, String> params = new HashMap<String, String>();
     params.put(DESC_PRODUCT_GROUP, product.getProductGroup().name());
-    params.put(DESC_INDIVIDUAL, product.getIndividual().toString());
     params.put(DESC_DELIVERY_CHANNEL, product.getDeliveryChannel().name());
     params.put(DESC_IP_ADDRESS, ipAddress);
     params.put(DESC_UPRN, Long.toString(uprn.getValue()));

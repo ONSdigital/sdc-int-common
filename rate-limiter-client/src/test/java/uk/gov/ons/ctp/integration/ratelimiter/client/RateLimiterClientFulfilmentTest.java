@@ -11,12 +11,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.ons.ctp.common.FixtureHelper;
-import uk.gov.ons.ctp.common.domain.CaseType;
 import uk.gov.ons.ctp.common.domain.UniquePropertyReferenceNumber;
 import uk.gov.ons.ctp.common.error.CTPException;
-import uk.gov.ons.ctp.integration.common.product.model.Product;
-import uk.gov.ons.ctp.integration.common.product.model.Product.DeliveryChannel;
-import uk.gov.ons.ctp.integration.common.product.model.Product.ProductGroup;
+import uk.gov.ons.ctp.common.domain.Product;
+import uk.gov.ons.ctp.common.domain.DeliveryChannel;
+import uk.gov.ons.ctp.common.domain.ProductGroup;
 import uk.gov.ons.ctp.integration.ratelimiter.model.LimitDescriptor;
 import uk.gov.ons.ctp.integration.ratelimiter.model.RateLimitRequest;
 import uk.gov.ons.ctp.integration.ratelimiter.model.RateLimitResponse;
@@ -25,21 +24,9 @@ import uk.gov.ons.ctp.integration.ratelimiter.model.RateLimitResponse;
 @ExtendWith(MockitoExtension.class)
 public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
 
-  private Product product =
-      new Product(
-          "P1",
-          ProductGroup.QUESTIONNAIRE,
-          "Large print Welsh",
-          null,
-          true,
-          null,
-          DeliveryChannel.SMS,
-          null,
-          null,
-          null);
+  Product product = Product.builder().fulfilmentCode("F1").productGroup( ProductGroup.UAC).description("Big print").deliveryChannel(DeliveryChannel.SMS).build();
 
   private UniquePropertyReferenceNumber uprn = new UniquePropertyReferenceNumber("24234234");
-  private CaseType caseType = CaseType.HH;
 
   @Test
   public void shouldRejectNullEncryptionPassword() {
@@ -224,16 +211,16 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
     // Verify that the limit request is correct, for whatever combination of mandatory and
     // optional data we are currently testing
     int i = 0;
-    verifyDescriptor(request, i++, product, caseType, "uprn", Long.toString(uprn.getValue()));
+    verifyDescriptor(request, i++, product, true, "uprn", Long.toString(uprn.getValue()));
     if (useTelNo) {
-      verifyDescriptor(request, i++, product, caseType, "telNo", telNo);
+      verifyDescriptor(request, i++, product, true, "telNo", telNo);
     }
-    verifyDescriptor(request, i++, product, "uprn", Long.toString(uprn.getValue()));
+    verifyDescriptor(request, i++, product, false, "uprn", Long.toString(uprn.getValue()));
     if (useTelNo) {
-      verifyDescriptor(request, i++, product, "telNo", telNo);
+      verifyDescriptor(request, i++, product, false, "telNo", telNo);
     }
     if (useIpAddress) {
-      verifyDescriptor(request, i++, product, "ipAddress", ipAddress);
+      verifyDescriptor(request, i++, product, false, "ipAddress", ipAddress);
     }
   }
 
@@ -245,7 +232,7 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
     int expectedNumDescriptors = 4;
 
     if (expectIpUsed) {
-      verifyDescriptor(request, expectedNumDescriptors++, product, "ipAddress", ipAddress);
+      verifyDescriptor(request, expectedNumDescriptors++, product, false, "ipAddress", ipAddress);
     }
     assertEquals(expectedNumDescriptors, request.getDescriptors().size());
   }
@@ -254,26 +241,16 @@ public class RateLimiterClientFulfilmentTest extends RateLimiterClientTestBase {
       RateLimitRequest request,
       int index,
       Product product,
-      CaseType caseType,
+      boolean includeProductGroup,
       String finalKeyName,
       String finalKeyValue) {
     LimitDescriptor descriptor = request.getDescriptors().get(index);
-    assertEquals(5, descriptor.getEntries().size());
-    verifyEntry(descriptor, 0, "deliveryChannel", product.getDeliveryChannel().name());
-    verifyEntry(descriptor, 1, "productGroup", product.getProductGroup().name());
-    verifyEntry(descriptor, 2, "individual", Boolean.toString(product.getIndividual()));
-    verifyEntry(descriptor, 4, finalKeyName, finalKeyValue);
-  }
-
-  private void verifyDescriptor(
-      RateLimitRequest request,
-      int index,
-      Product product,
-      String finalKeyName,
-      String finalKeyValue) {
-    LimitDescriptor descriptor = request.getDescriptors().get(index);
-    assertEquals(2, descriptor.getEntries().size());
-    verifyEntry(descriptor, 0, "deliveryChannel", product.getDeliveryChannel().name());
-    verifyEntry(descriptor, 1, finalKeyName, finalKeyValue);
+    int count = 0;
+    verifyEntry(descriptor, count++, "deliveryChannel", product.getDeliveryChannel().name());
+    if (includeProductGroup) {
+      verifyEntry(descriptor, count++, "productGroup", product.getProductGroup().name());
+    }
+    verifyEntry(descriptor, count++, finalKeyName, finalKeyValue);
+    assertEquals(count, descriptor.getEntries().size());
   }
 }
