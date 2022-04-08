@@ -62,7 +62,7 @@
       <artifactId>logstash-logback-encoder</artifactId>
     </dependency>
 
-	<dependency>
+	  <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
       <version>1</version>
@@ -82,7 +82,7 @@
 
     <dependency>
       <groupId>ons.sdc.int.common</groupId>
-      <artifactId>product-reference</artifactId>
+      <artifactId>event-publisher</artifactId>
       <version>${project.version}</version>
     </dependency>
 

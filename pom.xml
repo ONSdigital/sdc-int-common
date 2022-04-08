@@ -24,7 +24,6 @@
   <modules>
     <module>framework</module>
     <module>test-framework</module>
-    <module>product-reference</module>
     <module>eq-launcher</module>
     <module>event-publisher</module>
     <module>case-api-client</module>
